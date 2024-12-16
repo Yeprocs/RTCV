@@ -118,6 +118,7 @@
             this.lbMemoryDomains.Tag = "color:dark2";
             this.lbMemoryDomains.SelectedIndexChanged += new System.EventHandler(this.HandleMemoryDomainSelectionChange);
             this.lbMemoryDomains.MouseDown += new System.Windows.Forms.MouseEventHandler(this.HandleMemoryDomainsMouseDown);
+            this.lbMemoryDomains.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.lbMemoryDomains_DoubleClick);
             // 
             // tableLayoutPanel1
             // 
@@ -134,7 +135,7 @@
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableLayoutPanel1.Size = new System.Drawing.Size(200, 24);
             this.tableLayoutPanel1.TabIndex = 20;
-            // 
+            //
             // MemoryDomainsForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
