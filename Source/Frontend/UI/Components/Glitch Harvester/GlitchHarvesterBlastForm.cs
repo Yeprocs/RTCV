@@ -2,16 +2,15 @@ namespace RTCV.UI
 {
     using System;
     using System.Collections.Generic;
-    using System.Data;
     using System.Diagnostics;
     using System.Drawing;
     using System.IO;
     using System.Linq;
     using System.Windows.Forms;
-    using RTCV.CorruptCore;
-    using RTCV.NetCore;
+    using CorruptCore;
+    using NetCore;
     using RTCV.Common;
-    using RTCV.UI.Modular;
+    using Modular;
 
     public partial class GlitchHarvesterBlastForm : ComponentForm, IBlockable
     {
@@ -25,6 +24,7 @@ namespace RTCV.UI
         public bool loadBeforeOperation { get; set; } = true;
 
         private Color? originalRenderOutputButtonColor = null;
+        private bool updatingBackColor = false;
 
         private bool isCorruptionApplied;
         public bool IsCorruptionApplied
@@ -32,34 +32,7 @@ namespace RTCV.UI
             get => isCorruptionApplied;
             set
             {
-                if (value)
-                {
-                    btnBlastToggle.BackColor = Color.FromArgb(224, 128, 128);
-                    btnBlastToggle.ForeColor = Color.Black;
-                    btnBlastToggle.Text = "BlastLayer : ON";
-
-                    S.GET<StockpilePlayerForm>().btnBlastToggle.BackColor = Color.FromArgb(224, 128, 128);
-                    S.GET<StockpilePlayerForm>().btnBlastToggle.ForeColor = Color.Black;
-                    S.GET<StockpilePlayerForm>().btnBlastToggle.Text = "BlastLayer : ON     (Attempts to uncorrupt/recorrupt in real-time)";
-
-                    S.GET<SimpleModeForm>().btnBlastToggle.BackColor = Color.FromArgb(224, 128, 128);
-                    S.GET<SimpleModeForm>().btnBlastToggle.ForeColor = Color.Black;
-                    S.GET<SimpleModeForm>().btnBlastToggle.Text = "BlastLayer : ON     (Attempts to uncorrupt/recorrupt in real-time)";
-                }
-                else
-                {
-                    btnBlastToggle.BackColor = S.GET<CoreForm>().btnLogo.BackColor;
-                    btnBlastToggle.ForeColor = Color.White;
-                    btnBlastToggle.Text = "BlastLayer : OFF";
-
-                    S.GET<StockpilePlayerForm>().btnBlastToggle.BackColor = S.GET<CoreForm>().btnLogo.BackColor;
-                    S.GET<StockpilePlayerForm>().btnBlastToggle.ForeColor = Color.White;
-                    S.GET<StockpilePlayerForm>().btnBlastToggle.Text = "BlastLayer : OFF    (Attempts to uncorrupt/recorrupt in real-time)";
-
-                    S.GET<SimpleModeForm>().btnBlastToggle.BackColor = S.GET<CoreForm>().btnLogo.BackColor;
-                    S.GET<SimpleModeForm>().btnBlastToggle.ForeColor = Color.White;
-                    S.GET<SimpleModeForm>().btnBlastToggle.Text = "BlastLayer : OFF    (Attempts to uncorrupt/recorrupt in real-time)";
-                }
+                this.UpdateBlastToggleColor(value);
 
                 isCorruptionApplied = value;
             }
@@ -73,10 +46,53 @@ namespace RTCV.UI
 
             //cbRenderType.SelectedIndex = 0;
 
-            //Registers the drag and drop with the blast edirot form
+            //Registers the drag and drop with the blast editor form
             AllowDrop = true;
             this.DragEnter += OnDragEnter;
             this.DragDrop += OnDragDrop;
+            this.btnBlastToggle.BackColorChanged += (s, e) =>
+            {
+                if (!this.updatingBackColor)
+                {
+                    this.UpdateBlastToggleColor(this.IsCorruptionApplied);
+                }
+            };
+        }
+
+        private void UpdateBlastToggleColor(bool value)
+        {
+            this.updatingBackColor = true;
+            
+            if (value)
+            {
+                this.btnBlastToggle.BackColor = Color.FromArgb(224, 128, 128);
+                this.btnBlastToggle.ForeColor = Color.Black;
+                this.btnBlastToggle.Text = "BlastLayer : ON";
+
+                S.GET<StockpilePlayerForm>().btnBlastToggle.BackColor = Color.FromArgb(224, 128, 128);
+                S.GET<StockpilePlayerForm>().btnBlastToggle.ForeColor = Color.Black;
+                S.GET<StockpilePlayerForm>().btnBlastToggle.Text = "BlastLayer : ON     (Attempts to uncorrupt/recorrupt in real-time)";
+
+                S.GET<SimpleModeForm>().btnBlastToggle.BackColor = Color.FromArgb(224, 128, 128);
+                S.GET<SimpleModeForm>().btnBlastToggle.ForeColor = Color.Black;
+                S.GET<SimpleModeForm>().btnBlastToggle.Text = "BlastLayer : ON     (Attempts to uncorrupt/recorrupt in real-time)";
+            }
+            else
+            {
+                this.btnBlastToggle.BackColor = S.GET<CoreForm>().btnLogo.BackColor;
+                this.btnBlastToggle.ForeColor = Color.White;
+                this.btnBlastToggle.Text = "BlastLayer : OFF";
+
+                S.GET<StockpilePlayerForm>().btnBlastToggle.BackColor = S.GET<CoreForm>().btnLogo.BackColor;
+                S.GET<StockpilePlayerForm>().btnBlastToggle.ForeColor = Color.White;
+                S.GET<StockpilePlayerForm>().btnBlastToggle.Text = "BlastLayer : OFF    (Attempts to uncorrupt/recorrupt in real-time)";
+
+                S.GET<SimpleModeForm>().btnBlastToggle.BackColor = S.GET<CoreForm>().btnLogo.BackColor;
+                S.GET<SimpleModeForm>().btnBlastToggle.ForeColor = Color.White;
+                S.GET<SimpleModeForm>().btnBlastToggle.Text = "BlastLayer : OFF    (Attempts to uncorrupt/recorrupt in real-time)";
+            }
+
+            this.updatingBackColor = false;
         }
 
         private void OnDragDrop(object sender, DragEventArgs e)
