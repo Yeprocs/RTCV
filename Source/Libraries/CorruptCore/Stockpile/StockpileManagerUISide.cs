@@ -1,13 +1,13 @@
+using System;
+using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
+using System.IO;
+using System.Linq;
+using System.Windows.Forms;
+using RTCV.NetCore;
+
 namespace RTCV.CorruptCore
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Diagnostics.CodeAnalysis;
-    using System.IO;
-    using System.Linq;
-    using System.Windows.Forms;
-    using RTCV.NetCore;
-
     public static class StockpileManagerUISide
     {
         //Object references
@@ -447,7 +447,7 @@ namespace RTCV.CorruptCore
                     catch (Exception ex)
                     {
                         Common.Logging.GlobalLogger.Error(ex,
-                            "Som-ething went terribly wrong when fixing missing references\n" +
+                            "Something went terribly wrong when fixing missing references\n" +
                             "Your stockpile should be fine (might prompt you to fix it on load)" +
                             "Report this to the devs.");
                     }
@@ -456,7 +456,12 @@ namespace RTCV.CorruptCore
                 }
             }
 
-            string message = customMessage ?? $"Can't find file {psk.RomFilename}\nGame name: {psk.GameName}\nSystem name: {psk.SystemName}\n\n To continue loading, provide a new file for replacement.";
+            string message = customMessage ?? $"Can't find file {psk.RomFilename}\n" +
+                                              $"Game name: {psk.GameName}\n" +
+                                              $"System name: {psk.SystemName}\n" +
+                                               "\n" +
+                                               "To continue loading, you must provide a new file for replacement.\n" +
+                                               "Press OK to select a file or Cancel to abort.\n";
             string title = customTitle ?? "Error: File not found";
 
             if ((force || !File.Exists(psk.RomFilename)) && !psk.RomFilename.EndsWith("IGNORE"))
@@ -467,7 +472,7 @@ namespace RTCV.CorruptCore
                     {
                         DefaultExt = "*",
                         Title = "Select Replacement File",
-                        Filter = $"Any file|*.*",
+                        Filter = "Any file|*.*",
                         RestoreDirectory = true
                     };
                     if (ofd.ShowDialog() == DialogResult.OK)

@@ -10,14 +10,16 @@ namespace RTCV.UI.Modular
         private protected static NLog.Logger logger;
         private Panel defaultPanel = null;
         private Panel previousPanel = null;
+        private Size dockedMinimumSize = new Size(int.MinValue, int.MinValue);
+        private Size dockedMaximumSize = new Size(int.MinValue, int.MinValue);
 
         public Panel blockPanel { get; set; } = null;
 
         public bool undockedSizable { get; set; } = true;
-        public bool popoutAllowed { get; set; } = true;
+        public virtual bool PopoutAllowed { get; set; } = true;
         public ComponentFormTile ParentComponentFormTitle { get; set; } = null;
 
-        public ComponentForm() : base()
+        public ComponentForm()
         {
             logger = NLog.LogManager.GetLogger(this.GetType().ToString());
         }
@@ -56,6 +58,17 @@ namespace RTCV.UI.Modular
                 _p.WindowState = FormWindowState.Normal;
             }
 
+            if (this.dockedMinimumSize == new Size(int.MinValue, int.MinValue))
+            {
+                this.dockedMinimumSize = this.MinimumSize;
+                this.dockedMaximumSize = this.MaximumSize;
+            }
+            else
+            {
+                this.MinimumSize = this.dockedMinimumSize;
+                this.MaximumSize = this.dockedMaximumSize;
+            }
+
             this.Size = this.Parent.Size;
             this.Location = new Point(0, 0);
 
@@ -83,6 +96,18 @@ namespace RTCV.UI.Modular
             }
 
             this.Show();
+
+            // ReSharper disable ArrangeThisQualifier
+            if (dockedMinimumSize.Width > 0 && dockedMinimumSize.Height > 0)
+            {
+                MinimumSize = new Size(dockedMinimumSize.Width + Width - ClientRectangle.Width, dockedMinimumSize.Height + Height - ClientRectangle.Height);
+            }
+
+            if (dockedMaximumSize.Width > 0 && dockedMaximumSize.Height > 0)
+            {
+                MaximumSize = new Size(dockedMaximumSize.Width + Width - ClientRectangle.Width, dockedMaximumSize.Height + Height - ClientRectangle.Height);
+            }
+            // ReSharper enable ArrangeThisQualifier
         }
 
         public void RestoreToPreviousPanel()
@@ -149,14 +174,14 @@ namespace RTCV.UI.Modular
                 e = new MouseEventArgs(e.Button, e.Clicks, e.X + c.Location.X, e.Y + c.Location.Y, e.Delta);
             }
 
-            if (popoutAllowed && e.Button == MouseButtons.Right && (sender as ComponentForm).FormBorderStyle == FormBorderStyle.None)
+            if (this.PopoutAllowed && e.Button == MouseButtons.Right && (sender as ComponentForm).FormBorderStyle == FormBorderStyle.None)
             {
                 var locate = new Point(((Control)sender).Location.X + e.Location.X, ((Control)sender).Location.Y + e.Location.Y);
                 var columnsMenu = new ContextMenuStrip();
-                columnsMenu.Items.Add("Detach to window", null, new EventHandler((ob, ev) =>
+                columnsMenu.Items.Add("Detach to window", null, (ob, ev) =>
                 {
-                    (sender as ComponentForm).SwitchToWindow();
-                }));
+                    (sender as ComponentForm)?.SwitchToWindow();
+                });
                 columnsMenu.Show(this, locate);
             }
         }
@@ -167,7 +192,6 @@ namespace RTCV.UI.Modular
             {
                 e.Cancel = true;
                 this.RestoreToPreviousPanel();
-                return;
             }
         }
 

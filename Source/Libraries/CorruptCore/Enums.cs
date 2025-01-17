@@ -76,7 +76,6 @@ namespace RTCV.CorruptCore
     public enum CorruptionEngine
     {
         NIGHTMARE,
-        HELLGENIE,
         DISTORTION,
         FREEZE,
         PIPE,
@@ -150,9 +149,11 @@ namespace RTCV.CorruptCore
         public static readonly string CORE_ALLOWCROSSCORECORRUPTION = nameof(CORE_ALLOWCROSSCORECORRUPTION);
         public static readonly string CORE_CURRENTPRECISION = nameof(CORE_CURRENTPRECISION);
         public static readonly string CORE_CURRENTALIGNMENT = nameof(CORE_CURRENTALIGNMENT);
+        public static readonly string CORE_USEALIGNMENT = nameof(CORE_USEALIGNMENT);
         public static readonly string CORE_INTENSITY = nameof(CORE_INTENSITY);
         public static readonly string CORE_ERRORDELAY = nameof(CORE_ERRORDELAY);
         public static readonly string CORE_RADIUS = nameof(CORE_RADIUS);
+        public static readonly string CORE_CREATEINFINITEUNITS = nameof(CORE_CREATEINFINITEUNITS);
         public static readonly string STEP_CLEARSTEPACTIONSONREWIND = nameof(STEP_CLEARSTEPACTIONSONREWIND);
         public static readonly string STEP_MAXINFINITEBLASTUNITS = nameof(STEP_MAXINFINITEBLASTUNITS);
         public static readonly string STEP_LOCKEXECUTION = nameof(STEP_LOCKEXECUTION);
@@ -179,14 +180,6 @@ namespace RTCV.CorruptCore
         public static readonly string NIGHTMARE_MINVALUE32BIT = nameof(NIGHTMARE_MINVALUE32BIT);
         public static readonly string NIGHTMARE_MAXVALUE64BIT = nameof(NIGHTMARE_MAXVALUE64BIT);
         public static readonly string NIGHTMARE_MINVALUE64BIT = nameof(NIGHTMARE_MINVALUE64BIT);
-        public static readonly string HELLGENIE_MINVALUE8BIT = nameof(HELLGENIE_MINVALUE8BIT);
-        public static readonly string HELLGENIE_MAXVALUE8BIT = nameof(HELLGENIE_MAXVALUE8BIT);
-        public static readonly string HELLGENIE_MINVALUE16BIT = nameof(HELLGENIE_MINVALUE16BIT);
-        public static readonly string HELLGENIE_MAXVALUE16BIT = nameof(HELLGENIE_MAXVALUE16BIT);
-        public static readonly string HELLGENIE_MINVALUE32BIT = nameof(HELLGENIE_MINVALUE32BIT);
-        public static readonly string HELLGENIE_MAXVALUE32BIT = nameof(HELLGENIE_MAXVALUE32BIT);
-        public static readonly string HELLGENIE_MINVALUE64BIT = nameof(HELLGENIE_MINVALUE64BIT);
-        public static readonly string HELLGENIE_MAXVALUE64BIT = nameof(HELLGENIE_MAXVALUE64BIT);
         public static readonly string DISTORTION_DELAY = nameof(DISTORTION_DELAY);
         public static readonly string CUSTOM_NAME = nameof(CUSTOM_NAME);
         public static readonly string CUSTOM_PATH = nameof(CUSTOM_PATH);
@@ -218,6 +211,13 @@ namespace RTCV.CorruptCore
         public static readonly string VECTOR_LIMITERLISTHASH = nameof(VECTOR_LIMITERLISTHASH);
         public static readonly string VECTOR_VALUELISTHASH = nameof(VECTOR_VALUELISTHASH);
         public static readonly string VECTOR_UNLOCKPRECISION = nameof(VECTOR_UNLOCKPRECISION);
+        public static readonly string CLUSTER_LIMITERLISTHASH = nameof(CLUSTER_LIMITERLISTHASH);
+        public static readonly string CLUSTER_SHUFFLETYPE = nameof(CLUSTER_SHUFFLETYPE);
+        public static readonly string CLUSTER_SHUFFLEAMT = nameof(CLUSTER_SHUFFLEAMT);
+        public static readonly string CLUSTER_MODIFIER = nameof(CLUSTER_MODIFIER);
+        public static readonly string CLUSTER_MULTIOUT = nameof(CLUSTER_MULTIOUT);
+        public static readonly string CLUSTER_FILTERALL = nameof(CLUSTER_FILTERALL);
+        public static readonly string CLUSTER_DIR = nameof(CLUSTER_DIR);
         public static readonly string RENDER_AT_LOAD = nameof(RENDER_AT_LOAD);
         public static readonly string RENDER_ISRENDERING = nameof(RENDER_ISRENDERING);
         public static readonly string RENDER_RENDERTYPE = nameof(RENDER_RENDERTYPE);

@@ -1,3 +1,5 @@
+using RTCV.NetCore;
+
 namespace RTCV.UI
 {
     using System;
@@ -19,31 +21,16 @@ namespace RTCV.UI
         private new void HandleMouseDown(object s, MouseEventArgs e) => base.HandleMouseDown(s, e);
         private new void HandleFormClosing(object s, FormClosingEventArgs e) => base.HandleFormClosing(s, e);
 
-        private Color? originalSaveButtonColor = null;
-        private bool _UnsavedEdits = false;
+        private Color? originalSaveButtonColor;
+        private bool _UnsavedEdits;
+        private bool _loadEntryWhenSelectedWithArrows = Params.IsParamSet("LOAD_STOCKPILE_ENTRY_ON_ARROW_CLICK");
         public bool UnsavedEdits
         {
             get => _UnsavedEdits;
             set
             {
                 _UnsavedEdits = value;
-
-                if (_UnsavedEdits && btnSaveStockpile.Enabled)
-                {
-                    if (originalSaveButtonColor == null)
-                    {
-                        originalSaveButtonColor = btnSaveStockpile.BackColor;
-                    }
-
-                    btnSaveStockpile.BackColor = Color.Tomato;
-                }
-                else
-                {
-                    if (originalSaveButtonColor != null)
-                    {
-                        btnSaveStockpile.BackColor = originalSaveButtonColor.Value;
-                    }
-                }
+                UpdateSaveButtonColor(value);
             }
         }
 
@@ -51,13 +38,15 @@ namespace RTCV.UI
         {
             InitializeComponent();
 
-            popoutAllowed = true;
-            this.undockedSizable = true;
+            PopoutAllowed = true;
+            undockedSizable = true;
 
             dgvStockpile.RowsAdded += (o, e) =>
             {
                 RefreshNoteIcons();
             };
+            btnSaveStockpile.BackColorChanged += (o, e) => UpdateSaveButtonColor(UnsavedEdits);
+            btnSaveStockpileAs.BackColorChanged += (o, e) => UpdateSaveButtonColor(UnsavedEdits);
         }
 
         public void HandleCellClick(object sender, DataGridViewCellEventArgs e)
@@ -75,19 +64,16 @@ namespace RTCV.UI
                 btnStockpileDOWN.Enabled = false;
 
                 // Stockpile Note handling
-                if (e != null)
+                var senderGrid = (DataGridView)sender;
+
+                if (senderGrid.Columns[e.ColumnIndex] is DataGridViewButtonColumn &&
+                    e.RowIndex >= 0)
                 {
-                    var senderGrid = (DataGridView)sender;
+                    StashKey sk = (StashKey)senderGrid.Rows[e.RowIndex].Cells["Item"].Value;
+                    S.SET(new NoteEditorForm(sk, senderGrid.Rows[e.RowIndex].Cells["Note"]));
+                    S.GET<NoteEditorForm>().Show();
 
-                    if (senderGrid.Columns[e.ColumnIndex] is DataGridViewButtonColumn &&
-                        e.RowIndex >= 0)
-                    {
-                        StashKey sk = (StashKey)senderGrid.Rows[e.RowIndex].Cells["Item"].Value;
-                        S.SET(new NoteEditorForm(sk, senderGrid.Rows[e.RowIndex].Cells["Note"]));
-                        S.GET<NoteEditorForm>().Show();
-
-                        return;
-                    }
+                    return;
                 }
 
                 S.GET<StashHistoryForm>().lbStashHistory.ClearSelected();
@@ -541,7 +527,7 @@ namespace RTCV.UI
                 S.GET<SaveProgressForm>().Dock = DockStyle.Fill;
                 ghForm?.OpenSubForm(S.GET<SaveProgressForm>());
 
-                var r = await Task.Run(() => Stockpile.Save(sks, path, NetCore.Params.IsParamSet("INCLUDE_REFERENCED_FILES"), NetCore.Params.IsParamSet("COMPRESS_STOCKPILE")));
+                var r = await Task.Run(() => Stockpile.Save(sks, path, Params.IsParamSet("INCLUDE_REFERENCED_FILES"), Params.IsParamSet("COMPRESS_STOCKPILE")));
 
                 if (r)
                 {
@@ -567,7 +553,7 @@ namespace RTCV.UI
             Point locate = new Point(((Control)sender).Location.X + e.Location.X, ((Control)sender).Location.Y + e.Location.Y);
 
             ContextMenuStrip loadMenuItems = new ContextMenuStrip();
-            loadMenuItems.Items.Add("Load Stockpile", null, new EventHandler((ob, ev) =>
+            loadMenuItems.Items.Add("Load Stockpile", null, (ob, ev) =>
             {
                 string filename = "";
                 OpenFileDialog ofd = new OpenFileDialog
@@ -587,9 +573,9 @@ namespace RTCV.UI
                 }
 
                 LoadStockpile(filename);
-            }));
+            });
 
-            loadMenuItems.Items.Add($"Load {RtcCore.VanguardImplementationName} settings from Stockpile", null, new EventHandler((ob, ev) =>
+            loadMenuItems.Items.Add($"Load {RtcCore.VanguardImplementationName} settings from Stockpile", null, (ob, ev) =>
             {
                 try
                 {
@@ -605,9 +591,9 @@ namespace RTCV.UI
                 finally
                 {
                 }
-            }));
+            });
 
-            loadMenuItems.Items.Add($"Restore {RtcCore.VanguardImplementationName} config Backup", null, new EventHandler((ob, ev) =>
+            loadMenuItems.Items.Add($"Restore {RtcCore.VanguardImplementationName} config Backup", null, (ob, ev) =>
             {
                 try
                 {
@@ -625,7 +611,7 @@ namespace RTCV.UI
                 finally
                 {
                 }
-            })).Enabled = (File.Exists(Path.Combine(RtcCore.EmuDir, "backup_config.ini")));
+            }).Enabled = (File.Exists(Path.Combine(RtcCore.EmuDir, "backup_config.ini")));
 
             loadMenuItems.Show(this, locate);
         }
@@ -639,7 +625,7 @@ namespace RTCV.UI
             }
 
             UICore.SetHotkeyTimer(false);
-            string path = "";
+            string path;
             SaveFileDialog saveFileDialog1 = new SaveFileDialog
             {
                 DefaultExt = "sks",
@@ -672,6 +658,31 @@ namespace RTCV.UI
             foreach (DataGridViewRow dataRow in dgvStockpile.Rows)
             {
                 StashKey sk = (StashKey)dataRow.Cells["Item"].Value;
+            }
+        }
+        
+        private void UpdateSaveButtonColor(bool unsaved)
+        {
+            if (unsaved)
+            {
+                if (btnSaveStockpile.Enabled)
+                {
+                    btnSaveStockpile.BackColor = Color.Tomato;
+                }
+                else
+                {
+                    btnSaveStockpileAs.BackColor = Color.Tomato;
+                }
+            }
+            else
+            {
+                const float light1 = 0.10f;
+                const float generalDarken = -0.50f;
+                Color c = Colors.GeneralColor.ChangeColorBrightness(generalDarken).ChangeColorBrightness(light1);
+                btnSaveStockpile.BackColor = c;
+                btnSaveStockpile.FlatAppearance.BorderColor = c;
+                btnSaveStockpileAs.BackColor = c;
+                btnSaveStockpileAs.FlatAppearance.BorderColor = c;
             }
         }
 
@@ -814,7 +825,10 @@ namespace RTCV.UI
                 dgvStockpile.Rows[currentSelectedIndex - 1].Selected = true;
             }
 
-            HandleCellClick(dgvStockpile, null);
+            if (_loadEntryWhenSelectedWithArrows)
+            {
+                HandleCellClick(dgvStockpile, new DataGridViewCellEventArgs(0, dgvStockpile.SelectedRows[0].Index));
+            }
         }
 
         private void StockpileDown(object sender, EventArgs e)
@@ -837,7 +851,10 @@ namespace RTCV.UI
                 dgvStockpile.Rows[currentSelectedIndex + 1].Selected = true;
             }
 
-            HandleCellClick(dgvStockpile, null);
+            if (_loadEntryWhenSelectedWithArrows)
+            {
+                HandleCellClick(dgvStockpile, new DataGridViewCellEventArgs(0, dgvStockpile.SelectedRows[0].Index));
+            }
         }
 
         private void OnFormLoad(object sender, EventArgs e)
@@ -857,34 +874,16 @@ namespace RTCV.UI
                 Font = new Font("Segoe UI", 12)
             });
 
-            ((ToolStripMenuItem)ghSettingsMenu.Items.Add("Stockpile items: " + dgvStockpile.Rows.Cast<DataGridViewRow>().Count().ToString() , null, new EventHandler((ob, ev) =>
+            ((ToolStripMenuItem)ghSettingsMenu.Items.Add("Stockpile items: " + dgvStockpile.Rows.Cast<DataGridViewRow>().Count(), null, (ob, ev) =>
             {
 
-            }))).Enabled = false;
+            })).Enabled = false;
 
-            ((ToolStripMenuItem)ghSettingsMenu.Items.Add("Compress Stockpiles", null, new EventHandler((ob, ev) =>
-            {
-                if (NetCore.Params.IsParamSet("COMPRESS_STOCKPILE"))
-                {
-                    NetCore.Params.RemoveParam("COMPRESS_STOCKPILE");
-                }
-                else
-                {
-                    NetCore.Params.SetParam("COMPRESS_STOCKPILE");
-                }
-            }))).Checked = NetCore.Params.IsParamSet("COMPRESS_STOCKPILE");
+            ((ToolStripMenuItem)ghSettingsMenu.Items.Add("Compress Stockpiles", null, (ob, ev) => Params.ToggleParam("COMPRESS_STOCKPILE"))).Checked = Params.IsParamSet("COMPRESS_STOCKPILE");
 
-            ((ToolStripMenuItem)ghSettingsMenu.Items.Add("Include referenced files", null, new EventHandler((ob, ev) =>
-            {
-                if (NetCore.Params.IsParamSet("INCLUDE_REFERENCED_FILES"))
-                {
-                    NetCore.Params.RemoveParam("INCLUDE_REFERENCED_FILES");
-                }
-                else
-                {
-                    NetCore.Params.SetParam("INCLUDE_REFERENCED_FILES");
-                }
-            }))).Checked = NetCore.Params.IsParamSet("INCLUDE_REFERENCED_FILES");
+            ((ToolStripMenuItem)ghSettingsMenu.Items.Add("Include referenced files", null, (ob, ev) => Params.ToggleParam("INCLUDE_REFERENCED_FILES"))).Checked = Params.IsParamSet("INCLUDE_REFERENCED_FILES");
+            
+            ((ToolStripMenuItem)ghSettingsMenu.Items.Add("Load entry when selected with arrows", null, (ob, ev) => _loadEntryWhenSelectedWithArrows = Params.ToggleParam("LOAD_STOCKPILE_ENTRY_ON_ARROW_CLICK"))).Checked = Params.IsParamSet("LOAD_STOCKPILE_ENTRY_ON_ARROW_CLICK");
 
             ghSettingsMenu.Items.Add(new ToolStripSeparator());
 

@@ -37,7 +37,6 @@ namespace RTCV.UI.Modular
                         S.GET<OpenToolsForm>(),
                         })
         {
-            popoutAllowed = false,
             Text = "Advanced Tools and Plugins",
         };
 
@@ -48,7 +47,7 @@ namespace RTCV.UI.Modular
             {
                 if (_engineConfig == null)
                 {
-                    var ecGrid = new CanvasGrid(15, 12, "Engine Config");
+                    var ecGrid = new CanvasGrid(15, 13, "Engine Config");
 
                     Form gpForm = S.GET<GeneralParametersForm>();
                     Form mdForm = S.GET<MemoryDomainsForm>();
@@ -56,10 +55,10 @@ namespace RTCV.UI.Modular
 
                     //UICore.mtForm = DefaultTools;
 
-                    ecGrid.SetTileForm(gpForm, 0, 0, 5, 5, true);
-                    ecGrid.SetTileForm(ceForm, 5, 0, 10, 5, true);
-                    ecGrid.SetTileForm(mdForm, 0, 5, 5, 7, true);
-                    ecGrid.SetTileForm(UICore.mtForm, 5, 5, 10, 7, true);
+                    ecGrid.SetTileForm(gpForm, 0, 0, 5, 6, true, AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right);
+                    ecGrid.SetTileForm(ceForm, 5, 0, 10, 6, true, AnchorStyles.Top | AnchorStyles.Right);
+                    ecGrid.SetTileForm(mdForm, 0, 6, 5, 7, true, AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right);
+                    ecGrid.SetTileForm(UICore.mtForm, 5, 6, 10, 7, true, AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Right);
 
                     _engineConfig = ecGrid;
                 }
@@ -124,7 +123,7 @@ namespace RTCV.UI.Modular
             {
                 if (_glitchHarvester == null)
                 {
-                    var ghGrid = new CanvasGrid(20, 12, "Glitch Harvester")
+                    var ghGrid = new CanvasGrid(20, 12, 20, 10, "Glitch Harvester")
                     {
                         isResizable = true
                     };
@@ -136,10 +135,10 @@ namespace RTCV.UI.Modular
                     Form spmForm = S.GET<StockpileManagerForm>();
 
                     ghGrid.SetTileForm(ghbForm, 0, 0, 4, 4, true);
-                    ghGrid.SetTileForm(ssmForm, 0, 4, 4, 8, true);
+                    ghGrid.SetTileForm(ssmForm, 0, 4, 4, 8, true, AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left);
                     ghGrid.SetTileForm(ghiForm, 4, 0, 5, 3, true);
-                    ghGrid.SetTileForm(shForm, 4, 3, 5, 9, true, (AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Bottom));
-                    ghGrid.SetTileForm(spmForm, 9, 0, 11, 12, true, (AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right | AnchorStyles.Bottom));
+                    ghGrid.SetTileForm(shForm, 4, 3, 5, 9, true, AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Bottom);
+                    ghGrid.SetTileForm(spmForm, 9, 0, 11, 12, true, AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right | AnchorStyles.Bottom);
 
                     _glitchHarvester = ghGrid;
                 }

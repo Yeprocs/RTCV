@@ -14,7 +14,8 @@ namespace RTCV.UI
         private new void HandleMouseDown(object s, MouseEventArgs e) => base.HandleMouseDown(s, e);
         private new void HandleFormClosing(object s, FormClosingEventArgs e) => base.HandleFormClosing(s, e);
 
-        public bool DontLoadSelectedStash { get; set; } = false;
+        public bool DontLoadSelectedStash { get; set; }
+        public bool LoadWhenSelectedWithArrows { get; set; } = Params.IsParamSet("LOAD_STASH_ON_ARROW_CLICK");
 
         public StashHistoryForm()
         {
@@ -122,7 +123,8 @@ namespace RTCV.UI
                 StockpileManagerUISide.CurrentStashkey.Alias = Name;
             }
 
-            sk.BlastLayer.RasterizeVMDs();
+            if (Params.IsParamSet("RASTERIZE_VMD_UPON_STOCKPILING"))
+                sk.BlastLayer.RasterizeVMDs();
 
             DataGridViewRow dataRow = S.GET<StockpileManagerForm>().dgvStockpile.Rows[S.GET<StockpileManagerForm>().dgvStockpile.Rows.Add()];
             dataRow.Cells["Item"].Value = sk;
@@ -355,7 +357,7 @@ namespace RTCV.UI
             if (MessageBox.Show("Are you sure you want to clear the stash?", "Clear stash?", MessageBoxButtons.YesNo) == DialogResult.Yes)
             {
                 StockpileManagerUISide.StashHistory.Clear();
-                RefreshStashHistory();
+                this.RefreshStashHistory();
 
                 //Force clean up
                 GC.Collect();
@@ -365,41 +367,61 @@ namespace RTCV.UI
 
         public void MoveSelectedStashUp(object sender, EventArgs e)
         {
-            if (lbStashHistory.SelectedIndex == -1)
+            if (this.lbStashHistory.SelectedIndex == -1)
             {
                 return;
             }
 
-            if (lbStashHistory.SelectedIndex == 0)
+            if (this.lbStashHistory.SelectedIndex == 0)
             {
-                lbStashHistory.ClearSelected();
-                lbStashHistory.SelectedIndex = lbStashHistory.Items.Count - 1;
+                this.lbStashHistory.ClearSelected();
+                if (!this.LoadWhenSelectedWithArrows)
+                {
+                    this.DontLoadSelectedStash = true;
+                }
+
+                this.lbStashHistory.SelectedIndex = this.lbStashHistory.Items.Count - 1;
             }
             else
             {
-                int newPos = lbStashHistory.SelectedIndex - 1;
-                lbStashHistory.ClearSelected();
-                lbStashHistory.SelectedIndex = newPos;
+                int newPos = this.lbStashHistory.SelectedIndex - 1;
+                this.lbStashHistory.ClearSelected();
+                if (!this.LoadWhenSelectedWithArrows)
+                {
+                    this.DontLoadSelectedStash = true;
+                }
+
+                this.lbStashHistory.SelectedIndex = newPos;
             }
         }
 
         public void MoveSelectedStashDown(object sender, EventArgs e)
         {
-            if (lbStashHistory.SelectedIndex == -1)
+            if (this.lbStashHistory.SelectedIndex == -1)
             {
                 return;
             }
 
-            if (lbStashHistory.SelectedIndex == lbStashHistory.Items.Count - 1)
+            if (this.lbStashHistory.SelectedIndex == this.lbStashHistory.Items.Count - 1)
             {
-                lbStashHistory.ClearSelected();
-                lbStashHistory.SelectedIndex = 0;
+                this.lbStashHistory.ClearSelected();
+                if (!this.LoadWhenSelectedWithArrows)
+                {
+                    this.DontLoadSelectedStash = true;
+                }
+
+                this.lbStashHistory.SelectedIndex = 0;
             }
             else
             {
-                int newPos = lbStashHistory.SelectedIndex + 1;
-                lbStashHistory.ClearSelected();
-                lbStashHistory.SelectedIndex = newPos;
+                int newPos = this.lbStashHistory.SelectedIndex + 1;
+                this.lbStashHistory.ClearSelected();
+                if (!this.LoadWhenSelectedWithArrows)
+                {
+                    this.DontLoadSelectedStash = true;
+                }
+
+                this.lbStashHistory.SelectedIndex = newPos;
             }
         }
     }

@@ -97,60 +97,66 @@ namespace RTCV.UI
 
         private void ResizeCanvas(CanvasGrid canvasGrid)
         {
-            this.SetSize(getTilePos(canvasGrid.X), getTilePos(canvasGrid.Y));
+            this.SetSize(getTilePos(canvasGrid.Width), getTilePos(canvasGrid.Height), getTilePos(canvasGrid.MinimumWidth), getTilePos(canvasGrid.MinimumHeight));
         }
 
-        public void SetSize(int x, int y)
+        public void SetSize(int width, int height, int minWidth, int minHeight)
         {
             if (this.TopLevel)
             {
-                this.Size = new Size(x + CoreForm.xPadding, y + CoreForm.yPadding);
+                this.MinimumSize = new Size(minWidth + CoreForm.xPadding, minHeight + CoreForm.yPadding);
+                this.Size = new Size(width + CoreForm.xPadding, height + CoreForm.yPadding);
             }
             else
             {
-                CoreForm.thisForm.SetSize(x, y);
+                CoreForm.thisForm.SetSize(width, height, minWidth, minHeight);
             }
         }
 
-        private static void loadTileForm(CanvasForm targetForm, CanvasGrid canvasGrid)
+        private static void loadTileForm(CanvasForm targetForm, CanvasGrid canvasGrid, bool dontAnchor = false)
         {
             targetForm.ResizeCanvas(canvasGrid);
 
-            for (int x = 0; x < canvasGrid.X; x++)
+            for (int x = 0; x < canvasGrid.Width; x++)
             {
-                for (int y = 0; y < canvasGrid.Y; y++)
+                for (int y = 0; y < canvasGrid.Height; y++)
                 {
-                    if (canvasGrid.gridComponent[x, y] != null)
+                    if (canvasGrid.gridComponent[x, y] is { } form)
                     {
+                        if (dontAnchor && form.Parent == null)
+                        {
+                            form.Show();
+                            continue;
+                        }
                         targetForm.Text = canvasGrid.GridName;
-                        bool DisplayHeader = (canvasGrid.gridComponentDisplayHeader[x, y].HasValue ? canvasGrid.gridComponentDisplayHeader[x, y].Value : false);
+                        
+                        bool displayHeader = canvasGrid.gridComponentDisplayHeader[x, y].HasValue ? canvasGrid.gridComponentDisplayHeader[x, y].Value : false;
+                        AnchorStyles anchor = canvasGrid.gridComponentAnchor[x, y].HasValue ? canvasGrid.gridComponentAnchor[x, y].Value : AnchorStyles.None;
                         var size = canvasGrid.gridComponentSize[x, y];
-                        ComponentFormTile tileForm = getTileForm(canvasGrid.gridComponent[x, y], size?.Width, size?.Height, DisplayHeader);
+                        
+                        ComponentFormTile tileForm = getTileForm(canvasGrid.gridComponent[x, y], size?.Width, size?.Height, displayHeader);
+                        
                         tileForm.TopLevel = false;
                         targetForm.Controls.Add(tileForm);
                         tileForm.Location = getTileLocation(x, y);
-
-                        tileForm.Anchor = tileForm.childForm.Anchor;
+                        tileForm.ChildForm.Anchor = anchor;
+                        tileForm.Anchor = tileForm.ChildForm.Anchor;
 
                         tileForm.Show();
                     }
                 }
             }
 
-            targetForm.MinimumSize = targetForm.Size;
+            //targetForm.MinimumSize = new Size(getTilePos(canvasGrid.MinimumWidth), getTilePos(canvasGrid.MinimumHeight));
         }
 
         //public void BlockView() => (this as IBlockable)?.BlockView();
         //public void UnblockView() => (this as IBlockable)?.UnblockView();
 
-        internal static void loadTileFormExtraWindow(CanvasGrid canvasGrid, string WindowHeader, bool silent = false)
+        internal static void loadTileFormExtraWindow(CanvasGrid canvasGrid, string WindowHeader, bool silent = false, bool dontAnchor = false)
         {
-            CanvasForm extraForm;
-
-            if (allExtraForms.ContainsKey(WindowHeader))
+            if (allExtraForms.TryGetValue(WindowHeader, out var extraForm))
             {
-                extraForm = allExtraForms[WindowHeader];
-
                 foreach (Control ctr in extraForm?.Controls)
                 {
                     if (ctr is ComponentFormTile cft)
@@ -171,7 +177,7 @@ namespace RTCV.UI
 
             UICore.registerFormEvents(extraForm);
             UICore.registerHotkeyBlacklistControls(extraForm);
-            loadTileForm(extraForm, canvasGrid);
+            loadTileForm(extraForm, canvasGrid, dontAnchor);
 
             if (canvasGrid.isResizable)
             {
@@ -188,13 +194,21 @@ namespace RTCV.UI
             {
                 extraForm.Show();
                 extraForm.Focus();
+                if (extraForm.Location.X < -30000)
+                {
+                    // when a window is minimized, it's location is set to -32000, -32000
+                    // if it's closed while minimized, it will maintain that location for some reason upon reopening
+                    extraForm.Location = new Point(0, 0);
+                    // we have to call loadTileForm again as well and i don't know why
+                    loadTileForm(extraForm, canvasGrid, dontAnchor);
+                }
             }
         }
 
-        internal static void loadTileFormMain(CanvasGrid canvasGrid)
+        internal static void loadTileFormMain(CanvasGrid canvasGrid, bool dontAnchor = false)
         {
             clearMainTileForm();
-            loadTileForm(mainForm, canvasGrid);
+            loadTileForm(mainForm, canvasGrid, dontAnchor);
 
             if (mainForm.Parent is Form f)
             {
@@ -263,13 +277,13 @@ namespace RTCV.UI
             {
                 //S.GET<RTC_Core_Form>().btnGlitchHarvester.Text = S.GET<RTC_Core_Form>().btnGlitchHarvester.Text.Replace("○ ", "");
 
-                if (this.Text == "Glitch Harvester")
+                if (Text == "Glitch Harvester")
                 {
                     S.GET<CoreForm>().pnGlitchHarvesterOpen.Visible = false;
                 }
 
                 e.Cancel = true;
-                this.Hide();
+                Hide();
             }
         }
     }

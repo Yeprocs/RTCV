@@ -150,7 +150,7 @@ namespace RTCV.CorruptCore
             set => AllSpec.CorruptCoreSpec.Update(RTCSPEC.CUSTOM_VALUELISTHASH, value);
         }
 
-        public static BlastUnit GenerateUnit(string domain, long address, int precision, int alignment)
+        public static BlastUnit GenerateUnit(string domain, long address, int precision, int alignment, bool useAlignment)
         {
             try
             {
@@ -166,7 +166,9 @@ namespace RTCV.CorruptCore
                 }
 
                 byte[] value = new byte[precision];
-                long safeAddress = address - (address % precision) + alignment;
+                long safeAddress = address;
+                if (useAlignment)
+                    safeAddress = safeAddress - (address % precision) + alignment;
                 if (safeAddress > mi.Size - precision && mi.Size > precision)
                 {
                     safeAddress = mi.Size - (2 * precision) + alignment; //If we're out of range, hit the last aligned address
@@ -247,7 +249,10 @@ namespace RTCV.CorruptCore
                                     {
                                         BlastTarget bt = RtcCore.GetBlastTarget();
                                         MemoryInterface _mi = MemoryDomains.GetInterface(bt.Domain);
-                                        long safeStartAddress = bt.Address - (bt.Address % precision) + alignment;
+                                        
+                                        long safeStartAddress = bt.Address;
+                                        if (useAlignment)
+                                            safeStartAddress = safeStartAddress - (bt.Address % precision) + alignment;
 
                                         if (safeStartAddress > _mi.Size - precision)
                                         {
@@ -304,7 +309,7 @@ namespace RTCV.CorruptCore
             }
             catch (Exception ex)
             {
-                throw new Exception("Custom Engine GenerateUnit Threw Up\n" + ex);
+                throw new Exception("Custom Engine GenerateUnit Threw Up", ex);
             }
         }
 
@@ -362,14 +367,12 @@ namespace RTCV.CorruptCore
         public static void InitTemplates()
         {
             var nightmare = InitializeNightmareEngineTemplate();
-            var hellgenie = InitializeHellgenieEngineTemplate();
             var freeze = InitializeFreezeEngineTemplate();
             var distortion = InitializeDistortionEngineTemplate();
             var pipe = InitializePipeEngineTemplate();
             var vector = InitializeVectorEngineTemplate();
 
             Name2TemplateDico[nightmare[RTCSPEC.CUSTOM_NAME].ToString()] = nightmare;
-            Name2TemplateDico[hellgenie[RTCSPEC.CUSTOM_NAME].ToString()] = hellgenie;
             Name2TemplateDico[freeze[RTCSPEC.CUSTOM_NAME].ToString()] = freeze;
             Name2TemplateDico[distortion[RTCSPEC.CUSTOM_NAME].ToString()] = distortion;
             Name2TemplateDico[pipe[RTCSPEC.CUSTOM_NAME].ToString()] = pipe;
@@ -413,46 +416,10 @@ namespace RTCV.CorruptCore
 
             pSpec[RTCSPEC.CORE_CURRENTPRECISION] = 1;
             pSpec[RTCSPEC.CORE_CURRENTALIGNMENT] = 0;
+            pSpec[RTCSPEC.CORE_USEALIGNMENT] = true;
 
             pSpec[RTCSPEC.CUSTOM_DELAY] = 0;
             pSpec[RTCSPEC.CUSTOM_LIFETIME] = 1;
-            pSpec[RTCSPEC.CUSTOM_LOOP] = false;
-
-            pSpec[RTCSPEC.CUSTOM_TILTVALUE] = new BigInteger(0);
-
-            pSpec[RTCSPEC.CUSTOM_LIMITERTIME] = LimiterTime.NONE;
-            pSpec[RTCSPEC.CUSTOM_STORELIMITERMODE] = StoreLimiterSource.ADDRESS;
-            pSpec[RTCSPEC.CUSTOM_LIMITERINVERTED] = false;
-
-            pSpec[RTCSPEC.CUSTOM_MINVALUE8BIT] = 0UL;
-            pSpec[RTCSPEC.CUSTOM_MINVALUE16BIT] = 0UL;
-            pSpec[RTCSPEC.CUSTOM_MINVALUE32BIT] = 0UL;
-            pSpec[RTCSPEC.CUSTOM_MINVALUE64BIT] = 0UL;
-            pSpec[RTCSPEC.CUSTOM_MAXVALUE8BIT] = 0xFFUL;
-            pSpec[RTCSPEC.CUSTOM_MAXVALUE16BIT] = 0xFFFFUL;
-            pSpec[RTCSPEC.CUSTOM_MAXVALUE32BIT] = 0xFFFFFFFFUL;
-            pSpec[RTCSPEC.CUSTOM_MAXVALUE64BIT] = 0xFFFFFFFFFFFFFFFFUL;
-
-            pSpec[RTCSPEC.CUSTOM_VALUESOURCE] = CustomValueSource.RANDOM;
-
-            pSpec[RTCSPEC.CUSTOM_SOURCE] = BlastUnitSource.VALUE;
-
-            pSpec[RTCSPEC.CUSTOM_STOREADDRESS] = CustomStoreAddress.RANDOM;
-            pSpec[RTCSPEC.CUSTOM_STORETIME] = StoreTime.IMMEDIATE;
-            pSpec[RTCSPEC.CUSTOM_STORETYPE] = StoreType.ONCE;
-            return pSpec;
-        }
-
-        public static PartialSpec InitializeHellgenieEngineTemplate()
-        {
-            PartialSpec pSpec = new PartialSpec(AllSpec.CorruptCoreSpec.name);
-            pSpec[RTCSPEC.CUSTOM_NAME] = "Hellgenie Engine";
-
-            pSpec[RTCSPEC.CORE_CURRENTPRECISION] = 1;
-            pSpec[RTCSPEC.CORE_CURRENTALIGNMENT] = 0;
-
-            pSpec[RTCSPEC.CUSTOM_DELAY] = 0;
-            pSpec[RTCSPEC.CUSTOM_LIFETIME] = 0;
             pSpec[RTCSPEC.CUSTOM_LOOP] = false;
 
             pSpec[RTCSPEC.CUSTOM_TILTVALUE] = new BigInteger(0);
@@ -488,6 +455,7 @@ namespace RTCV.CorruptCore
 
             pSpec[RTCSPEC.CORE_CURRENTPRECISION] = 1;
             pSpec[RTCSPEC.CORE_CURRENTALIGNMENT] = 0;
+            pSpec[RTCSPEC.CORE_USEALIGNMENT] = true;
 
             pSpec[RTCSPEC.CUSTOM_DELAY] = 50;
             pSpec[RTCSPEC.CUSTOM_LIFETIME] = 1;
@@ -562,6 +530,7 @@ namespace RTCV.CorruptCore
 
             pSpec[RTCSPEC.CORE_CURRENTPRECISION] = 1;
             pSpec[RTCSPEC.CORE_CURRENTALIGNMENT] = 0;
+            pSpec[RTCSPEC.CORE_USEALIGNMENT] = true;
 
             pSpec[RTCSPEC.CUSTOM_DELAY] = 0;
             pSpec[RTCSPEC.CUSTOM_LIFETIME] = 0;
@@ -600,6 +569,7 @@ namespace RTCV.CorruptCore
 
             pSpec[RTCSPEC.CORE_CURRENTPRECISION] = 4;
             pSpec[RTCSPEC.CORE_CURRENTALIGNMENT] = 0;
+            pSpec[RTCSPEC.CORE_USEALIGNMENT] = true;
 
             pSpec[RTCSPEC.CUSTOM_DELAY] = 0;
             pSpec[RTCSPEC.CUSTOM_LIFETIME] = 1;
@@ -638,6 +608,7 @@ namespace RTCV.CorruptCore
 
             pSpec[RTCSPEC.CORE_CURRENTPRECISION] = AllSpec.CorruptCoreSpec[RTCSPEC.CORE_CURRENTPRECISION];
             pSpec[RTCSPEC.CORE_CURRENTALIGNMENT] = AllSpec.CorruptCoreSpec[RTCSPEC.CORE_CURRENTALIGNMENT];
+            pSpec[RTCSPEC.CORE_USEALIGNMENT] = AllSpec.CorruptCoreSpec[RTCSPEC.CORE_USEALIGNMENT];
 
             pSpec[RTCSPEC.CUSTOM_DELAY] = AllSpec.CorruptCoreSpec[RTCSPEC.CUSTOM_DELAY];
             pSpec[RTCSPEC.CUSTOM_LIFETIME] = AllSpec.CorruptCoreSpec[RTCSPEC.CUSTOM_LIFETIME];
@@ -832,6 +803,7 @@ namespace RTCV.CorruptCore
             pSpec[RTCSPEC.CUSTOM_PATH] = path;
             pSpec[RTCSPEC.CORE_CURRENTPRECISION] = RtcCore.CurrentPrecision;
             pSpec[RTCSPEC.CORE_CURRENTALIGNMENT] = RtcCore.Alignment;
+            pSpec[RTCSPEC.CORE_USEALIGNMENT] = RtcCore.UseAlignment;
 
             string jsonString = pSpec.GetSerializedDico();
             File.WriteAllText(path, jsonString);

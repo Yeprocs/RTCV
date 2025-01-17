@@ -1,13 +1,12 @@
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Windows.Forms;
+using RTCV.CorruptCore.Extensions;
+using RTCV.NetCore;
+
 namespace RTCV.CorruptCore
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Diagnostics.CodeAnalysis;
-    using System.IO;
-    using System.Windows.Forms;
-    using RTCV.NetCore;
-    using RTCV.CorruptCore.Extensions;
-
     public static class StockpileManagerEmuSide
     {
         internal static BlastLayer CorruptBL = null;

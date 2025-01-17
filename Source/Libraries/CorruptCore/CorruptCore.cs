@@ -145,6 +145,12 @@ namespace RTCV.CorruptCore
             set => AllSpec.CorruptCoreSpec.Update(RTCSPEC.CORE_CURRENTALIGNMENT, value);
         }
 
+        public static bool UseAlignment
+        {
+            get => (bool)AllSpec.CorruptCoreSpec[RTCSPEC.CORE_USEALIGNMENT];
+            set => AllSpec.CorruptCoreSpec.Update(RTCSPEC.CORE_USEALIGNMENT, value);
+        }
+
         public static long Intensity
         {
             get => (long)AllSpec.CorruptCoreSpec?[RTCSPEC.CORE_INTENSITY];
@@ -169,6 +175,12 @@ namespace RTCV.CorruptCore
         {
             get => (BlastRadius)AllSpec.CorruptCoreSpec[RTCSPEC.CORE_RADIUS];
             set => AllSpec.CorruptCoreSpec.Update(RTCSPEC.CORE_RADIUS, value);
+        }
+
+        public static bool CreateInfiniteUnits
+        {
+            get => (bool)AllSpec.CorruptCoreSpec[RTCSPEC.CORE_CREATEINFINITEUNITS];
+            set => AllSpec.CorruptCoreSpec.Update(RTCSPEC.CORE_CREATEINFINITEUNITS, value);
         }
 
         public static bool AutoCorrupt
@@ -386,7 +398,6 @@ namespace RTCV.CorruptCore
                 //Engine Settings
                 rtcSpecTemplate.Insert(getDefaultPartial());
                 rtcSpecTemplate.Insert(NightmareEngine.getDefaultPartial());
-                rtcSpecTemplate.Insert(HellgenieEngine.getDefaultPartial());
                 rtcSpecTemplate.Insert(DistortionEngine.getDefaultPartial());
 
                 //Custom Engine Config with Nightmare Engine
@@ -471,9 +482,11 @@ namespace RTCV.CorruptCore
 
                 partial[RTCSPEC.CORE_CURRENTPRECISION] = 1;
                 partial[RTCSPEC.CORE_CURRENTALIGNMENT] = 0;
+                partial[RTCSPEC.CORE_USEALIGNMENT] = true;
                 partial[RTCSPEC.CORE_INTENSITY] = 1L;
                 partial[RTCSPEC.CORE_ERRORDELAY] = 1L;
                 partial[RTCSPEC.CORE_RADIUS] = BlastRadius.SPREAD;
+                partial[RTCSPEC.CORE_CREATEINFINITEUNITS] = false;
 
                 partial[RTCSPEC.CORE_EXTRACTBLASTLAYER] = false;
                 partial[RTCSPEC.CORE_AUTOCORRUPT] = false;
@@ -484,7 +497,7 @@ namespace RTCV.CorruptCore
 
                 if (Params.IsParamSet("ALLOW_CROSS_CORE_CORRUPTION"))
                 {
-                    partial[RTCSPEC.CORE_ALLOWCROSSCORECORRUPTION] = (string.Equals(Params.ReadParam("ALLOW_CROSS_CORE_CORRUPTION"), "TRUE", StringComparison.OrdinalIgnoreCase));
+                    partial[RTCSPEC.CORE_ALLOWCROSSCORECORRUPTION] = string.Equals(Params.ReadParam("ALLOW_CROSS_CORE_CORRUPTION"), "TRUE", StringComparison.OrdinalIgnoreCase);
                 }
                 else
                 {
@@ -493,7 +506,7 @@ namespace RTCV.CorruptCore
 
                 if (Params.IsParamSet("REROLL_SOURCEADDRESS"))
                 {
-                    partial[RTCSPEC.CORE_REROLLSOURCEADDRESS] = (string.Equals(Params.ReadParam("REROLL_SOURCEADDRESS"), "TRUE", StringComparison.OrdinalIgnoreCase));
+                    partial[RTCSPEC.CORE_REROLLSOURCEADDRESS] = string.Equals(Params.ReadParam("REROLL_SOURCEADDRESS"), "TRUE", StringComparison.OrdinalIgnoreCase);
                 }
                 else
                 {
@@ -502,7 +515,7 @@ namespace RTCV.CorruptCore
 
                 if (Params.IsParamSet("REROLL_SOURCEDOMAIN"))
                 {
-                    partial[RTCSPEC.CORE_REROLLSOURCEDOMAIN] = (string.Equals(Params.ReadParam("REROLL_SOURCEDOMAIN"), "TRUE", StringComparison.OrdinalIgnoreCase));
+                    partial[RTCSPEC.CORE_REROLLSOURCEDOMAIN] = string.Equals(Params.ReadParam("REROLL_SOURCEDOMAIN"), "TRUE", StringComparison.OrdinalIgnoreCase);
                 }
                 else
                 {
@@ -511,7 +524,7 @@ namespace RTCV.CorruptCore
 
                 if (Params.IsParamSet("REROLL_IGNOREORIGINALSOURCE"))
                 {
-                    partial[RTCSPEC.CORE_REROLLIGNOREORIGINALSOURCE] = (string.Equals(Params.ReadParam("REROLL_IGNOREORIGINALSOURCE"), "TRUE", StringComparison.OrdinalIgnoreCase));
+                    partial[RTCSPEC.CORE_REROLLIGNOREORIGINALSOURCE] = string.Equals(Params.ReadParam("REROLL_IGNOREORIGINALSOURCE"), "TRUE", StringComparison.OrdinalIgnoreCase);
                 }
                 else
                 {
@@ -520,7 +533,7 @@ namespace RTCV.CorruptCore
 
                 if (Params.IsParamSet("REROLL_ADDRESS"))
                 {
-                    partial[RTCSPEC.CORE_REROLLADDRESS] = (string.Equals(Params.ReadParam("REROLL_ADDRESS"), "TRUE", StringComparison.OrdinalIgnoreCase));
+                    partial[RTCSPEC.CORE_REROLLADDRESS] = string.Equals(Params.ReadParam("REROLL_ADDRESS"), "TRUE", StringComparison.OrdinalIgnoreCase);
                 }
                 else
                 {
@@ -529,7 +542,7 @@ namespace RTCV.CorruptCore
 
                 if (Params.IsParamSet("REROLL_DOMAIN"))
                 {
-                    partial[RTCSPEC.CORE_REROLLDOMAIN] = (string.Equals(Params.ReadParam("REROLL_DOMAIN"), "TRUE", StringComparison.OrdinalIgnoreCase));
+                    partial[RTCSPEC.CORE_REROLLDOMAIN] = string.Equals(Params.ReadParam("REROLL_DOMAIN"), "TRUE", StringComparison.OrdinalIgnoreCase);
                 }
                 else
                 {
@@ -538,7 +551,7 @@ namespace RTCV.CorruptCore
 
                 if (Params.IsParamSet("REROLL_FOLLOWSCUSTOMENGINE"))
                 {
-                    partial[RTCSPEC.CORE_REROLLFOLLOWENGINESETTINGS] = (string.Equals(Params.ReadParam("REROLL_FOLLOWSCUSTOMENGINE"), "TRUE", StringComparison.OrdinalIgnoreCase));
+                    partial[RTCSPEC.CORE_REROLLFOLLOWENGINESETTINGS] = string.Equals(Params.ReadParam("REROLL_FOLLOWSCUSTOMENGINE"), "TRUE", StringComparison.OrdinalIgnoreCase);
                 }
                 else
                 {
@@ -685,7 +698,7 @@ namespace RTCV.CorruptCore
             }
         }
         */
-        public static BlastUnit[] GetBlastUnits(string domain, long address, int precision, int alignment, CorruptionEngine engine)
+        public static BlastUnit[] GetBlastUnits(string domain, long address, int precision, int alignment, bool useAlignment, CorruptionEngine engine)
         {
             try
             {
@@ -698,28 +711,25 @@ namespace RTCV.CorruptCore
                 switch (engine)
                 {
                     case CorruptionEngine.NIGHTMARE:
-                        bu = NightmareEngine.GenerateUnit(domain, address, precision, alignment);
-                        break;
-                    case CorruptionEngine.HELLGENIE:
-                        bu = HellgenieEngine.GenerateUnit(domain, address, precision, alignment);
+                        bu = NightmareEngine.GenerateUnit(domain, address, precision, alignment, useAlignment);
                         break;
                     case CorruptionEngine.DISTORTION:
-                        bu = DistortionEngine.GenerateUnit(domain, address, precision, alignment);
+                        bu = DistortionEngine.GenerateUnit(domain, address, precision, alignment, useAlignment);
                         break;
                     case CorruptionEngine.FREEZE:
-                        bu = FreezeEngine.GenerateUnit(domain, address, precision, alignment);
+                        bu = FreezeEngine.GenerateUnit(domain, address, precision, alignment, useAlignment);
                         break;
                     case CorruptionEngine.PIPE:
-                        bu = PipeEngine.GenerateUnit(domain, address, precision, alignment);
+                        bu = PipeEngine.GenerateUnit(domain, address, precision, alignment, useAlignment);
                         break;
                     case CorruptionEngine.VECTOR:
-                        bu = VectorEngine.GenerateUnit(domain, address, alignment);
+                        bu = VectorEngine.GenerateUnit(domain, address, alignment, useAlignment);
                         break;
                     case CorruptionEngine.CLUSTER:
-                        bus = ClusterEngine.GenerateUnit(domain, address, alignment);
+                        bus = ClusterEngine.GenerateUnit(domain, address, alignment, useAlignment);
                         break;
                     case CorruptionEngine.CUSTOM:
-                        bu = CustomEngine.GenerateUnit(domain, address, precision, alignment);
+                        bu = CustomEngine.GenerateUnit(domain, address, precision, alignment, useAlignment);
                         break;
                     case CorruptionEngine.NONE:
                         return null;
@@ -772,25 +782,34 @@ namespace RTCV.CorruptCore
             //If there is only one thread, only generate a single BlastLayer.
             if (cpus == 1 || AllSpec.VanguardSpec[VSPEC.SUPPORTS_MULTITHREAD] == null)
             {
-                return GenerateBlastLayer(domains);
+                BlastLayer layer = GenerateBlastLayer(domains);
+                if (layer is null)
+                    return null;
+                
+                for (int i = 0; i < layer.Layer.Count; i++)
+                for (int j = i + 1; j < layer.Layer.Count; j++)
+                    if (layer.Layer[i].Address == layer.Layer[j].Address && layer.Layer[i].Domain == layer.Layer[j].Domain)
+                        layer.Layer.RemoveAt(j--);
+                
+                return layer;
             }
 
             //if emulator supports multithreaded access of the domains, disregard the emulation thread and just span threads...
-            var reminder = Intensity % (cpus - 1);
-            var splitintensity = (Intensity - reminder) / (cpus - 1);
+            var remainder = Intensity % (cpus - 1);
+            var splitintensity = (Intensity - remainder) / (cpus - 1);
             var tasks = new Task<BlastLayer>[cpus];
             for (var i = 0; i < cpus; i++)
             {
                 var requestedIntensity = splitintensity;
-                if (i == 0 && reminder != 0)
+                if (i == 0 && remainder != 0)
                 {
-                    requestedIntensity = reminder;
+                    requestedIntensity = remainder;
                 }
 
                 tasks[i] = Task.Factory.StartNew(() => GenerateBlastLayer(domains, requestedIntensity));
             }
 
-            Task.WaitAll(tasks);
+            Task.WhenAll(tasks).Wait();
 
             BlastLayer bl = tasks[0].Result ?? new BlastLayer();
 
@@ -799,6 +818,15 @@ namespace RTCV.CorruptCore
                 if (tasks[i].Result != null)
                 {
                     bl.Layer.AddRange(tasks[i].Result.Layer);
+                }
+            }
+            
+            for (int i = 0; i < bl.Layer.Count; i++)
+            for (int j = i + 1; j < bl.Layer.Count; j++)
+            {
+                if (bl.Layer[i].Address == bl.Layer[j].Address && bl.Layer[i].Domain == bl.Layer[j].Domain)
+                {
+                    bl.Layer.RemoveAt(j--);
                 }
             }
 
@@ -820,7 +848,7 @@ namespace RTCV.CorruptCore
             }
 
             // Capping intensity at engine-specific maximums
-            if ((SelectedEngine == CorruptionEngine.HELLGENIE ||
+            if ((CreateInfiniteUnits ||
                 SelectedEngine == CorruptionEngine.FREEZE ||
                 SelectedEngine == CorruptionEngine.PIPE ||
                 (SelectedEngine == CorruptionEngine.CUSTOM && CustomEngine.Lifetime == 0)) &&
@@ -887,6 +915,7 @@ namespace RTCV.CorruptCore
                     var cachedDomainSizes = new long[selectedDomains.Length];
                     var cachedEngine = SelectedEngine;
                     var cachedAlignment = Alignment;
+                    var useAlignment = UseAlignment;
 
                     for (var i = 0; i < selectedDomains.Length; i++)
                     {
@@ -905,7 +934,7 @@ namespace RTCV.CorruptCore
                                     maxAddress = cachedDomainSizes[r];
                                     randomAddress = RND.NextLong(0, maxAddress - CachedPrecision);
 
-                                    bus = GetBlastUnits(domain, randomAddress, CachedPrecision, cachedAlignment, cachedEngine);
+                                    bus = GetBlastUnits(domain, randomAddress, CachedPrecision, cachedAlignment, useAlignment, cachedEngine);
                                     if (bus != null)
                                     {
                                         bl.Layer.AddRange(bus);
@@ -926,7 +955,7 @@ namespace RTCV.CorruptCore
                                 {
                                     randomAddress = RND.NextLong(0, maxAddress - CachedPrecision);
 
-                                    bus = GetBlastUnits(domain, randomAddress, CachedPrecision, cachedAlignment, cachedEngine);
+                                    bus = GetBlastUnits(domain, randomAddress, CachedPrecision, cachedAlignment, useAlignment, cachedEngine);
                                     if (bus != null)
                                     {
                                         bl.Layer.AddRange(bus);
@@ -948,7 +977,7 @@ namespace RTCV.CorruptCore
                                     {
                                         randomAddress = RND.NextLong(0, maxAddress - CachedPrecision);
 
-                                        bus = GetBlastUnits(domain, randomAddress, CachedPrecision, cachedAlignment, cachedEngine);
+                                        bus = GetBlastUnits(domain, randomAddress, CachedPrecision, cachedAlignment, useAlignment, cachedEngine);
                                         if (bus != null)
                                         {
                                             bl.Layer.AddRange(bus);
@@ -987,7 +1016,7 @@ namespace RTCV.CorruptCore
                                         maxAddress = domainSize[i];
                                         randomAddress = RND.NextLong(0, maxAddress - CachedPrecision);
 
-                                        bus = GetBlastUnits(domain, randomAddress, CachedPrecision, cachedAlignment, cachedEngine);
+                                        bus = GetBlastUnits(domain, randomAddress, CachedPrecision, cachedAlignment, useAlignment, cachedEngine);
                                         if (bus != null)
                                         {
                                             bl.Layer.AddRange(bus);
@@ -1018,7 +1047,7 @@ namespace RTCV.CorruptCore
                                     maxAddress = cachedDomainSizes[i];
                                     randomAddress = RND.NextLong(0, maxAddress - CachedPrecision);
 
-                                    bus = GetBlastUnits(domain, randomAddress, CachedPrecision, cachedAlignment, cachedEngine);
+                                    bus = GetBlastUnits(domain, randomAddress, CachedPrecision, cachedAlignment, useAlignment, cachedEngine);
                                     if (bus != null)
                                     {
                                         bl.Layer.AddRange(bus);
@@ -1039,7 +1068,7 @@ namespace RTCV.CorruptCore
                                     maxAddress = cachedDomainSizes[i];
                                     randomAddress = RND.NextLong(0, maxAddress - CachedPrecision);
 
-                                    bus = GetBlastUnits(domain, randomAddress, CachedPrecision, cachedAlignment, cachedEngine);
+                                    bus = GetBlastUnits(domain, randomAddress, CachedPrecision, cachedAlignment, useAlignment, cachedEngine);
                                     if (bus != null)
                                     {
                                         bl.Layer.AddRange(bus);

@@ -23,7 +23,9 @@ namespace RTCV.UI
         internal static CoreForm thisForm;
         internal static CanvasForm cfForm;
 
-        public CanvasGrid previousGrid { get; set; } = null;
+        // Contains the previous grid in the main form and the previous external grid, in order of appearance
+        public CanvasGrid[] PreviousGrids { get; } = new CanvasGrid[2];
+        public int ExternalIndex = -1;
 
         //Values used for padding and scaling properly in high dpi
         internal static int xPadding { get; private set; }
@@ -82,10 +84,14 @@ namespace RTCV.UI
 
         private void OnFormClosing(object sender, FormClosingEventArgs e)
         {
-            if (S.GET<StockpileManagerForm>().UnsavedEdits && !UICore.isClosing && MessageBox.Show("You have unsaved edits in the Glitch Harvester Stockpile. \n\n Are you sure you want to close RTC without saving?", "Unsaved edits in Stockpile", MessageBoxButtons.YesNo) == DialogResult.No)
+            if (!UICore.isClosing)
             {
-                e.Cancel = true;
-                return;
+                if ((S.GET<StockpileManagerForm>().UnsavedEdits && DialogResult.No == MessageBox.Show("You have unsaved edits in the Glitch Harvester Stockpile. \n\n Are you sure you want to close RTC without saving?", "Unsaved edits in Stockpile", MessageBoxButtons.YesNo))
+                 || (S.GET<SavestateManagerForm>().UnsavedEdits && DialogResult.No == MessageBox.Show("You have unsaved edits in the Glitch Harvester Savestate Manager. \n\n Are you sure you want to close RTC without saving?", "Unsaved edits in Savestate Manager", MessageBoxButtons.YesNo)))
+                {
+                    e.Cancel = true;
+                    return;
+                }
             }
 
             UICore.isClosing = true;
@@ -143,7 +149,6 @@ This message only appears once.";
                 }
 
                 S.GET<IntroForm>().DisplayRtcvDisclaimer(disclaimer.Replace("[ver]", RtcCore.RtcVersion));
-                //MessageBox.Show(disclaimer.Replace("[ver]", CorruptCore.RtcCore.RtcVersion), "RTC", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
                 Params.SetParam("DISCLAIMER_READ");
 
@@ -160,17 +165,22 @@ This message only appears once.";
                 }
 
                 Params.SetParam("COMPRESS_STOCKPILE"); //Default param
+                Params.SetParam("COMPRESS_SAVESTATES"); //Default param
                 Params.SetParam("INCLUDE_REFERENCED_FILES"); //Default param
+                Params.SetParam("LOAD_STASH_ON_ARROW_CLICK"); //Default param
+                Params.SetParam("RASTERIZE_VMD_UPON_STOCKPILING"); //Default param
             }
 
             //RtcCore.DownloadProblematicProcesses();
             //DefaultGrids.engineConfig.LoadToMain();
         }
 
-        public void SetSize(int x, int y)
+        public void SetSize(int width, int height, int minWidth, int minHeight)
         {
+            //this.MinimumSize = new Size(x + xPadding, y + yPadding + coreYPadding); //For Horizontal tab-style menu in coreform
+            this.MinimumSize = new Size(minWidth + xPadding + corePadding, minHeight + yPadding); //For Vertical tab-style menu in coreform
             //this.Size = new Size(x + xPadding, y + yPadding + coreYPadding); //For Horizontal tab-style menu in coreform
-            this.Size = new Size(x + xPadding + corePadding, y + yPadding); //For Vertical tab-style menu in coreform
+            this.Size = new Size(width + xPadding + corePadding, height + yPadding); //For Vertical tab-style menu in coreform
         }
 
         private void OnResizeBegin(object sender, EventArgs e)
@@ -292,12 +302,14 @@ This message only appears once.";
         {
             if (Params.IsParamSet("SIMPLE_MODE"))
             {
+                this.SetDefaultGrid(DefaultGrids.simpleMode);
                 DefaultGrids.simpleMode.LoadToMain();
                 SimpleModeForm smForm = S.GET<SimpleModeForm>();
                 smForm.EnteringSimpleMode();
             }
             else
             {
+                this.SetDefaultGrid(DefaultGrids.engineConfig);
                 DefaultGrids.engineConfig.LoadToMain();
             }
         }
@@ -351,7 +363,38 @@ This message only appears once.";
             }
             else
             {
-                LocalNetCoreRouter.Route(NetCore.Endpoints.CorruptCore, NetCore.Commands.Basic.ManualBlast, true);
+                LocalNetCoreRouter.Route(Endpoints.CorruptCore, NetCore.Commands.Basic.ManualBlast, true);
+            }
+        }
+
+        public void SetDefaultGrid(CanvasGrid grid, bool isExternal = false)
+        {
+            if (this.PreviousGrids[1] == grid)
+            {
+                return;
+            }
+
+            if (isExternal)
+            {   
+                // we don't want to store two external grids in the history, that wouldn't make sense
+                if (this.ExternalIndex < 1)
+                {
+                    this.PreviousGrids[0] = this.PreviousGrids[1];
+                }
+                else // if the last external form had any modules that should also be in the main form's grid, they need to be put back
+                {
+                    this.PreviousGrids[0].LoadToMain();
+                }
+            }
+
+            this.PreviousGrids[1] = grid;
+            if (isExternal)
+            {
+                this.ExternalIndex = 1;
+            }
+            else
+            {
+                this.ExternalIndex--; //Loading a custom layout 2.1 billion times crashes RTCV
             }
         }
 
@@ -685,22 +728,13 @@ This message only appears once.";
                 ContextMenuStrip columnsMenu = new ContextMenuStrip();
 
                 Point locate = e.GetMouseLocation(sender);
-                columnsMenu.Items.Add("Open Blast Editor", null, new EventHandler((ob, ev) =>
+                columnsMenu.Items.Add("Open Blast Editor", null, (ob, ev) =>
                 {
                     BlastEditorForm.OpenBlastEditor();
-                }));
+                });
 
-                var ghmain = (columnsMenu.Items.Add("Open the Glitch Harvester to Main Window", null, new EventHandler((ob, ev) =>
-                {
-                    if (Params.IsParamSet("GH_OPEN_MAIN"))
-                    {
-                        Params.RemoveParam("GH_OPEN_MAIN");
-                    }
-                    else
-                    {
-                        Params.SetParam("GH_OPEN_MAIN");
-                    }
-                })) as ToolStripMenuItem);
+                var ghmain = columnsMenu.Items.Add("Open the Glitch Harvester to Main Window", null, 
+                    (ob, ev) => Params.ToggleParam("GH_OPEN_MAIN")) as ToolStripMenuItem;
 
                 ghmain.Checked = Params.IsParamSet("GH_OPEN_MAIN");
 

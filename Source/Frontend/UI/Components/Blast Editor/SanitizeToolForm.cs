@@ -258,7 +258,7 @@ namespace RTCV.UI
 
             if (check == null && lbSteps.Items.Count > 1)
             {
-                DialogResult dr = MessageBox.Show("Would you like to restore the Original BlastLayer in the Blest Editor?", "Leaving Sanitize Tool", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
+                DialogResult dr = MessageBox.Show("Would you like to restore the Original BlastLayer in the Blast Editor?", "Leaving Sanitize Tool", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
 
                 switch (dr)
                 {
@@ -328,7 +328,8 @@ namespace RTCV.UI
             newSk.BlastLayer = (BlastLayer)oldSk.BlastLayer.Clone();
             StockpileManagerUISide.StashHistory.Add(newSk);
 
-            S.GET<StashHistoryForm>().RefreshStashHistory();
+            var stash = S.GET<StashHistoryForm>();
+            stash.RefreshStashHistorySelectLast();
 
             //S.GET<StockpileManagerForm>().dgvStockpile.ClearSelection();
             //S.GET<StashHistoryForm>().lbStashHistory.ClearSelected();
@@ -353,10 +354,7 @@ namespace RTCV.UI
 
         private void cbCloseOnSend_CheckedChanged(object sender, EventArgs e)
         {
-            if (cbCloseOnSend.Checked)
-                RTCV.NetCore.Params.SetParam("SANITIZETOOL_AUTOCLOSE");
-            else
-                Params.RemoveParam("SANITIZETOOL_AUTOCLOSE");
+            Params.SetOrRemoveParam("SANITIZETOOL_AUTOCLOSE", cbCloseOnSend.Checked);
         }
 
         private void SanitizeToolForm_Load(object sender, EventArgs e)

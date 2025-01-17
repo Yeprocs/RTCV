@@ -1,3 +1,5 @@
+using RTCV.UI.Modular;
+
 namespace RTCV.UI
 {
     using System;
@@ -13,60 +15,72 @@ namespace RTCV.UI
     {
         //grid that represents the layout of a single form
 
-        public int X { get; private set; } = 0;
-        public int Y { get; private set; } = 0;
+        public int Width { get; private set; } = 0;
+        public int Height { get; private set; } = 0;
+        public int MinimumWidth { get; private set; } = 0;
+        public int MinimumHeight { get; private set; } = 0;
         public Form[,] gridComponent { get; private set; }
         public Size?[,] gridComponentSize { get; private set; }
         public bool?[,] gridComponentDisplayHeader { get; private set; }
+        public AnchorStyles?[,] gridComponentAnchor { get; private set; }
 
         public string GridName { get; private set; } = "";
         internal bool isResizable = false;
 
-        public CanvasGrid(int x, int y, string gridName)
+        public CanvasGrid(int width, int height, string gridName) : this(width, height, width, height, gridName)
         {
-            X = x;
-            Y = y;
-            gridComponent = new Form[X, Y];
-            gridComponentSize = new Size?[X, Y];
-            gridComponentDisplayHeader = new bool?[X, Y];
-            GridName = gridName;
+        }
+
+        public CanvasGrid(int width, int height, int minWidth, int minHeight, string gridName)
+        {
+            this.Width = width;
+            this.Height = height;
+            this.MinimumWidth = minWidth;
+            this.MinimumHeight = minHeight;
+            this.gridComponent = new Form[Width, Height];
+            this.gridComponentSize = new Size?[Width, Height];
+            this.gridComponentDisplayHeader = new bool?[Width, Height];
+            this.gridComponentAnchor = new AnchorStyles?[Width, Height];
+            this.GridName = gridName;
         }
 
         internal void SetTileForm(Form componentForm, int tilePosX, int tilePosY, int tileSizeX, int tileSizeY, bool displayHeader, AnchorStyles anchor = (AnchorStyles.Top | AnchorStyles.Left))
         {
             //removes tileForm position if already exists
-            for (int _x = 0; _x < X; _x++)
+            for (int x = 0; x < this.Width; x++)
             {
-                for (int _y = 0; _y < Y; _y++)
+                for (int y = 0; y < this.Height; y++)
                 {
-                    if (gridComponent[_x, _y] == componentForm)
+                    if (this.gridComponent[x, y] == componentForm)
                     {
-                        gridComponent[_x, _y] = null;
-                        gridComponentSize[_x, _y] = null;
-                        gridComponentDisplayHeader[_x, _y] = null;
+                        this.gridComponent[x, y] = null;
+                        this.gridComponentSize[x, y] = null;
+                        this.gridComponentDisplayHeader[x, y] = null;
+                        this.gridComponentAnchor[x, y] = null;
                     }
                 }
             }
 
             //place tileForm if within grid space
-            if (tilePosX < X && tilePosY < Y)
+            if (tilePosX < Width && tilePosY < Height)
             {
                 gridComponent[tilePosX, tilePosY] = componentForm;
                 gridComponentSize[tilePosX, tilePosY] = new Size(tileSizeX, tileSizeY);
                 gridComponentDisplayHeader[tilePosX, tilePosY] = displayHeader;
+                gridComponentAnchor[tilePosX, tilePosY] = anchor;
             }
 
             componentForm.Anchor = anchor;
         }
 
-        internal void LoadToMain()
+        internal void LoadToMain(bool dontAnchor = false)
         {
-            CanvasForm.loadTileFormMain(this);
+            CanvasForm.loadTileFormMain(this, dontAnchor);
         }
 
-        internal void LoadToNewWindow(string GridID = null, bool silent = false)
+        internal void LoadToNewWindow(string gridId = null, bool silent = false, bool dontAnchor = false)
         {
-            CanvasForm.loadTileFormExtraWindow(this, GridID, silent);
+            CanvasForm.loadTileFormExtraWindow(this, gridId, silent, dontAnchor);
         }
 
         internal static FileInfo[] GetEnabledCustomLayouts()
@@ -90,6 +104,8 @@ namespace RTCV.UI
 
             int gridSizeX = 26;
             int gridSizeY = 19;
+            int minSizeX = -1;
+            int minSizeY = -1;
             string gridName = "Custom Grid";
             CanvasGrid cuGrid = new CanvasGrid(gridSizeX, gridSizeY, gridName);
 
@@ -122,17 +138,34 @@ namespace RTCV.UI
                             break;
                         }
                     case "GridSize":
-                        {
-                            string[] subData = data.Split(',');
+                    {
+                        string[] subData = data.Split(',');
 
-                            gridSizeX = Convert.ToInt32(subData[0].Trim());
-                            gridSizeY = Convert.ToInt32(subData[1].Trim());
+                        gridSizeX = Convert.ToInt32(subData[0].Trim());
+                        gridSizeY = Convert.ToInt32(subData[1].Trim());
 
-                            break;
-                        }
+                        break;
+                    }
+                    case "MinimumSize":
+                    {
+                        string[] subData = data.Split(',');
+
+                        minSizeX = Convert.ToInt32(subData[0].Trim());
+                        minSizeY = Convert.ToInt32(subData[1].Trim());
+
+                        break;
+                    }
                     case "CreateGrid":
                         {
-                            cuGrid = new CanvasGrid(gridSizeX, gridSizeY, gridName);
+                            if (minSizeX == -1 || minSizeY == -1)
+                            {
+                                cuGrid = new CanvasGrid(gridSizeX, gridSizeY, gridName);
+                            }
+                            else
+                            {
+                                cuGrid = new CanvasGrid(gridSizeX, gridSizeY, minSizeX, minSizeY, gridName);
+                            }
+
                             break;
                         }
                     case "IsResizable":
@@ -158,7 +191,7 @@ namespace RTCV.UI
                                 formGridAnchor = (AnchorStyles)Convert.ToInt32(subData[5].Trim());
                             }
 
-                            Form tileForm = null;
+                            Form tileForm;
 
                             if (formName == "MemoryTools")
                             {
@@ -184,7 +217,6 @@ namespace RTCV.UI
                                     catch (Exception ex)
                                     {
                                         _ = ex;
-                                        continue;
                                     }
                                 }
 
@@ -205,12 +237,15 @@ namespace RTCV.UI
                         }
                     case "LoadTo":
                         {
+                            var coreForm = S.GET<CoreForm>();
                             if (data == "Main")
                             {
+                                coreForm.SetDefaultGrid(cuGrid);
                                 cuGrid.LoadToMain();
                             }
                             else
                             {
+                                coreForm.SetDefaultGrid(cuGrid, true);
                                 cuGrid.LoadToNewWindow("External");
                             }
 
@@ -218,6 +253,25 @@ namespace RTCV.UI
                         }
                 }
             }
+
+            var form = CanvasForm.GetExtraForm("External");
+            if (form is null)
+            {
+                return;
+            }
+
+            form.FormClosing -= RemoveExternalForm;
+            form.FormClosing += RemoveExternalForm;
+        }
+        
+        private static void RemoveExternalForm(object sender, FormClosingEventArgs e)
+        {
+            var coreForm = S.GET<CoreForm>();
+            coreForm.PreviousGrids[1] = coreForm.PreviousGrids[(coreForm.ExternalIndex + 1) % 1];
+            coreForm.ExternalIndex = -1;
+            
+            // if the external form had any modules that should also be in the main form's grid, they need to be put back
+            coreForm.PreviousGrids[1].LoadToMain();
         }
     }
 }

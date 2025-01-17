@@ -20,7 +20,6 @@ namespace RTCV.UI
 
         public readonly Components.EngineConfig.EngineControls.FreezeEngineControl FreezeEngineControl;
         public readonly Components.EngineConfig.EngineControls.NightmareEngineControl NightmareEngineControl;
-        public readonly Components.EngineConfig.EngineControls.HellgenieEngineControl HellgenieEngineControl;
         public readonly Components.EngineConfig.EngineControls.DistortionEngineControl DistortionEngineControl;
         public readonly Components.EngineConfig.EngineControls.CustomEngineControl CustomEngineControl;
         public readonly Components.EngineConfig.EngineControls.PipeEngineControl PipeEngineControl;
@@ -48,36 +47,40 @@ namespace RTCV.UI
         public CorruptionEngineForm()
         {
             InitializeComponent();
-
-            this.undockedSizable = false;
+            undockedSizable = false;
 
             var engineControlLocation = new Point(gbSelectedEngine.Location.X, gbSelectedEngine.Location.Y);
 
             FreezeEngineControl = new Components.EngineConfig.EngineControls.FreezeEngineControl(this);
+            FreezeEngineControl.Anchor = AnchorStyles.Left | AnchorStyles.Top | AnchorStyles.Right | AnchorStyles.Bottom;
             this.Controls.Add(FreezeEngineControl);
 
             NightmareEngineControl = new Components.EngineConfig.EngineControls.NightmareEngineControl(engineControlLocation);
+            NightmareEngineControl.Anchor = AnchorStyles.Left | AnchorStyles.Top | AnchorStyles.Right | AnchorStyles.Bottom;
             this.Controls.Add(NightmareEngineControl);
 
-            HellgenieEngineControl = new Components.EngineConfig.EngineControls.HellgenieEngineControl(this);
-            this.Controls.Add(HellgenieEngineControl);
-
             DistortionEngineControl = new Components.EngineConfig.EngineControls.DistortionEngineControl(engineControlLocation);
+            DistortionEngineControl.Anchor = AnchorStyles.Left | AnchorStyles.Top | AnchorStyles.Right | AnchorStyles.Bottom;
             this.Controls.Add(DistortionEngineControl);
 
             CustomEngineControl = new Components.EngineConfig.EngineControls.CustomEngineControl(engineControlLocation);
+            CustomEngineControl.Anchor = AnchorStyles.Left | AnchorStyles.Top | AnchorStyles.Right | AnchorStyles.Bottom;
             this.Controls.Add(CustomEngineControl);
 
             PipeEngineControl = new Components.EngineConfig.EngineControls.PipeEngineControl(this);
+            PipeEngineControl.Anchor = AnchorStyles.Left | AnchorStyles.Top | AnchorStyles.Right | AnchorStyles.Bottom;
             this.Controls.Add(PipeEngineControl);
 
             BlastGeneratorEngineControl = new Components.EngineConfig.EngineControls.BlastGeneratorEngineControl(engineControlLocation);
+            BlastGeneratorEngineControl.Anchor = AnchorStyles.Left | AnchorStyles.Top | AnchorStyles.Right | AnchorStyles.Bottom;
             this.Controls.Add(BlastGeneratorEngineControl);
 
             VectorEngineControl = new Components.EngineConfig.EngineControls.VectorEngineControl(this);
+            VectorEngineControl.Anchor = AnchorStyles.Left | AnchorStyles.Top | AnchorStyles.Right | AnchorStyles.Bottom;
             this.Controls.Add(VectorEngineControl);
 
             ClusterEngineControl = new Components.EngineConfig.EngineControls.ClusterEngineControl(engineControlLocation);
+            ClusterEngineControl.Anchor = AnchorStyles.Left | AnchorStyles.Top | AnchorStyles.Right | AnchorStyles.Bottom;
             this.Controls.Add(ClusterEngineControl);
         }
 
@@ -104,12 +107,12 @@ namespace RTCV.UI
             }
 
             nmAlignment.Value = Math.Max(nmAlignment.Minimum, Math.Min(nmAlignment.Maximum, RtcCore.Alignment));
+            cbUseAlignment.Checked = RtcCore.UseAlignment;
 
 
             //Resyncs all engines to their spec (UI value to Spec)
             FreezeEngineControl.ResyncEngineUI();
             NightmareEngineControl.ResyncEngineUI();
-            HellgenieEngineControl.ResyncEngineUI();
             DistortionEngineControl.ResyncEngineUI();
             CustomEngineControl.ResyncEngineUI();
             BlastGeneratorEngineControl.ResyncEngineUI();
@@ -173,7 +176,7 @@ namespace RTCV.UI
 
         private void OnFormLoad(object sender, EventArgs e)
         {
-            var handler = new EventHandler<Components.Controls.ValueUpdateEventArgs<decimal>>(HandleAlignmentChange);
+            var handler = new EventHandler<ValueUpdateEventArgs<decimal>>(HandleAlignmentChange);
             nmAlignment.ValueChanged += handler;
             nmAlignment.registerSlave(S.GET<CustomEngineConfigForm>().nmAlignment, handler);
 
@@ -192,16 +195,21 @@ namespace RTCV.UI
             }
         }
 
-        private void HandleAlignmentChange(object sender, Components.Controls.ValueUpdateEventArgs<decimal> e)
+        private void HandleAlignmentChange(object sender, ValueUpdateEventArgs<decimal> e)
         {
             if (dontUpdate) return;
             RtcCore.Alignment = Convert.ToInt32(nmAlignment.Value);
         }
 
+        private void HandleUseAlignmentChange(object sender, EventArgs e)
+        {
+            if (dontUpdate) return;
+            RtcCore.UseAlignment = cbUseAlignment.Checked;
+        }
+
         private void UpdateEngine(object sender, EventArgs e)
         {
             NightmareEngineControl.Visible = false;
-            HellgenieEngineControl.Visible = false;
             DistortionEngineControl.Visible = false;
             FreezeEngineControl.Visible = false;
             PipeEngineControl.Visible = false;
@@ -212,7 +220,6 @@ namespace RTCV.UI
             cbCustomPrecision.Enabled = false;
             nmAlignment.Maximum = RtcCore.CurrentPrecision - 1;
 
-            //S.GET<GlitchHarvesterIntensityForm>().Visible = true;
             S.GET<GeneralParametersForm>().Show();
             S.GET<MemoryDomainsForm>().Show();
             S.GET<GlitchHarvesterIntensityForm>().Show();
@@ -228,14 +235,6 @@ namespace RTCV.UI
                 case "Nightmare Engine":
                     RtcCore.SelectedEngine = CorruptionEngine.NIGHTMARE;
                     NightmareEngineControl.Visible = true;
-                    cbCustomPrecision.Enabled = true;
-
-                    S.GET<CoreForm>().btnAutoCorrupt.Visible = AllSpec.VanguardSpec?.Get<bool>(VSPEC.SUPPORTS_REALTIME) ?? true;
-                    break;
-
-                case "Hellgenie Engine":
-                    RtcCore.SelectedEngine = CorruptionEngine.HELLGENIE;
-                    HellgenieEngineControl.Visible = true;
                     cbCustomPrecision.Enabled = true;
 
                     S.GET<CoreForm>().btnAutoCorrupt.Visible = AllSpec.VanguardSpec?.Get<bool>(VSPEC.SUPPORTS_REALTIME) ?? true;
@@ -414,8 +413,8 @@ namespace RTCV.UI
         {
             dontUpdate = true;
             S.GET<SettingsCorruptForm>().SetRewindBoxes(enabled);
+            S.GET<GeneralParametersForm>().cbClearFreezesOnRewind.Checked = enabled;
             FreezeEngineControl.cbClearFreezesOnRewind.Checked = enabled;
-            HellgenieEngineControl.cbClearCheatsOnRewind.Checked = enabled;
             PipeEngineControl.cbClearPipesOnRewind.Checked = enabled;
             dontUpdate = false;
         }
@@ -465,7 +464,6 @@ namespace RTCV.UI
         private void UpdateMinMaxBoxes(int precision)
         {
             NightmareEngineControl.UpdateMinMaxBoxes(precision);
-            HellgenieEngineControl.UpdateMinMaxBoxes(precision);
         }
 
         private void UpdateCustomPrecision(object sender, EventArgs e)

@@ -1,3 +1,6 @@
+using System.Threading;
+using System.Threading.Tasks;
+
 namespace RTCV.CorruptCore
 {
     using System;
@@ -34,7 +37,7 @@ namespace RTCV.CorruptCore
         {
         }
 
-        public VirtualMemoryDomain Generate()
+        public VirtualMemoryDomain Generate(IProgress<int> progress = null)
         {
             VirtualMemoryDomain VMD = new VirtualMemoryDomain
             {
@@ -67,31 +70,74 @@ namespace RTCV.CorruptCore
                 {
                     continue;
                 }
-
-                for (long i = start; i < end; i++)
+                int addresses = addressCount;
+                
+                int threads = (int)Math.Min(Environment.ProcessorCount - 2, end - start);
+                if (threads <= 0)
                 {
-                    if (!IsAddressInRanges(i, RemoveSingles, RemoveRanges))
+                    threads = 1;
+                }
+                
+                var orderedPointers = new List<long>[threads];
+
+                object lockObject = new object();
+                
+                Parallel.For(0, threads, thread =>
+                {
+                    List<long> pointerAddresses = new List<long>();
+                    long size = (end - start) / threads;
+                    long beginning = (size * thread) + start;
+                    long ending;
+                    if (thread == threads - 1)
                     {
-                        if (PointerSpacer == 1 || addressCount % PointerSpacer == 0)
-                        {
-                            //VMD.PointerDomains.Add(GenDomain);
-                            VMD.PointerAddresses.Add(i);
-                        }
+                        ending = end;
+                    }
+                    else
+                    {
+                        ending = (size * (thread + 1)) - 1 + start;
                     }
 
-                    addressCount++;
+                    int ourAddresses = addresses + (int)beginning;
+
+                    for (long i = beginning; i <= ending; i++)
+                    {
+                        if (!IsAddressInRanges(i, this.RemoveSingles, this.RemoveRanges))
+                        {
+                            if (this.PointerSpacer == 1 || ourAddresses % this.PointerSpacer == 0)
+                            {
+                                //VMD.PointerDomains.Add(GenDomain);
+                                pointerAddresses.Add(i);
+                            }
+                        }
+
+                        if (progress != null && ourAddresses % (1423 * threads) == 0)
+                        {
+                            progress.Report(threads);
+                        }
+                        ourAddresses++;
+                    }
+                    Interlocked.Add(ref addressCount, ourAddresses);
+                    lock (lockObject)
+                    {
+                        orderedPointers[thread] = pointerAddresses;
+                    }
+                });
+                foreach (List<long> pointers in orderedPointers)
+                {
+                    VMD.PointerAddresses.AddRange(pointers);
                 }
+                addressCount += addresses;
             }
 
-            foreach (long single in AddSingles)
+            foreach (long single in this.AddSingles)
             {
                 //VMD.PointerDomains.Add(GenDomain);
                 VMD.PointerAddresses.Add(single);
                 addressCount++;
             }
 
-            VMD.CompactPointerDomains = new string[] { GenDomain };
-            VMD.CompactPointerAddresses = new long[][] { VMD.PointerAddresses.ToArray() };
+            VMD.CompactPointerDomains = new[] { this.GenDomain };
+            VMD.CompactPointerAddresses = new[] { VMD.PointerAddresses.ToArray() };
 
             VMD.Compact(true);
 

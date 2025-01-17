@@ -69,8 +69,7 @@ namespace RTCV.UI
         {
             InitializeComponent();
 
-            popoutAllowed = true;
-            this.undockedSizable = false;
+            PopoutAllowed = true;
 
             //cbRenderType.SelectedIndex = 0;
 
@@ -551,6 +550,16 @@ namespace RTCV.UI
                 StockpileManagerUISide.StashAfterOperation = StockpileManagerUISide.StashAfterOperation ^= true;
                 RedrawActionUI();
             }))).Checked = StockpileManagerUISide.StashAfterOperation;
+            ((ToolStripMenuItem)ghSettingsMenu.Items.Add("Load stash items when selected with arrows", null, new EventHandler((ob, ev) =>
+            {
+                S.GET<StashHistoryForm>().LoadWhenSelectedWithArrows = Params.ToggleParam("LOAD_STASH_ON_ARROW_CLICK");
+                RedrawActionUI();
+            }))).Checked = Params.IsParamSet("LOAD_STASH_ON_ARROW_CLICK");
+            ((ToolStripMenuItem)ghSettingsMenu.Items.Add("Compress savestates", null, new EventHandler((ob, ev) =>
+            {
+                Params.ToggleParam("COMPRESS_SAVESTATES");
+                RedrawActionUI();
+            }))).Checked = Params.IsParamSet("COMPRESS_SAVESTATES");
 
             ghSettingsMenu.Show(this, locate);
         }
