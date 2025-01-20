@@ -1153,6 +1153,7 @@ namespace RTCV.UI
 
             cbShiftBlastlayer.Items.Add(new ComboBoxItem<string>(BuProperty.Address.ToString(), BuProperty.Address.ToString()));
             cbShiftBlastlayer.Items.Add(new ComboBoxItem<string>("Source Address", BuProperty.SourceAddress.ToString()));
+            cbShiftBlastlayer.Items.Add(new ComboBoxItem<string>("Address & Source", "Address & Source"));
             cbShiftBlastlayer.Items.Add(new ComboBoxItem<string>("Value", BuProperty.ValueString.ToString()));
             cbShiftBlastlayer.Items.Add(new ComboBoxItem<string>(BuProperty.Lifetime.ToString(), BuProperty.Lifetime.ToString()));
             cbShiftBlastlayer.Items.Add(new ComboBoxItem<string>("Execute Frame", BuProperty.ExecuteFrame.ToString()));
@@ -2050,33 +2051,18 @@ namespace RTCV.UI
         {
             foreach (DataGridViewRow row in rows)
             {
+                if (column == "Address & Source")
+                {
+                    ShiftNumericCell(amount, shiftDown, (DataGridViewNumericUpDownCell)row.Cells[BuProperty.Address.ToString()]);
+                    ShiftNumericCell(amount, shiftDown, (DataGridViewNumericUpDownCell)row.Cells[BuProperty.SourceAddress.ToString()]);
+                    continue;
+                }
                 var cell = row.Cells[column];
 
                 //Can't use a switch statement because tostring is evaluated at runtime
-                if (cell is DataGridViewNumericUpDownCell u)
+                if (cell is DataGridViewNumericUpDownCell numericCell)
                 {
-                    if (shiftDown)
-                    {
-                        if ((Convert.ToInt64(u.Value) - amount) >= 0)
-                        {
-                            u.Value = Convert.ToInt64(u.Value) - amount;
-                        }
-                        else
-                        {
-                            u.Value = 0;
-                        }
-                    }
-                    else
-                    {
-                        if ((Convert.ToInt64(u.Value) + amount) <= u.Maximum)
-                        {
-                            u.Value = Convert.ToInt64(u.Value) + amount;
-                        }
-                        else
-                        {
-                            u.Value = u.Maximum;
-                        }
-                    }
+                    ShiftNumericCell(amount, shiftDown, numericCell);
                 }
                 else if (cell.OwningColumn.Name == BuProperty.ValueString.ToString())
                 {
@@ -2091,6 +2077,32 @@ namespace RTCV.UI
             }
             dgvBlastEditor.Refresh();
             UpdateBottom();
+        }
+
+        private static void ShiftNumericCell(decimal amount, bool shiftDown, DataGridViewNumericUpDownCell cell)
+        {
+            if (shiftDown)
+            {
+                if ((Convert.ToInt64(cell.Value) - amount) >= 0)
+                {
+                    cell.Value = Convert.ToInt64(cell.Value) - amount;
+                }
+                else
+                {
+                    cell.Value = 0;
+                }
+            }
+            else
+            {
+                if ((Convert.ToInt64(cell.Value) + amount) <= cell.Maximum)
+                {
+                    cell.Value = Convert.ToInt64(cell.Value) + amount;
+                }
+                else
+                {
+                    cell.Value = cell.Maximum;
+                }
+            }
         }
 
         private static string getShiftedHexString(string value, decimal amount, int precision)
