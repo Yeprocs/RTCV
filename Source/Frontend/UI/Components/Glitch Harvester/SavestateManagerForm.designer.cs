@@ -83,6 +83,7 @@ namespace RTCV.UI
             this.btnLoadSavestateList.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.btnLoadSavestateList.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.btnLoadSavestateList.UseVisualStyleBackColor = false;
+            this.btnLoadSavestateList.MouseClick += this.OnLoadSavestateListButtonMouseClick;
             this.btnLoadSavestateList.MouseDown += new System.Windows.Forms.MouseEventHandler(this.OnLoadSavestateListButtonMouseDown);
             // 
             // cbSavestateLoadOnClick
