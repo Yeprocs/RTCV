@@ -33,7 +33,6 @@ namespace RTCV.UI.Modular
                         S.GET<ListGenForm>(),
                         S.GET<VmdLimiterProfilerForm>(),
                         //S.GET<DomainAnalyticsForm>(),
-                        S.GET<CodeCaveSettingsForm>(),
                         S.GET<OpenToolsForm>(),
                         })
         {
