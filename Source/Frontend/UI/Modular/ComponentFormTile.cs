@@ -66,7 +66,7 @@ namespace RTCV.UI.Modular
         {
             get => this._sizeY; set => this._sizeY = value;
         }
-        private Point _mouseDownAt = new Point(int.MinValue);
+        private Point _mouseDownAt = new Point(int.MinValue, int.MinValue);
         
         private void OnFormTileMouseDown(object sender, MouseEventArgs e)
         {
@@ -98,7 +98,7 @@ namespace RTCV.UI.Modular
 
         private void OnFormTileMouseMove(object sender, MouseEventArgs e)
         {
-            if (e.Button != MouseButtons.Left)
+            if (e.Button != MouseButtons.Left || this._mouseDownAt.X == int.MinValue || this._mouseDownAt.Y == int.MinValue)
             {
                 return;
             }
