@@ -567,7 +567,7 @@ namespace RTCV.UI
             CustomEngine.SaveTemplateFile(false);
         }
 
-        private void RestoreUIStateFromSpec()
+        internal void RestoreUIStateFromSpec()
         {
             try
             {
