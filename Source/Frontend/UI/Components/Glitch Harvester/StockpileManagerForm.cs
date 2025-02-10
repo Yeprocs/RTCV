@@ -677,9 +677,7 @@ namespace RTCV.UI
                 const float generalDarken = -0.50f;
                 Color c = Colors.GeneralColor.ChangeColorBrightness(generalDarken).ChangeColorBrightness(light1);
                 btnSaveStockpile.BackColor = c;
-                btnSaveStockpile.FlatAppearance.BorderColor = c;
                 btnSaveStockpileAs.BackColor = c;
-                btnSaveStockpileAs.FlatAppearance.BorderColor = c;
             }
         }
 
