@@ -227,7 +227,6 @@ namespace RTCV.UI
                 return;
             }
 
-            var ghForm = CanvasForm.GetExtraForm("Glitch Harvester");
             try
             {
                 //We do this here and invoke because our unlock runs at the end of the awaited method, but there's a chance an error occurs
@@ -236,7 +235,7 @@ namespace RTCV.UI
                 {
                     UICore.LockInterface(false, true);
                     S.GET<SaveProgressForm>().Dock = DockStyle.Fill;
-                    ghForm?.OpenSubForm(S.GET<SaveProgressForm>());
+                    this.ParentCanvas?.OpenSubForm(S.GET<SaveProgressForm>());
                 });
 
                 await Task.Run(() =>
@@ -248,7 +247,7 @@ namespace RTCV.UI
             {
                 SyncObjectSingleton.FormExecute(() =>
                 {
-                    ghForm?.CloseSubForm();
+                    this.ParentCanvas?.CloseSubForm();
                     UICore.UnlockInterface();
                 });
             }
@@ -480,7 +479,6 @@ namespace RTCV.UI
                 return;
             }
 
-            var ghForm = CanvasForm.GetExtraForm("Glitch Harvester");
             try
             {
                 //We do this here and invoke because our unlock runs at the end of the awaited method, but there's a chance an error occurs
@@ -489,7 +487,7 @@ namespace RTCV.UI
                 {
                     UICore.LockInterface(false, true);
                     S.GET<SaveProgressForm>().Dock = DockStyle.Fill;
-                    ghForm?.OpenSubForm(S.GET<SaveProgressForm>());
+                    this.ParentCanvas?.OpenSubForm(S.GET<SaveProgressForm>());
                 });
 
                 await Task.Run(() =>
@@ -501,7 +499,7 @@ namespace RTCV.UI
             {
                 SyncObjectSingleton.FormExecute(() =>
                 {
-                    ghForm?.CloseSubForm();
+                    this.ParentCanvas?.CloseSubForm();
                     UICore.UnlockInterface();
                 });
             }

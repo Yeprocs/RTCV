@@ -13,6 +13,24 @@ namespace RTCV.UI.Modular
         private Size dockedMinimumSize = new Size(int.MinValue, int.MinValue);
         private Size dockedMaximumSize = new Size(int.MinValue, int.MinValue);
 
+        protected CanvasForm ParentCanvas
+        {
+            get
+            {
+                if (this.previousPanel is { Parent: { Parent: CanvasForm form } })
+                {
+                    return form;
+                }
+
+                if (this.ParentForm is { ParentForm: CanvasForm _ })
+                {
+                    return this.ParentForm.ParentForm as CanvasForm;
+                }
+
+                return null;
+            }
+        }
+
         public Panel blockPanel { get; set; } = null;
 
         public bool undockedSizable { get; set; } = true;

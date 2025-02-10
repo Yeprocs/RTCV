@@ -406,7 +406,6 @@ namespace RTCV.UI
                 return;
             }
 
-            var ghForm = CanvasForm.GetExtraForm("Glitch Harvester");
             try
             {
                 //We do this here and invoke because our unlock runs at the end of the awaited method, but there's a chance an error occurs
@@ -419,7 +418,7 @@ namespace RTCV.UI
 
                 logger.Trace("Opening SaveProgress Form");
                 S.GET<SaveProgressForm>().Dock = DockStyle.Fill;
-                ghForm?.OpenSubForm(S.GET<SaveProgressForm>());
+                this.ParentCanvas?.OpenSubForm(S.GET<SaveProgressForm>());
 
                 logger.Trace("Clearing Current Stockpile");
                 StockpileManagerUISide.ClearCurrentStockpile();
@@ -466,7 +465,7 @@ namespace RTCV.UI
             finally
             {
                 logger.Trace("Closing Save form");
-                ghForm?.CloseSubForm();
+                this.ParentCanvas?.CloseSubForm();
                 UICore.SetHotkeyTimer(true);
                 logger.Trace("Unlocking Interface");
                 UICore.UnlockInterface();
@@ -478,13 +477,12 @@ namespace RTCV.UI
 
         private async void ImportStockpile(string filename)
         {
-            var ghForm = CanvasForm.GetExtraForm("Glitch Harvester");
             try
             {
                 UICore.SetHotkeyTimer(false);
                 UICore.LockInterface(false, true);
                 S.GET<SaveProgressForm>().Dock = DockStyle.Fill;
-                ghForm?.OpenSubForm(S.GET<SaveProgressForm>());
+                this.ParentCanvas?.OpenSubForm(S.GET<SaveProgressForm>());
 
                 var r = await Task.Run(() => Stockpile.Import(filename));
 
@@ -507,7 +505,7 @@ namespace RTCV.UI
             }
             finally
             {
-                ghForm?.CloseSubForm();
+                this.ParentCanvas?.CloseSubForm();
                 UICore.UnlockInterface();
                 UICore.SetHotkeyTimer(true);
                 RefreshNoteIcons();
@@ -517,7 +515,6 @@ namespace RTCV.UI
         private async void SaveStockpile(Stockpile sks, string path)
         {
             logger.Trace("Entering SaveStockpile {0}\n{1}", Thread.CurrentThread.ManagedThreadId, Environment.StackTrace);
-            var ghForm = CanvasForm.GetExtraForm("Glitch Harvester");
             try
             {
                 //We do this here and invoke because our unlock runs at the end of the awaited method, but there's a chance an error occurs
@@ -525,7 +522,7 @@ namespace RTCV.UI
                 UICore.SetHotkeyTimer(false);
                 UICore.LockInterface(false, true);
                 S.GET<SaveProgressForm>().Dock = DockStyle.Fill;
-                ghForm?.OpenSubForm(S.GET<SaveProgressForm>());
+                this.ParentCanvas?.OpenSubForm(S.GET<SaveProgressForm>());
 
                 var r = await Task.Run(() => Stockpile.Save(sks, path, Params.IsParamSet("INCLUDE_REFERENCED_FILES"), Params.IsParamSet("COMPRESS_STOCKPILE")));
 
@@ -539,7 +536,7 @@ namespace RTCV.UI
             }
             finally
             {
-                ghForm?.CloseSubForm();
+                this.ParentCanvas?.CloseSubForm();
                 UICore.UnlockInterface();
                 UICore.SetHotkeyTimer(true);
             }
