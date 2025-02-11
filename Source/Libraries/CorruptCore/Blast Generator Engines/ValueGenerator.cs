@@ -82,14 +82,14 @@ namespace RTCV.CorruptCore
                 {
                     return null;
                 }
-
+                
                 switch (mode)
                 {
                     case BGValueMode.Add:
-                        tiltValue = new BigInteger(param1Bytes);
+                        tiltValue = new BigInteger(param1Bytes.Reverse().ToArray());
                         break;
                     case BGValueMode.Subtract:
-                        tiltValue = new BigInteger(param1Bytes) * -1;
+                        tiltValue = -new BigInteger(param1Bytes.Reverse().ToArray());
                         break;
                     case BGValueMode.Random:
                         for (int i = 0; i < value.Length; i++)
@@ -99,7 +99,14 @@ namespace RTCV.CorruptCore
 
                         break;
                     case BGValueMode.RandomRange:
-                        ulong temp = rand.NextULong(param1, param2);
+                        ulong temp;
+                        if (param2 > param1) {
+                            temp = rand.NextULong(param1, param2);
+                        } else if (param1 > param2) {
+                            temp = rand.NextULong(param2, param1);
+                        } else {
+                            temp = param1;
+                        }
                         value = ByteArrayExtensions.GetByteArrayValue(precision, temp, true);
                         break;
                     case BGValueMode.ReplaceXWithY:
@@ -211,10 +218,17 @@ namespace RTCV.CorruptCore
 
                 var bu = new BlastUnit(value, domain, address, precision, mi.BigEndian, executeFrame, lifetime, note)
                 {
-                    TiltValue = tiltValue,
                     Loop = loop
                 };
 
+                if (mode == BGValueMode.Add || mode == BGValueMode.Subtract)
+                {
+                    bu.TiltValue = tiltValue;
+                    bu.Source = BlastUnitSource.STORE;
+                    bu.SourceDomain = domain;
+                    bu.SourceAddress = address;
+                }
+                
                 return bu;
             }
             catch (Exception ex)
