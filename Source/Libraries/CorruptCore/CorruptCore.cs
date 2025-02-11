@@ -73,6 +73,11 @@ namespace RTCV.CorruptCore
 
 
 
+        public static string RtcDir
+        {
+            get => (string)AllSpec.CorruptCoreSpec[RTCSPEC.RTCDIR];
+            set => AllSpec.CorruptCoreSpec.Update(RTCSPEC.RTCDIR, value);
+        }
         public static string EmuDir
         {
             get
@@ -90,24 +95,17 @@ namespace RTCV.CorruptCore
         }
 
         public static string EmuAssetsDir => Path.Combine(EmuDir, "ASSETS");
+        public static string VaultDir => Path.Combine(EmuDir, "VAULT");
+        
         public static string PluginDir => Path.Combine(RtcDir, "PLUGINS");
-
-        public static string RtcDir
-        {
-            get => (string)AllSpec.CorruptCoreSpec[RTCSPEC.RTCDIR];
-            set => AllSpec.CorruptCoreSpec.Update(RTCSPEC.RTCDIR, value);
-        }
-
         public static string workingDir => Path.Combine(RtcDir, "WORKING");
         public static string AssetsDir => Path.Combine(RtcDir, "ASSETS");
         public static string ListsDir => Path.Combine(RtcDir, "LISTS");
-
         public static string VmdsDir => Path.Combine(RtcDir, "VMDS");
-
-        public static string VaultDir => Path.Combine(EmuDir, "VAULT");
+        public static string EngineTemplateDir => Path.Combine(RtcDir, "ENGINETEMPLATES");
+        public static string AutoSaveDir => Path.Combine(RtcDir, "AUTOSAVE");
 
         public static string LauncherDir => Path.Combine(new DirectoryInfo(RtcDir).Parent.Parent.FullName, "Launcher");
-        public static string EngineTemplateDir => Path.Combine(RtcDir, "ENGINETEMPLATES");
 
         public static event EventHandler<ProgressBarEventArgs> ProgressBarHandler;
 
@@ -333,12 +331,13 @@ namespace RTCV.CorruptCore
                     Path.Combine(workingDir, "MEMORYDUMPS"),
                     Path.Combine(workingDir, "MP"),
                     Path.Combine(AssetsDir, "CRASHSOUNDS"),
+                    Path.Combine(AssetsDir, "PLATESHD"),
                     Path.Combine(RtcDir, "PARAMS"),
-                    Path.Combine(RtcDir, "LISTS"),
                     Path.Combine(RtcDir, "RENDEROUTPUT"),
                     Path.Combine(RtcDir, "ENGINETEMPLATES"),
                     Path.Combine(RtcDir, "LAYOUTS"),
-                    Path.Combine(AssetsDir, "PLATESHD")
+                    ListsDir,
+                    AutoSaveDir
                 });
 
                 if (!Params.IsParamSet("DISCLAIMER_READ"))

@@ -77,12 +77,7 @@ namespace RTCV.UI
             RtcCore.StartUISide();
 
             //Loading RTC Params
-            var settingsForm = S.GET<SettingsGeneralForm>();
-            settingsForm.cbDisableEmulatorOSD.Checked = Params.IsParamSet(RTCSPEC.CORE_EMULATOROSDDISABLED);
-            settingsForm.cbAllowCrossCoreCorruption.Checked = Params.IsParamSet("ALLOW_CROSS_CORE_CORRUPTION");
-            settingsForm.cbDontCleanAtQuit.Checked = Params.IsParamSet("DONT_CLEAN_SAVESTATES_AT_QUIT");
-            settingsForm.cbUncapIntensity.Checked = Params.IsParamSet("UNCAP_INTENSITY");
-            settingsForm.cbRasterizeUponStockpiling.Checked = Params.IsParamSet("RASTERIZE_VMD_UPON_STOCKPILING");
+            S.GET<SettingsGeneralForm>().LoadConfigIntoUI();
 
             //Initialize input code. Poll every 16ms
             Input.Input.Initialize();

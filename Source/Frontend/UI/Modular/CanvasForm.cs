@@ -1,3 +1,5 @@
+using RTCV.UI.Components.Controls;
+
 namespace RTCV.UI
 {
     using System;
@@ -269,6 +271,19 @@ namespace RTCV.UI
                 spForm.Hide();
                 spForm = null;
             }
+        }
+        
+        public void ShowToast(Toast toast)
+        {
+            this.Controls.Add(toast);
+            
+            //position the toast in the top right corner
+            toast.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            toast.Location = new Point(this.ClientRectangle.Width - toast.Width - 10, 10);
+            
+            toast.Show();
+            toast.BringToFront();
+            toast.Refresh();
         }
 
         private void OnClosing(object sender, FormClosingEventArgs e)

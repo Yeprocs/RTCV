@@ -231,31 +231,34 @@ namespace RTCV.UI.Components.Controls
                     }
                 }
 
-                cms.Items.Add("New Blastlayer from this Savestate (Blast Editor)", null, (ob, ev) =>
+                if (holder.sk != null)
                 {
-                    var holder = (SavestateHolder)((Button)sender).Parent;
-                    var psk = holder.sk;
-
-                    if (psk == null)
+                    cms.Items.Add("New Blastlayer from this Savestate (Blast Editor)", null, (ob, ev) =>
                     {
-                        MessageBox.Show("There is no savestate associated with this box. Make a savestate and try again.");
-                        return;
-                    }
+                        var holder = (SavestateHolder)((Button)sender).Parent;
+                        var psk = holder.sk;
 
-                    var newStashkey = new StashKey(RtcCore.GetRandomKey(), psk.ParentKey, null)
-                    {
-                        RomFilename = psk.RomFilename,
-                        SystemName = psk.SystemName,
-                        SystemCore = psk.SystemCore,
-                        GameName = psk.GameName,
-                        SyncSettings = psk.SyncSettings,
-                        StateLocation = psk.StateLocation
-                    };
+                        if (psk == null)
+                        {
+                            MessageBox.Show("There is no savestate associated with this box. Make a savestate and try again.");
+                            return;
+                        }
 
-                    newStashkey.BlastLayer = new BlastLayer();
+                        var newStashkey = new StashKey(RtcCore.GetRandomKey(), psk.ParentKey, null)
+                        {
+                            RomFilename = psk.RomFilename,
+                            SystemName = psk.SystemName,
+                            SystemCore = psk.SystemCore,
+                            GameName = psk.GameName,
+                            SyncSettings = psk.SyncSettings,
+                            StateLocation = psk.StateLocation
+                        };
 
-                    BlastEditorForm.OpenBlastEditor(newStashkey);
-                });
+                        newStashkey.BlastLayer = new BlastLayer();
+
+                        BlastEditorForm.OpenBlastEditor(newStashkey);
+                    });
+                }
 
                 cms.Items.Add("Save to this entry", null, (ob, ev) =>
                 {

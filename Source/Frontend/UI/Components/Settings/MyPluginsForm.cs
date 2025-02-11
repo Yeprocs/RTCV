@@ -1,3 +1,5 @@
+using RTCV.NetCore;
+
 namespace RTCV.UI
 {
     using System;
@@ -111,6 +113,8 @@ namespace RTCV.UI
                 RefreshPlugins();
                 return;
             }
+
+            Params.SetParam("RTC_CLEAN_SHUTDOWN");
 
             string standaloneRtcPath = System.Reflection.Assembly.GetEntryAssembly().Location;
             var oldEmuDir = CorruptCore.RtcCore.EmuDir;

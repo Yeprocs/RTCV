@@ -35,6 +35,7 @@ namespace RTCV.UI
             set
             {
                 _unsavedEdits = value;
+                AutoSave.SaveStatesUnsaved = value;
 
                 UpdateSaveButtonColor(value);
             }
@@ -327,7 +328,7 @@ namespace RTCV.UI
             }
         }
 
-        private void saveSSK(string path)
+        public void SaveSSK(string path)
         {
             decimal currentProgress = 0;
             try
@@ -430,8 +431,6 @@ namespace RTCV.UI
                     RtcCore.OnProgressBarUpdate(this, new ProgressBarEventArgs($"Moving {Path.GetFileName(file)} to SSK", currentProgress += percentPerFile));
                     File.Move(file, Path.Combine(RtcCore.workingDir, "SSK", Path.GetFileName(file)));
                 }
-
-                UnsavedEdits = false;
             }
             catch (Exception ex)
             {
@@ -491,8 +490,13 @@ namespace RTCV.UI
 
                 await Task.Run(() =>
                 {
-                    saveSSK(filename);
+                    lock (AutoSave.SavingLock)
+                    {
+                        this.SaveSSK(filename);
+                    }
                 });
+
+                UnsavedEdits = false;
             }
             finally
             {

@@ -21,45 +21,26 @@ namespace RTCV.UI
             PopoutAllowed = false;
         }
 
-        //todo - rewrite this?
-        /*
-        private void btnImportKeyBindings_Click(object sender, EventArgs e)
+        public void LoadConfigIntoUI()
         {
-
-            if (VanguardImplementation.connector.netConn.status != NetworkStatus.CONNECTED)
+            cbDisableEmulatorOSD.Checked = Params.IsParamSet(RTCSPEC.CORE_EMULATOROSDDISABLED);
+            cbAllowCrossCoreCorruption.Checked = Params.IsParamSet("ALLOW_CROSS_CORE_CORRUPTION");
+            cbDontCleanAtQuit.Checked = Params.IsParamSet("DONT_CLEAN_SAVESTATES_AT_QUIT");
+            cbUncapIntensity.Checked = Params.IsParamSet("UNCAP_INTENSITY");
+            cbRasterizeUponStockpiling.Checked = Params.IsParamSet("RASTERIZE_VMD_UPON_STOCKPILING");
+            cbAutosave.Checked = Params.IsParamSet("AUTOSAVE");
+            if (decimal.TryParse(Params.ReadParam("AUTOSAVE_INTERVAL"), out decimal interval))
             {
-                MessageBox.Show("Can't import keybindings when not connected to Bizhawk!");
-                return;
+                int seconds = (int)interval % 60;
+                int minutes = (int)interval / 60;
+                
+                nmAutosaveMinutes.ValueChanged -= AutosaveTimeChanged;
+                nmAutosaveMinutes.Value = minutes;
+                nmAutosaveSeconds.ValueChanged += AutosaveTimeChanged;
+                
+                nmAutosaveSeconds.Value = seconds;
             }
-
-            try
-            {
-                if (CorruptCore.CorruptCore.EmuDir.Contains(Path.DirectorySeparatorChar + "VERSIONS" + Path.DirectorySeparatorChar))
-                {
-                    var bizhawkFolder = new DirectoryInfo(CorruptCore.CorruptCore.EmuDir);
-                    var LauncherVersFolder = bizhawkFolder.Parent.Parent;
-
-                    var versions = LauncherVersFolder.GetDirectories().Reverse().ToArray();
-
-                    var prevVersion = versions[1].Name;
-
-                    var dr = MessageBox.Show(
-                        "RTC Launcher detected,\n" +
-                        $"Do you want to import Controller/Hotkey bindings from version {prevVersion}"
-                        , $"Import config from previous version ?", MessageBoxButtons.YesNo, MessageBoxIcon.Information);
-
-                    if (dr == DialogResult.Yes)
-                        Stockpile.LoadBizhawkKeyBindsFromIni(versions[1].FullName + Path.DirectorySeparatorChar + "BizHawk\\config.ini");
-                    else
-                        Stockpile.LoadBizhawkKeyBindsFromIni();
-                }
-                else
-                    Stockpile.LoadBizhawkKeyBindsFromIni();
-            }
-            finally
-            {
-            }
-        }*/
+        }
 
         private void OpenOnlineWiki(object sender, EventArgs e)
         {
@@ -120,5 +101,69 @@ namespace RTCV.UI
         {
             RtcCore.AutoUncorrupt = cbAutoUncorrupt.Checked;
         }
+
+        private void cbAutosave_CheckedChanged(object sender, EventArgs e)
+        {
+            Params.SetOrRemoveParam("AUTOSAVE", cbAutosave.Checked);
+            if (cbAutosave.Checked)
+            {
+                AutoSave.Start();
+            }
+            else
+            {
+                AutoSave.Stop();
+            }
+        }
+
+        private void AutosaveTimeChanged(object sender, EventArgs e)
+        {
+            if (this.nmAutosaveMinutes.Value == 0 && this.nmAutosaveSeconds.Value < 1)
+            {
+                this.nmAutosaveSeconds.Value = 1;
+            }
+            int seconds = (int)((nmAutosaveMinutes.Value * 60) + nmAutosaveSeconds.Value);
+            Params.SetParam("AUTOSAVE_INTERVAL", seconds.ToString());
+            AutoSave.SetInterval(seconds);
+        }
+
+        //todo - rewrite this?
+        /*
+        private void btnImportKeyBindings_Click(object sender, EventArgs e)
+        {
+
+            if (VanguardImplementation.connector.netConn.status != NetworkStatus.CONNECTED)
+            {
+                MessageBox.Show("Can't import keybindings when not connected to Bizhawk!");
+                return;
+            }
+
+            try
+            {
+                if (CorruptCore.CorruptCore.EmuDir.Contains(Path.DirectorySeparatorChar + "VERSIONS" + Path.DirectorySeparatorChar))
+                {
+                    var bizhawkFolder = new DirectoryInfo(CorruptCore.CorruptCore.EmuDir);
+                    var LauncherVersFolder = bizhawkFolder.Parent.Parent;
+
+                    var versions = LauncherVersFolder.GetDirectories().Reverse().ToArray();
+
+                    var prevVersion = versions[1].Name;
+
+                    var dr = MessageBox.Show(
+                        "RTC Launcher detected,\n" +
+                        $"Do you want to import Controller/Hotkey bindings from version {prevVersion}"
+                        , $"Import config from previous version ?", MessageBoxButtons.YesNo, MessageBoxIcon.Information);
+
+                    if (dr == DialogResult.Yes)
+                        Stockpile.LoadBizhawkKeyBindsFromIni(versions[1].FullName + Path.DirectorySeparatorChar + "BizHawk\\config.ini");
+                    else
+                        Stockpile.LoadBizhawkKeyBindsFromIni();
+                }
+                else
+                    Stockpile.LoadBizhawkKeyBindsFromIni();
+            }
+            finally
+            {
+            }
+        }*/
     }
 }

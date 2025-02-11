@@ -13,7 +13,7 @@ namespace RTCV.UI.Modular
         private Size dockedMinimumSize = new Size(int.MinValue, int.MinValue);
         private Size dockedMaximumSize = new Size(int.MinValue, int.MinValue);
 
-        protected CanvasForm ParentCanvas
+        public CanvasForm ParentCanvas
         {
             get
             {

@@ -30,6 +30,12 @@ namespace RTCV.UI
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SettingsGeneralForm));
             this.panel1 = new System.Windows.Forms.Panel();
+            this.label1 = new System.Windows.Forms.Label();
+            this.nmAutosaveSeconds = new System.Windows.Forms.NumericUpDown();
+            this.lbSeconds = new System.Windows.Forms.Label();
+            this.nmAutosaveMinutes = new System.Windows.Forms.NumericUpDown();
+            this.cbAutosave = new System.Windows.Forms.CheckBox();
+            this.cbRasterizeUponStockpiling = new System.Windows.Forms.CheckBox();
             this.cbAutoUncorrupt = new System.Windows.Forms.CheckBox();
             this.cbUncapIntensity = new System.Windows.Forms.CheckBox();
             this.cbDontCleanAtQuit = new System.Windows.Forms.CheckBox();
@@ -41,13 +47,19 @@ namespace RTCV.UI
             this.btnOpenOnlineWiki = new System.Windows.Forms.Button();
             this.btnWatchTutorialVideo = new System.Windows.Forms.Button();
             this.btnResetRandomSeed = new System.Windows.Forms.Button();
-            this.cbRasterizeUponStockpiling = new System.Windows.Forms.CheckBox();
             this.panel1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.nmAutosaveSeconds)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nmAutosaveMinutes)).BeginInit();
             this.SuspendLayout();
             // 
             // panel1
             // 
             this.panel1.BackColor = System.Drawing.Color.Gray;
+            this.panel1.Controls.Add(this.label1);
+            this.panel1.Controls.Add(this.nmAutosaveSeconds);
+            this.panel1.Controls.Add(this.lbSeconds);
+            this.panel1.Controls.Add(this.nmAutosaveMinutes);
+            this.panel1.Controls.Add(this.cbAutosave);
             this.panel1.Controls.Add(this.cbRasterizeUponStockpiling);
             this.panel1.Controls.Add(this.cbAutoUncorrupt);
             this.panel1.Controls.Add(this.cbUncapIntensity);
@@ -56,9 +68,100 @@ namespace RTCV.UI
             this.panel1.Controls.Add(this.cbDisableEmulatorOSD);
             this.panel1.Location = new System.Drawing.Point(18, 206);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(323, 135);
+            this.panel1.Size = new System.Drawing.Size(323, 166);
             this.panel1.TabIndex = 138;
             this.panel1.Tag = "color:normal";
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Font = new System.Drawing.Font("Segoe UI", 8.25F);
+            this.label1.ForeColor = System.Drawing.Color.White;
+            this.label1.ImageAlign = System.Drawing.ContentAlignment.TopRight;
+            this.label1.Location = new System.Drawing.Point(255, 131);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(49, 13);
+            this.label1.TabIndex = 118;
+            this.label1.Text = "seconds";
+            this.label1.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            // 
+            // nmAutosaveSeconds
+            // 
+            this.nmAutosaveSeconds.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.nmAutosaveSeconds.Font = new System.Drawing.Font("Segoe UI", 8F);
+            this.nmAutosaveSeconds.ForeColor = System.Drawing.Color.White;
+            this.nmAutosaveSeconds.Location = new System.Drawing.Point(222, 129);
+            this.nmAutosaveSeconds.Maximum = new decimal(new int[] {
+            59,
+            0,
+            0,
+            0});
+            this.nmAutosaveSeconds.Name = "nmAutosaveSeconds";
+            this.nmAutosaveSeconds.Size = new System.Drawing.Size(33, 22);
+            this.nmAutosaveSeconds.TabIndex = 117;
+            this.nmAutosaveSeconds.Tag = "color:dark1";
+            this.nmAutosaveSeconds.ValueChanged += new System.EventHandler(this.AutosaveTimeChanged);
+            // 
+            // lbSeconds
+            // 
+            this.lbSeconds.AutoSize = true;
+            this.lbSeconds.Font = new System.Drawing.Font("Segoe UI", 8.25F);
+            this.lbSeconds.ForeColor = System.Drawing.Color.White;
+            this.lbSeconds.ImageAlign = System.Drawing.ContentAlignment.TopRight;
+            this.lbSeconds.Location = new System.Drawing.Point(152, 131);
+            this.lbSeconds.Name = "lbSeconds";
+            this.lbSeconds.Size = new System.Drawing.Size(71, 13);
+            this.lbSeconds.TabIndex = 116;
+            this.lbSeconds.Text = "minutes and";
+            this.lbSeconds.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            // 
+            // nmAutosaveMinutes
+            // 
+            this.nmAutosaveMinutes.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.nmAutosaveMinutes.Font = new System.Drawing.Font("Segoe UI", 8F);
+            this.nmAutosaveMinutes.ForeColor = System.Drawing.Color.White;
+            this.nmAutosaveMinutes.Location = new System.Drawing.Point(113, 129);
+            this.nmAutosaveMinutes.Maximum = new decimal(new int[] {
+            999,
+            0,
+            0,
+            0});
+            this.nmAutosaveMinutes.Name = "nmAutosaveMinutes";
+            this.nmAutosaveMinutes.Size = new System.Drawing.Size(39, 22);
+            this.nmAutosaveMinutes.TabIndex = 115;
+            this.nmAutosaveMinutes.Tag = "color:dark1";
+            this.nmAutosaveMinutes.Value = new decimal(new int[] {
+            5,
+            0,
+            0,
+            0});
+            this.nmAutosaveMinutes.ValueChanged += new System.EventHandler(this.AutosaveTimeChanged);
+            // 
+            // cbAutosave
+            // 
+            this.cbAutosave.AutoSize = true;
+            this.cbAutosave.Font = new System.Drawing.Font("Segoe UI", 8F);
+            this.cbAutosave.ForeColor = System.Drawing.Color.White;
+            this.cbAutosave.Location = new System.Drawing.Point(11, 130);
+            this.cbAutosave.Name = "cbAutosave";
+            this.cbAutosave.Size = new System.Drawing.Size(106, 17);
+            this.cbAutosave.TabIndex = 6;
+            this.cbAutosave.Text = "Auto-save every";
+            this.cbAutosave.UseVisualStyleBackColor = true;
+            this.cbAutosave.CheckedChanged += new System.EventHandler(this.cbAutosave_CheckedChanged);
+            // 
+            // cbRasterizeUponStockpiling
+            // 
+            this.cbRasterizeUponStockpiling.AutoSize = true;
+            this.cbRasterizeUponStockpiling.Font = new System.Drawing.Font("Segoe UI", 8F);
+            this.cbRasterizeUponStockpiling.ForeColor = System.Drawing.Color.White;
+            this.cbRasterizeUponStockpiling.Location = new System.Drawing.Point(11, 110);
+            this.cbRasterizeUponStockpiling.Name = "cbRasterizeUponStockpiling";
+            this.cbRasterizeUponStockpiling.Size = new System.Drawing.Size(250, 17);
+            this.cbRasterizeUponStockpiling.TabIndex = 5;
+            this.cbRasterizeUponStockpiling.Text = "Rasterize VMDs before sending to stockpile";
+            this.cbRasterizeUponStockpiling.UseVisualStyleBackColor = true;
+            this.cbRasterizeUponStockpiling.CheckedChanged += new System.EventHandler(this.HandleRasterizeUponStockpilingChange);
             // 
             // cbAutoUncorrupt
             // 
@@ -234,19 +337,6 @@ namespace RTCV.UI
             this.btnResetRandomSeed.UseVisualStyleBackColor = false;
             this.btnResetRandomSeed.Click += new System.EventHandler(this.btnResetRandomSeed_Click);
             // 
-            // cbRasterizeUponStockpiling
-            // 
-            this.cbRasterizeUponStockpiling.AutoSize = true;
-            this.cbRasterizeUponStockpiling.Font = new System.Drawing.Font("Segoe UI", 8F);
-            this.cbRasterizeUponStockpiling.ForeColor = System.Drawing.Color.White;
-            this.cbRasterizeUponStockpiling.Location = new System.Drawing.Point(11, 110);
-            this.cbRasterizeUponStockpiling.Name = "cbRasterizeUponStockpiling";
-            this.cbRasterizeUponStockpiling.Size = new System.Drawing.Size(250, 17);
-            this.cbRasterizeUponStockpiling.TabIndex = 5;
-            this.cbRasterizeUponStockpiling.Text = "Rasterize VMDs before sending to stockpile";
-            this.cbRasterizeUponStockpiling.UseVisualStyleBackColor = true;
-            this.cbRasterizeUponStockpiling.CheckedChanged += new System.EventHandler(this.HandleRasterizeUponStockpilingChange);
-            // 
             // SettingsGeneralForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -269,6 +359,8 @@ namespace RTCV.UI
             this.MouseDown += new System.Windows.Forms.MouseEventHandler(this.HandleMouseDown);
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.nmAutosaveSeconds)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nmAutosaveMinutes)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -287,5 +379,10 @@ namespace RTCV.UI
         public System.Windows.Forms.Button btnResetRandomSeed;
         public System.Windows.Forms.CheckBox cbAutoUncorrupt;
         public System.Windows.Forms.CheckBox cbRasterizeUponStockpiling;
+        public System.Windows.Forms.CheckBox cbAutosave;
+        public System.Windows.Forms.NumericUpDown nmAutosaveMinutes;
+        private System.Windows.Forms.Label lbSeconds;
+        private System.Windows.Forms.Label label1;
+        public System.Windows.Forms.NumericUpDown nmAutosaveSeconds;
     }
 }

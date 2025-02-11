@@ -1,3 +1,5 @@
+using System.Threading.Tasks;
+
 namespace RTCV.UI
 {
     using System;
@@ -111,6 +113,9 @@ namespace RTCV.UI
             //Shut down vanguard
             VanguardImplementation.Shutdown();
 
+            //Indicate that RTC shut down cleanly
+            Params.SetParam("RTC_CLEAN_SHUTDOWN");
+            
             //Signal the quit
             //Application.Exit();
             Environment.Exit(-1);
@@ -169,6 +174,26 @@ This message only appears once.";
                 Params.SetParam("INCLUDE_REFERENCED_FILES"); //Default param
                 Params.SetParam("LOAD_STASH_ON_ARROW_CLICK"); //Default param
                 Params.SetParam("RASTERIZE_VMD_UPON_STOCKPILING"); //Default param
+                Params.SetParam("AUTOSAVE_INTERVAL", "300"); //Default param (5 minutes in seconds)
+            }
+            else if (!Params.IsParamSet("RTC_CLEAN_SHUTDOWN"))
+            {
+                if (!Debugger.IsAttached)
+                {
+                    DialogResult showAutoSaves = MessageBox.Show(
+                        "It looks like RTC crashed or was closed improperly last time.\n" +
+                        $"If you lost any unsaved work, auto-save backups may be available in {RtcCore.AutoSaveDir} if enabled.\n" +
+                        "Would you like to go there now?",
+                        "RTC did not shut down cleanly", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+                    if (showAutoSaves == DialogResult.Yes)
+                    {
+                        Process.Start(RtcCore.AutoSaveDir);
+                    }
+                }
+            }
+            else
+            {
+                Params.RemoveParam("RTC_CLEAN_SHUTDOWN");
             }
 
             //RtcCore.DownloadProblematicProcesses();

@@ -30,6 +30,8 @@ namespace RTCV.UI
             set
             {
                 _UnsavedEdits = value;
+                AutoSave.StockpileUnsaved = value;
+                
                 UpdateSaveButtonColor(value);
             }
         }
@@ -524,7 +526,13 @@ namespace RTCV.UI
                 S.GET<SaveProgressForm>().Dock = DockStyle.Fill;
                 this.ParentCanvas?.OpenSubForm(S.GET<SaveProgressForm>());
 
-                var r = await Task.Run(() => Stockpile.Save(sks, path, Params.IsParamSet("INCLUDE_REFERENCED_FILES"), Params.IsParamSet("COMPRESS_STOCKPILE")));
+                var r = await Task.Run(() =>
+                {
+                    lock (AutoSave.SavingLock)
+                    {
+                        return Stockpile.Save(sks, path, Params.IsParamSet("INCLUDE_REFERENCED_FILES"), Params.IsParamSet("COMPRESS_STOCKPILE"));
+                    }
+                });
 
                 if (r)
                 {

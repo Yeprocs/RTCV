@@ -32,6 +32,22 @@ namespace RTCV.NetCore
                 a.Invoke();
             }
         }
+        public static void FormBeginExecute(Action a)
+        {
+            if (a == null)
+            {
+                throw new ArgumentNullException(nameof(a));
+            }
+
+            if (SyncObject.InvokeRequired)
+            {
+                SyncObject.BeginInvokeCorrectly(new MethodInvoker(a.Invoke));
+            }
+            else
+            {
+                a.Invoke();
+            }
+        }
 
         public static void FormExecute<T>(Action<T> a, T b)
         {
@@ -132,6 +148,20 @@ namespace RTCV.NetCore
                 ExceptionDispatchInfo.Capture(failure).Throw();
             }
             return result;
+        }
+        private static void BeginInvokeCorrectly(this Control control, Delegate method, params object[] args)
+        {
+            control.BeginInvoke(new Action(() =>
+            {
+                try
+                {
+                    method.DynamicInvoke(args);
+                }
+                catch (Exception ex)
+                {
+                    ExceptionDispatchInfo.Capture(ex.InnerException ?? ex).Throw();
+                }
+            }));
         }
     }
 
