@@ -951,7 +951,7 @@ namespace RTCV.UI
 
         private void ShowHelp(object sender, EventArgs e)
         {
-            System.Diagnostics.ProcessStartInfo sInfo = new System.Diagnostics.ProcessStartInfo("https://corrupt.wiki/corruptors/rtc-real-time-corruptor/blast-generator.html");
+            System.Diagnostics.ProcessStartInfo sInfo = new System.Diagnostics.ProcessStartInfo("https://corrupt.wiki/rtcv/rtc/blast-generator");
             System.Diagnostics.Process.Start(sInfo);
         }
 

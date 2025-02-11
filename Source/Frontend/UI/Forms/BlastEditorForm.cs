@@ -2120,7 +2120,7 @@ namespace RTCV.UI
 
         private void ShowHelp(object sender, EventArgs e)
         {
-            var startInfo = new System.Diagnostics.ProcessStartInfo("https://corrupt.wiki/corruptors/rtc-real-time-corruptor/blast-editor.html");
+            var startInfo = new System.Diagnostics.ProcessStartInfo("https://corrupt.wiki/rtcv/rtc/blast-editor");
             System.Diagnostics.Process.Start(startInfo);
         }
 
