@@ -105,7 +105,6 @@ namespace RTCV.UI.Components.Controls
         {
             InitializeComponent();
             Resize += (s, ev) => CalculateStatesPerPage();
-            // why do these get reset to 4px, forcing me to set them again?
         }
 
         private void InitializeSavestateHolder()
@@ -116,6 +115,16 @@ namespace RTCV.UI.Components.Controls
             flowPanel.Controls.Clear();
             _controlList = new List<SavestateHolder>();
             CalculateStatesPerPage();
+        }
+
+        private void flowPanel_SizeChanged(object sender, EventArgs e)
+        {
+            flowPanel.SuspendLayout();
+            foreach (Control control in flowPanel.Controls)
+            {
+                control.Width = flowPanel.Width;
+            }
+            flowPanel.ResumeLayout();
         }
 
         private void CalculateStatesPerPage()
@@ -129,6 +138,7 @@ namespace RTCV.UI.Components.Controls
             if (_controlList.Count == _numPerPage)
                 return;
             
+            flowPanel.SuspendLayout();
             if (_numPerPage > _controlList.Count)
             {
                 for (var i = _controlList.Count; i < _numPerPage; i++)
@@ -152,6 +162,7 @@ namespace RTCV.UI.Components.Controls
                 DataSource_PositionChanged(null, null);
             if (Parent is IColorize colorize)
                 colorize.Recolor();
+            flowPanel.ResumeLayout();
         }
 
         public void BtnSavestate_MouseDown(object sender, MouseEventArgs e)

@@ -30,16 +30,16 @@ namespace RTCV.UI.Components.Controls
         {
             this.flowPanel = new System.Windows.Forms.FlowLayoutPanel();
             this.pnBackForwardPage = new System.Windows.Forms.Panel();
-            this.btnBack = new System.Windows.Forms.Button();
-            this.btnForward = new System.Windows.Forms.Button();
-            this.pnChangeLoadSave = new System.Windows.Forms.Panel();
-            this.btnToggleSaveLoad = new System.Windows.Forms.Button();
-            this.btnSaveLoad = new System.Windows.Forms.Button();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+            this.btnForward = new System.Windows.Forms.Button();
+            this.btnBack = new System.Windows.Forms.Button();
+            this.pnChangeLoadSave = new System.Windows.Forms.Panel();
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
+            this.btnSaveLoad = new System.Windows.Forms.Button();
+            this.btnToggleSaveLoad = new System.Windows.Forms.Button();
             this.pnBackForwardPage.SuspendLayout();
-            this.pnChangeLoadSave.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
+            this.pnChangeLoadSave.SuspendLayout();
             this.tableLayoutPanel2.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -54,6 +54,7 @@ namespace RTCV.UI.Components.Controls
             this.flowPanel.Name = "flowPanel";
             this.flowPanel.Size = new System.Drawing.Size(152, 235);
             this.flowPanel.TabIndex = 0;
+            this.flowPanel.SizeChanged += new System.EventHandler(this.flowPanel_SizeChanged);
             // 
             // pnBackForwardPage
             // 
@@ -64,24 +65,22 @@ namespace RTCV.UI.Components.Controls
             this.pnBackForwardPage.Size = new System.Drawing.Size(152, 27);
             this.pnBackForwardPage.TabIndex = 0;
             // 
-            // btnBack
+            // tableLayoutPanel1
             // 
-            this.btnBack.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(32)))), ((int)(((byte)(32)))), ((int)(((byte)(32)))));
-            this.btnBack.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.btnBack.FlatAppearance.BorderSize = 0;
-            this.btnBack.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnBack.Font = new System.Drawing.Font("Segoe UI", 8F);
-            this.btnBack.ForeColor = System.Drawing.Color.White;
-            this.btnBack.Location = new System.Drawing.Point(0, 0);
-            this.btnBack.Margin = new System.Windows.Forms.Padding(0, 0, 3, 0);
-            this.btnBack.Name = "btnBack";
-            this.btnBack.Size = new System.Drawing.Size(73, 22);
-            this.btnBack.TabIndex = 159;
-            this.btnBack.TabStop = false;
-            this.btnBack.Tag = "color:dark2";
-            this.btnBack.Text = "◀";
-            this.btnBack.UseVisualStyleBackColor = false;
-            this.btnBack.Click += new System.EventHandler(this.BtnBack_Click);
+            this.tableLayoutPanel1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.tableLayoutPanel1.ColumnCount = 2;
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel1.Controls.Add(this.btnForward, 1, 0);
+            this.tableLayoutPanel1.Controls.Add(this.btnBack, 0, 0);
+            this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 5);
+            this.tableLayoutPanel1.Name = "tableLayoutPanel1";
+            this.tableLayoutPanel1.RowCount = 1;
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 22F));
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(152, 22);
+            this.tableLayoutPanel1.TabIndex = 1;
             // 
             // btnForward
             // 
@@ -102,6 +101,25 @@ namespace RTCV.UI.Components.Controls
             this.btnForward.UseVisualStyleBackColor = false;
             this.btnForward.Click += new System.EventHandler(this.BtnForward_Click);
             // 
+            // btnBack
+            // 
+            this.btnBack.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(32)))), ((int)(((byte)(32)))), ((int)(((byte)(32)))));
+            this.btnBack.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.btnBack.FlatAppearance.BorderSize = 0;
+            this.btnBack.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnBack.Font = new System.Drawing.Font("Segoe UI", 8F);
+            this.btnBack.ForeColor = System.Drawing.Color.White;
+            this.btnBack.Location = new System.Drawing.Point(0, 0);
+            this.btnBack.Margin = new System.Windows.Forms.Padding(0, 0, 3, 0);
+            this.btnBack.Name = "btnBack";
+            this.btnBack.Size = new System.Drawing.Size(73, 22);
+            this.btnBack.TabIndex = 159;
+            this.btnBack.TabStop = false;
+            this.btnBack.Tag = "color:dark2";
+            this.btnBack.Text = "◀";
+            this.btnBack.UseVisualStyleBackColor = false;
+            this.btnBack.Click += new System.EventHandler(this.BtnBack_Click);
+            // 
             // pnChangeLoadSave
             // 
             this.pnChangeLoadSave.Controls.Add(this.tableLayoutPanel2);
@@ -111,24 +129,21 @@ namespace RTCV.UI.Components.Controls
             this.pnChangeLoadSave.Size = new System.Drawing.Size(152, 31);
             this.pnChangeLoadSave.TabIndex = 1;
             // 
-            // btnToggleSaveLoad
+            // tableLayoutPanel2
             // 
-            this.btnToggleSaveLoad.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(32)))), ((int)(((byte)(32)))), ((int)(((byte)(32)))));
-            this.btnToggleSaveLoad.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.btnToggleSaveLoad.FlatAppearance.BorderSize = 0;
-            this.btnToggleSaveLoad.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnToggleSaveLoad.Font = new System.Drawing.Font("Segoe UI", 8F);
-            this.btnToggleSaveLoad.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(128)))));
-            this.btnToggleSaveLoad.Location = new System.Drawing.Point(0, 0);
-            this.btnToggleSaveLoad.Margin = new System.Windows.Forms.Padding(0, 0, 3, 0);
-            this.btnToggleSaveLoad.Name = "btnToggleSaveLoad";
-            this.btnToggleSaveLoad.Size = new System.Drawing.Size(73, 24);
-            this.btnToggleSaveLoad.TabIndex = 129;
-            this.btnToggleSaveLoad.TabStop = false;
-            this.btnToggleSaveLoad.Tag = "color:dark2";
-            this.btnToggleSaveLoad.Text = "Change ->";
-            this.btnToggleSaveLoad.UseVisualStyleBackColor = false;
-            this.btnToggleSaveLoad.Click += new System.EventHandler(this.BtnToggleSaveLoad_Click);
+            this.tableLayoutPanel2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.tableLayoutPanel2.ColumnCount = 2;
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel2.Controls.Add(this.btnSaveLoad, 1, 0);
+            this.tableLayoutPanel2.Controls.Add(this.btnToggleSaveLoad, 0, 0);
+            this.tableLayoutPanel2.Location = new System.Drawing.Point(0, 0);
+            this.tableLayoutPanel2.Name = "tableLayoutPanel2";
+            this.tableLayoutPanel2.RowCount = 1;
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel2.Size = new System.Drawing.Size(152, 24);
+            this.tableLayoutPanel2.TabIndex = 132;
             // 
             // btnSaveLoad
             // 
@@ -150,38 +165,24 @@ namespace RTCV.UI.Components.Controls
             this.btnSaveLoad.Click += new System.EventHandler(this.HandleSaveLoadClick);
             this.btnSaveLoad.MouseDown += new System.Windows.Forms.MouseEventHandler(this.btnSaveLoad_MouseDown);
             // 
-            // tableLayoutPanel1
+            // btnToggleSaveLoad
             // 
-            this.tableLayoutPanel1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.tableLayoutPanel1.ColumnCount = 2;
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel1.Controls.Add(this.btnForward, 1, 0);
-            this.tableLayoutPanel1.Controls.Add(this.btnBack, 0, 0);
-            this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 5);
-            this.tableLayoutPanel1.Name = "tableLayoutPanel1";
-            this.tableLayoutPanel1.RowCount = 1;
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(152, 22);
-            this.tableLayoutPanel1.TabIndex = 1;
-            // 
-            // tableLayoutPanel2
-            // 
-            this.tableLayoutPanel2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.tableLayoutPanel2.ColumnCount = 2;
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel2.Controls.Add(this.btnSaveLoad, 1, 0);
-            this.tableLayoutPanel2.Controls.Add(this.btnToggleSaveLoad, 0, 0);
-            this.tableLayoutPanel2.Location = new System.Drawing.Point(0, 0);
-            this.tableLayoutPanel2.Name = "tableLayoutPanel2";
-            this.tableLayoutPanel2.RowCount = 1;
-            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel2.Size = new System.Drawing.Size(152, 24);
-            this.tableLayoutPanel2.TabIndex = 132;
+            this.btnToggleSaveLoad.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(32)))), ((int)(((byte)(32)))), ((int)(((byte)(32)))));
+            this.btnToggleSaveLoad.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.btnToggleSaveLoad.FlatAppearance.BorderSize = 0;
+            this.btnToggleSaveLoad.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnToggleSaveLoad.Font = new System.Drawing.Font("Segoe UI", 8F);
+            this.btnToggleSaveLoad.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(128)))));
+            this.btnToggleSaveLoad.Location = new System.Drawing.Point(0, 0);
+            this.btnToggleSaveLoad.Margin = new System.Windows.Forms.Padding(0, 0, 3, 0);
+            this.btnToggleSaveLoad.Name = "btnToggleSaveLoad";
+            this.btnToggleSaveLoad.Size = new System.Drawing.Size(73, 24);
+            this.btnToggleSaveLoad.TabIndex = 129;
+            this.btnToggleSaveLoad.TabStop = false;
+            this.btnToggleSaveLoad.Tag = "color:dark2";
+            this.btnToggleSaveLoad.Text = "Change ->";
+            this.btnToggleSaveLoad.UseVisualStyleBackColor = false;
+            this.btnToggleSaveLoad.Click += new System.EventHandler(this.BtnToggleSaveLoad_Click);
             // 
             // SavestateList
             // 
@@ -194,8 +195,8 @@ namespace RTCV.UI.Components.Controls
             this.Name = "SavestateList";
             this.Size = new System.Drawing.Size(152, 266);
             this.pnBackForwardPage.ResumeLayout(false);
-            this.pnChangeLoadSave.ResumeLayout(false);
             this.tableLayoutPanel1.ResumeLayout(false);
+            this.pnChangeLoadSave.ResumeLayout(false);
             this.tableLayoutPanel2.ResumeLayout(false);
             this.ResumeLayout(false);
 
