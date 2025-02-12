@@ -114,7 +114,7 @@ namespace RTCV.UI
                 return;
             }
 
-            Params.SetParam("RTC_CLEAN_SHUTDOWN");
+            Params.RemoveParam("RTC_AWAKE");
 
             string standaloneRtcPath = System.Reflection.Assembly.GetEntryAssembly().Location;
             var oldEmuDir = CorruptCore.RtcCore.EmuDir;

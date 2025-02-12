@@ -99,86 +99,14 @@ namespace RTCV.UI
     
             if (SaveStatesUnsaved)
             {
-                var statesForm = S.GET<SavestateManagerForm>();
-                string[] allSSKs = Directory.GetFiles(RtcCore.AutoSaveDir, "*.ssk");
-                while (allSSKs.Length >= 3)
-                {
-                    string oldestSSK = allSSKs.OrderBy(f => new FileInfo(f).CreationTime).First();
-                    File.Delete(oldestSSK);
-                    allSSKs = Directory.GetFiles(RtcCore.AutoSaveDir, "*.ssk");
-                }
-                    
-                string savePath = Path.Combine(RtcCore.AutoSaveDir, $"autosave_{DateTime.Now:yyyy-MM-dd_HH-mm-ss}.ssk");
-
-                Console.WriteLine("Auto-saving save states...");
-                Stopwatch sw = Stopwatch.StartNew();
-                var tcs = new TaskCompletionSource<bool>();
-
-                Form sync = SyncObjectSingleton.SyncObject;
-                
-                SyncObjectSingleton.FormBeginExecute(() =>
-                {
-                    Toast toast = new Toast("Auto-saving save states...", "");
-                    statesForm.ParentCanvas.ShowToast(toast);
-
-                    Task.Run(() =>
-                    {
-                        lock (SavingLock)
-                        {
-                            statesForm.SaveSSK(savePath);
-                        }
-                        tcs.SetResult(true);
-                    }).ContinueWith(_ =>
-                    {
-                        // Close the toast on the UI thread
-                        toast.Close();
-                    }, TaskScheduler.FromCurrentSynchronizationContext());
-                });
-
-                await tcs.Task;
-                sw.Stop();
-                Console.WriteLine("Auto-save complete. Took " + sw.ElapsedMilliseconds + "ms");
+                await SaveStates();
                 SaveStatesUnsaved = false;
             }
                 
             // if stockpile is unsaved and not using a core that must be restarted to save the stockpile
             if (StockpileUnsaved && !(AllSpec.VanguardSpec[VSPEC.CORE_DISKBASED] as bool? ?? false))
             {
-                var stockpileForm = S.GET<StockpileManagerForm>();
-                string[] allStockpiles = Directory.GetFiles(RtcCore.AutoSaveDir, "*.sks");
-                while (allStockpiles.Length >= 3)
-                {
-                    string oldestSSK = allStockpiles.OrderBy(f => new FileInfo(f).CreationTime).First();
-                    File.Delete(oldestSSK);
-                    allStockpiles = Directory.GetFiles(RtcCore.AutoSaveDir, "*.sks");
-                }
-                    
-                string savePath = Path.Combine(RtcCore.AutoSaveDir, $"autosave_{DateTime.Now:yyyy-MM-dd_HH-mm-ss}.sks");
-
-                var tcs = new TaskCompletionSource<bool>();
-                
-                SyncObjectSingleton.FormBeginExecute(() =>
-                {
-                    Stockpile sks = new Stockpile(stockpileForm.dgvStockpile);
-
-                    if (sks.StashKeys.Count > 0)
-                    {
-                        Toast toast = new Toast("Auto-saving stockpile...", "");
-                        stockpileForm.ParentCanvas.ShowToast(toast);
-                        Task.Run(() =>
-                        {
-                            lock (SavingLock)
-                            {
-                                Stockpile.Save(sks, savePath, false, Params.IsParamSet("COMPRESS_STOCKPILE"));
-                            }
-                            tcs.SetResult(true);
-                        }).ContinueWith(_ =>
-                        {
-                            // Close the toast on the UI thread
-                            toast.Close();
-                        }, TaskScheduler.FromCurrentSynchronizationContext());
-                    }
-                });
+                await SaveStockpile();
                 StockpileUnsaved = false;
             }
 
@@ -187,6 +115,89 @@ namespace RTCV.UI
                 InProgress = false;
             }
             Start();
+        }
+
+        private static async Task SaveStates()
+        {
+            string[] allSSKs = Directory.GetFiles(RtcCore.AutoSaveDir, "*.ssk");
+            while (allSSKs.Length >= 3)
+            {
+                string oldestSSK = allSSKs.OrderBy(f => new FileInfo(f).CreationTime).First();
+                File.Delete(oldestSSK);
+                allSSKs = Directory.GetFiles(RtcCore.AutoSaveDir, "*.ssk");
+            }
+                    
+            string savePath = Path.Combine(RtcCore.AutoSaveDir, $"autosave_{DateTime.Now:yyyy-MM-dd_HH-mm-ss}.ssk");
+
+            var tcs = new TaskCompletionSource<bool>();
+                
+            var statesForm = S.GET<SavestateManagerForm>();
+            
+            SyncObjectSingleton.FormBeginExecute(() =>
+            {
+                Toast toast = new Toast("Auto-saving save states...", "");
+                statesForm.ParentCanvas.ShowToast(toast);
+
+                Task.Run(() =>
+                {
+                    lock (SavingLock)
+                    {
+                        statesForm.SaveSSK(savePath);
+                    }
+                    tcs.SetResult(true);
+                }).ContinueWith(_ =>
+                {
+                    // Close the toast on the UI thread
+                    toast.Close();
+                }, TaskScheduler.FromCurrentSynchronizationContext());
+            });
+
+            await tcs.Task;
+        }
+
+        private static async Task SaveStockpile()
+        {
+            string[] allStockpiles = Directory.GetFiles(RtcCore.AutoSaveDir, "*.sks");
+            while (allStockpiles.Length >= 3)
+            {
+                string oldestSSK = allStockpiles.OrderBy(f => new FileInfo(f).CreationTime).First();
+                File.Delete(oldestSSK);
+                allStockpiles = Directory.GetFiles(RtcCore.AutoSaveDir, "*.sks");
+            }
+                    
+            string savePath = Path.Combine(RtcCore.AutoSaveDir, $"autosave_{DateTime.Now:yyyy-MM-dd_HH-mm-ss}.sks");
+
+            var tcs = new TaskCompletionSource<bool>();
+                
+            var stockpileForm = S.GET<StockpileManagerForm>();
+            
+            SyncObjectSingleton.FormBeginExecute(() =>
+            {
+                Stockpile sks = new Stockpile(stockpileForm.dgvStockpile);
+
+                if (sks.StashKeys.Count <= 0)
+                {
+                    return;
+                }
+
+                Toast toast = new Toast("Auto-saving stockpile...", "");
+                stockpileForm.ParentCanvas.ShowToast(toast);
+                
+                Task.Run(() =>
+                {
+                    lock (SavingLock)
+                    {
+                        Stockpile.Save(sks, savePath, false, Params.IsParamSet("COMPRESS_STOCKPILE"));
+                    }
+                    tcs.SetResult(true);
+                }).ContinueWith(_ =>
+                {
+                    // Close the toast on the UI thread
+                    toast.Close();
+                }, TaskScheduler.FromCurrentSynchronizationContext());
+            });
+            
+            await tcs.Task;
         }
     }
 }

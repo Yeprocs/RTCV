@@ -114,7 +114,7 @@ namespace RTCV.UI
             VanguardImplementation.Shutdown();
 
             //Indicate that RTC shut down cleanly
-            Params.SetParam("RTC_CLEAN_SHUTDOWN");
+            Params.RemoveParam("RTC_AWAKE");
             
             //Signal the quit
             //Application.Exit();
@@ -176,7 +176,7 @@ This message only appears once.";
                 Params.SetParam("RASTERIZE_VMD_UPON_STOCKPILING"); //Default param
                 Params.SetParam("AUTOSAVE_INTERVAL", "300"); //Default param (5 minutes in seconds)
             }
-            else if (!Params.IsParamSet("RTC_CLEAN_SHUTDOWN"))
+            else if (Params.IsParamSet("RTC_AWAKE"))
             {
                 if (!Debugger.IsAttached)
                 {
@@ -193,7 +193,7 @@ This message only appears once.";
             }
             else
             {
-                Params.RemoveParam("RTC_CLEAN_SHUTDOWN");
+                Params.SetParam("RTC_AWAKE");
             }
 
             //RtcCore.DownloadProblematicProcesses();
