@@ -25,36 +25,11 @@ namespace RTCV.UI.Components.Controls
             RtcCore.ProgressBarHandler += UpdateProgress;
             Colors.SetRTCColor(Colors.GeneralColor, this);
         }
-
-
-        //why does winforms implement its own hand cursor? why??
-        //https://superuser.com/a/1501044
-        [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
-        private static extern IntPtr LoadCursorFromFile(string path);
         
-        private static Cursor LoadCustomCursor(string path)
-        {
-            IntPtr hCurs = LoadCursorFromFile(path);
-            if (hCurs == IntPtr.Zero) throw new Win32Exception();
-            var curs = new Cursor(hCurs);
-            // Note: force the cursor to own the handle so it gets released properly
-            var fi = typeof(Cursor).GetField("ownHandle", BindingFlags.NonPublic | BindingFlags.Instance);
-            fi.SetValue(curs, true);
-            return curs;
-        }
 
         private void Toast_Load(object sender, EventArgs e)
         {
-            try
-            {
-                string path = Registry.GetValue(@"HKEY_CURRENT_USER\Control Panel\Cursors", "Hand", null).ToString();
-                var hand = LoadCustomCursor(path);
-                this.lbChevron.Cursor = hand;
-            }
-            catch (Exception _)
-            {
-                this.lbChevron.Cursor = Cursors.Hand;
-            }
+            this.lbChevron.Cursor = HandCursor.Get();
         }
         
         private void UpdateProgress(object sender, ProgressBarEventArgs e)
