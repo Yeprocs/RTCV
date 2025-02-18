@@ -112,7 +112,11 @@ namespace RTCV.UI
         {
             // Show the color dialog.
             Color color;
-            ColorDialog cd = new ColorDialog();
+            ColorDialog cd = new ColorDialog
+            {
+                Color = GeneralColor,
+                CustomColors = new[] { ColorTranslator.ToOle(GeneralColor), ColorTranslator.ToOle(Color.LightSteelBlue) }
+            };
             DialogResult result = cd.ShowDialog();
             // See if user pressed ok.
             if (result == DialogResult.OK)
