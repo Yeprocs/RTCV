@@ -17,7 +17,7 @@ namespace RTCV.UI
     using RTCV.UI.Modular;
 
     #pragma warning disable CA2213 //Component designer classes generate their own Dispose method
-    public partial class CoreForm : Modular.ColorizedForm
+    public partial class CoreForm : ColorizedForm
     {
         //This form traps events and forwards them.
         //It contains the single CanvasForm instance.
@@ -175,20 +175,28 @@ This message only appears once.";
                 Params.SetParam("LOAD_STASH_ON_ARROW_CLICK"); //Default param
                 Params.SetParam("RASTERIZE_VMD_UPON_STOCKPILING"); //Default param
                 Params.SetParam("AUTOSAVE_INTERVAL", "300"); //Default param (5 minutes in seconds)
+                Params.SetParam("AUTOSAVE_MAX_SIZE", "2.5"); //Default param (2.5 GiB)
             }
-            else if (Params.IsParamSet("RTC_AWAKE"))
+            else if (Params.IsParamSet("RTC_AWAKE") && !Debugger.IsAttached)
             {
-                if (!Debugger.IsAttached)
+                if (Params.IsParamSet("AUTOSAVE"))
                 {
                     DialogResult showAutoSaves = MessageBox.Show(
                         "It looks like RTC crashed or was closed improperly last time.\n" +
-                        $"If you lost any unsaved work, auto-save backups may be available in {RtcCore.AutoSaveDir} if enabled.\n" +
+                        $"If you lost any unsaved work, auto-save backups may be available in {RtcCore.AutoSaveDir}.\n" +
                         "Would you like to go there now?",
                         "RTC did not shut down cleanly", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
                     if (showAutoSaves == DialogResult.Yes)
                     {
                         Process.Start(RtcCore.AutoSaveDir);
                     }
+                }
+                else
+                {
+                    MessageBox.Show(
+                        "It looks like RTC crashed or was closed improperly last time.\n" +
+                        $"If you lost any work, you can enable auto-save in the settings in case this happens again.",
+                        "RTC did not shut down cleanly", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 }
             }
             else

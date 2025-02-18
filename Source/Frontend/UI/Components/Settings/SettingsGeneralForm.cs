@@ -40,6 +40,10 @@ namespace RTCV.UI
                 
                 nmAutosaveSeconds.Value = seconds;
             }
+            this.nmMaxAutosaveSize.Value =
+                decimal.TryParse(Params.ReadParam("AUTOSAVE_MAX_SIZE"), out decimal maxSize)
+                ? maxSize
+                : 2.5m;
         }
 
         private void OpenOnlineWiki(object sender, EventArgs e)
@@ -124,6 +128,12 @@ namespace RTCV.UI
             int seconds = (int)((nmAutosaveMinutes.Value * 60) + nmAutosaveSeconds.Value);
             Params.SetParam("AUTOSAVE_INTERVAL", seconds.ToString());
             AutoSave.SetInterval(seconds);
+        }
+
+        private void MaxAutosaveSizeChanged(object sender, EventArgs e)
+        {
+            Params.SetParam("AUTOSAVE_MAX_SIZE", nmMaxAutosaveSize.Value.ToString());
+            AutoSave.SetMaxSize(this.nmMaxAutosaveSize.Value);
         }
 
         //todo - rewrite this?

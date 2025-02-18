@@ -30,6 +30,9 @@ namespace RTCV.UI
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SettingsGeneralForm));
             this.panel1 = new System.Windows.Forms.Panel();
+            this.label3 = new System.Windows.Forms.Label();
+            this.nmMaxAutosaveSize = new System.Windows.Forms.NumericUpDown();
+            this.label2 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.nmAutosaveSeconds = new System.Windows.Forms.NumericUpDown();
             this.lbSeconds = new System.Windows.Forms.Label();
@@ -48,6 +51,7 @@ namespace RTCV.UI
             this.btnWatchTutorialVideo = new System.Windows.Forms.Button();
             this.btnResetRandomSeed = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.nmMaxAutosaveSize)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nmAutosaveSeconds)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nmAutosaveMinutes)).BeginInit();
             this.SuspendLayout();
@@ -55,6 +59,9 @@ namespace RTCV.UI
             // panel1
             // 
             this.panel1.BackColor = System.Drawing.Color.Gray;
+            this.panel1.Controls.Add(this.label3);
+            this.panel1.Controls.Add(this.nmMaxAutosaveSize);
+            this.panel1.Controls.Add(this.label2);
             this.panel1.Controls.Add(this.label1);
             this.panel1.Controls.Add(this.nmAutosaveSeconds);
             this.panel1.Controls.Add(this.lbSeconds);
@@ -68,9 +75,58 @@ namespace RTCV.UI
             this.panel1.Controls.Add(this.cbDisableEmulatorOSD);
             this.panel1.Location = new System.Drawing.Point(18, 206);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(323, 166);
+            this.panel1.Size = new System.Drawing.Size(323, 177);
             this.panel1.TabIndex = 138;
             this.panel1.Tag = "color:normal";
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Font = new System.Drawing.Font("Segoe UI", 8.25F);
+            this.label3.ForeColor = System.Drawing.Color.White;
+            this.label3.ImageAlign = System.Drawing.ContentAlignment.TopRight;
+            this.label3.Location = new System.Drawing.Point(223, 152);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(25, 13);
+            this.label3.TabIndex = 121;
+            this.label3.Text = "GiB";
+            this.label3.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            // 
+            // nmMaxAutosaveSize
+            // 
+            this.nmMaxAutosaveSize.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.nmMaxAutosaveSize.DecimalPlaces = 2;
+            this.nmMaxAutosaveSize.Font = new System.Drawing.Font("Segoe UI", 8F);
+            this.nmMaxAutosaveSize.ForeColor = System.Drawing.Color.White;
+            this.nmMaxAutosaveSize.Location = new System.Drawing.Point(172, 148);
+            this.nmMaxAutosaveSize.Maximum = new decimal(new int[] {
+            999,
+            0,
+            0,
+            0});
+            this.nmMaxAutosaveSize.Name = "nmMaxAutosaveSize";
+            this.nmMaxAutosaveSize.Size = new System.Drawing.Size(51, 22);
+            this.nmMaxAutosaveSize.TabIndex = 120;
+            this.nmMaxAutosaveSize.Tag = "color:dark1";
+            this.nmMaxAutosaveSize.Value = new decimal(new int[] {
+            25,
+            0,
+            0,
+            65536});
+            this.nmMaxAutosaveSize.ValueChanged += new System.EventHandler(this.MaxAutosaveSizeChanged);
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Font = new System.Drawing.Font("Segoe UI", 8.25F);
+            this.label2.ForeColor = System.Drawing.Color.White;
+            this.label2.ImageAlign = System.Drawing.ContentAlignment.TopRight;
+            this.label2.Location = new System.Drawing.Point(8, 152);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(166, 13);
+            this.label2.TabIndex = 119;
+            this.label2.Text = "Max size per autosave file type:";
+            this.label2.TextAlign = System.Drawing.ContentAlignment.TopRight;
             // 
             // label1
             // 
@@ -78,7 +134,7 @@ namespace RTCV.UI
             this.label1.Font = new System.Drawing.Font("Segoe UI", 8.25F);
             this.label1.ForeColor = System.Drawing.Color.White;
             this.label1.ImageAlign = System.Drawing.ContentAlignment.TopRight;
-            this.label1.Location = new System.Drawing.Point(255, 131);
+            this.label1.Location = new System.Drawing.Point(258, 131);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(49, 13);
             this.label1.TabIndex = 118;
@@ -90,7 +146,7 @@ namespace RTCV.UI
             this.nmAutosaveSeconds.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
             this.nmAutosaveSeconds.Font = new System.Drawing.Font("Segoe UI", 8F);
             this.nmAutosaveSeconds.ForeColor = System.Drawing.Color.White;
-            this.nmAutosaveSeconds.Location = new System.Drawing.Point(222, 129);
+            this.nmAutosaveSeconds.Location = new System.Drawing.Point(225, 129);
             this.nmAutosaveSeconds.Maximum = new decimal(new int[] {
             59,
             0,
@@ -108,7 +164,7 @@ namespace RTCV.UI
             this.lbSeconds.Font = new System.Drawing.Font("Segoe UI", 8.25F);
             this.lbSeconds.ForeColor = System.Drawing.Color.White;
             this.lbSeconds.ImageAlign = System.Drawing.ContentAlignment.TopRight;
-            this.lbSeconds.Location = new System.Drawing.Point(152, 131);
+            this.lbSeconds.Location = new System.Drawing.Point(155, 131);
             this.lbSeconds.Name = "lbSeconds";
             this.lbSeconds.Size = new System.Drawing.Size(71, 13);
             this.lbSeconds.TabIndex = 116;
@@ -127,7 +183,7 @@ namespace RTCV.UI
             0,
             0});
             this.nmAutosaveMinutes.Name = "nmAutosaveMinutes";
-            this.nmAutosaveMinutes.Size = new System.Drawing.Size(39, 22);
+            this.nmAutosaveMinutes.Size = new System.Drawing.Size(43, 22);
             this.nmAutosaveMinutes.TabIndex = 115;
             this.nmAutosaveMinutes.Tag = "color:dark1";
             this.nmAutosaveMinutes.Value = new decimal(new int[] {
@@ -359,6 +415,7 @@ namespace RTCV.UI
             this.MouseDown += new System.Windows.Forms.MouseEventHandler(this.HandleMouseDown);
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.nmMaxAutosaveSize)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nmAutosaveSeconds)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nmAutosaveMinutes)).EndInit();
             this.ResumeLayout(false);
@@ -384,5 +441,8 @@ namespace RTCV.UI
         private System.Windows.Forms.Label lbSeconds;
         private System.Windows.Forms.Label label1;
         public System.Windows.Forms.NumericUpDown nmAutosaveSeconds;
+        private System.Windows.Forms.Label label2;
+        public System.Windows.Forms.NumericUpDown nmMaxAutosaveSize;
+        private System.Windows.Forms.Label label3;
     }
 }

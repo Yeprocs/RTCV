@@ -37,7 +37,7 @@ namespace RTCV.UI
                 string path = Registry.GetValue(@"HKEY_CURRENT_USER\Control Panel\Cursors", "Hand", null).ToString();
                 return LoadCustomCursor(path);
             }
-            catch (Exception _)
+            catch (Exception)
             {
                 return Cursors.Hand;
             }

@@ -18,10 +18,10 @@ namespace RTCV.UI
     {
         private static readonly Timer AutoSaveTimer;
         private static bool InProgress;
+        private static decimal MaxSizeGiB;
 
         private static readonly object InProgressLock = new object();
         public static readonly object SavingLock = new object();
-        
 
         private static bool _saveStatesUnsaved;
         public static bool SaveStatesUnsaved
@@ -71,6 +71,12 @@ namespace RTCV.UI
         {
             AutoSaveTimer.Interval = seconds * 1000;
         }
+        public static void SetMaxSize(decimal gibibytes)
+        {
+            MaxSizeGiB = gibibytes;
+            RemoveExcessBackups();
+        }
+
         public static void Start()
         {
             AutoSaveTimer.Start();
@@ -96,15 +102,20 @@ namespace RTCV.UI
             if (SaveStatesUnsaved)
             {
                 await SaveStates();
-                SaveStatesUnsaved = false;
             }
                 
             // if stockpile is unsaved and not using a core that must be restarted to save the stockpile
             if (StockpileUnsaved && !(AllSpec.VanguardSpec[VSPEC.CORE_DISKBASED] as bool? ?? false))
             {
                 await SaveStockpile();
-                StockpileUnsaved = false;
             }
+            
+            if (SaveStatesUnsaved || (StockpileUnsaved && !(AllSpec.VanguardSpec[VSPEC.CORE_DISKBASED] as bool? ?? false)))
+            {
+                RemoveExcessBackups();
+            }
+            SaveStatesUnsaved = false;
+            StockpileUnsaved = false;
 
             lock (InProgressLock)
             {
@@ -115,14 +126,6 @@ namespace RTCV.UI
 
         private static async Task SaveStates()
         {
-            string[] allSSKs = Directory.GetFiles(RtcCore.AutoSaveDir, "*.ssk");
-            while (allSSKs.Length >= 3)
-            {
-                string oldestSSK = allSSKs.OrderBy(f => new FileInfo(f).CreationTime).First();
-                File.Delete(oldestSSK);
-                allSSKs = Directory.GetFiles(RtcCore.AutoSaveDir, "*.ssk");
-            }
-                    
             string savePath = Path.Combine(RtcCore.AutoSaveDir, $"autosave_{DateTime.Now:yyyy-MM-dd_HH-mm-ss}.ssk");
 
             var tcs = new TaskCompletionSource<bool>();
@@ -153,14 +156,6 @@ namespace RTCV.UI
 
         private static async Task SaveStockpile()
         {
-            string[] allStockpiles = Directory.GetFiles(RtcCore.AutoSaveDir, "*.sks");
-            while (allStockpiles.Length >= 3)
-            {
-                string oldestSSK = allStockpiles.OrderBy(f => new FileInfo(f).CreationTime).First();
-                File.Delete(oldestSSK);
-                allStockpiles = Directory.GetFiles(RtcCore.AutoSaveDir, "*.sks");
-            }
-                    
             string savePath = Path.Combine(RtcCore.AutoSaveDir, $"autosave_{DateTime.Now:yyyy-MM-dd_HH-mm-ss}.sks");
 
             var tcs = new TaskCompletionSource<bool>();
@@ -194,6 +189,25 @@ namespace RTCV.UI
             });
             
             await tcs.Task;
+        }
+
+        private static void RemoveExcessBackups()
+        {
+            string[] allSSKs = Directory.GetFiles(RtcCore.AutoSaveDir, "*.ssk");
+            while (allSSKs.Sum(s => new FileInfo(s).Length) > MaxSizeGiB * 1024 * 1024 * 1024)
+            {
+                string oldestSSK = allSSKs.OrderBy(f => new FileInfo(f).CreationTime).First();
+                File.Delete(oldestSSK);
+                allSSKs = Directory.GetFiles(RtcCore.AutoSaveDir, "*.ssk");
+            }
+
+            string[] allStockpiles = Directory.GetFiles(RtcCore.AutoSaveDir, "*.sks");
+            while (allStockpiles.Sum(s => new FileInfo(s).Length) > MaxSizeGiB * 1024 * 1024 * 1024)
+            {
+                string oldestStockpile = allStockpiles.OrderBy(f => new FileInfo(f).CreationTime).First();
+                File.Delete(oldestStockpile);
+                allStockpiles = Directory.GetFiles(RtcCore.AutoSaveDir, "*.sks");
+            }
         }
     }
 }

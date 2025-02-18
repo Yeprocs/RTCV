@@ -275,14 +275,15 @@ namespace RTCV.UI
         
         public void ShowToast(Toast toast)
         {
-            this.Controls.Add(toast);
-            
-            //position the toast in the top right corner
+            toast.SuspendLayout();
             toast.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             toast.Location = new Point(this.ClientRectangle.Width - toast.Width - 10, 10);
             
+            this.Controls.Add(toast);
+            
             toast.Show();
             toast.BringToFront();
+            toast.ResumeLayout();
             toast.Refresh();
         }
 

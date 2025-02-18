@@ -156,11 +156,19 @@ namespace RTCV.UI
         {
             if (e.Button == MouseButtons.Right)
             {
+                DataGridView.HitTestInfo hti = dgvStockpile.HitTest(e.X, e.Y);
+                // Necessary to show the context menu for the row we just clicked rather than the one that was selected before
+                if (hti.RowIndex != -1)
+                {
+                    foreach (DataGridViewRow row in this.dgvStockpile.SelectedRows)
+                        row.Selected = false;
+                    
+                    this.dgvStockpile.Rows[hti.RowIndex].Selected = true;
+                }
+                
                 Point locate = new Point((sender as Control).Location.X + e.Location.X, (sender as Control).Location.Y + e.Location.Y);
 
                 ContextMenuStrip columnsMenu = new ContextMenuStrip();
-
-
 
                 BlastLayer bl = null;
 
