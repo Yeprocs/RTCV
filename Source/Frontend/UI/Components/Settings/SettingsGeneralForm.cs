@@ -36,9 +36,15 @@ namespace RTCV.UI
                 
                 nmAutosaveMinutes.ValueChanged -= AutosaveTimeChanged;
                 nmAutosaveMinutes.Value = minutes;
-                nmAutosaveSeconds.ValueChanged += AutosaveTimeChanged;
-                
+                nmAutosaveMinutes.ValueChanged += AutosaveTimeChanged;
                 nmAutosaveSeconds.Value = seconds;
+            }
+            else
+            {
+                nmAutosaveMinutes.ValueChanged -= AutosaveTimeChanged;
+                nmAutosaveMinutes.Value = 5;
+                nmAutosaveMinutes.ValueChanged += AutosaveTimeChanged;
+                nmAutosaveSeconds.Value = 0;
             }
             this.nmMaxAutosaveSize.Value =
                 decimal.TryParse(Params.ReadParam("AUTOSAVE_MAX_SIZE"), out decimal maxSize)
