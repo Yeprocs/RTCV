@@ -220,9 +220,12 @@ namespace RTCV.UI
             cbCustomPrecision.Enabled = false;
             nmAlignment.Maximum = RtcCore.CurrentPrecision - 1;
 
-            S.GET<GeneralParametersForm>().Show();
+            var gpForm = S.GET<GeneralParametersForm>();
+            gpForm.Show();
             S.GET<MemoryDomainsForm>().Show();
             S.GET<GlitchHarvesterIntensityForm>().Show();
+
+            gpForm.cbCreateInfiniteUnits.Enabled = true;
 
             ICorruptionEngine previousPluginEngine = null;
 
@@ -253,6 +256,8 @@ namespace RTCV.UI
                     FreezeEngineControl.Visible = true;
                     cbCustomPrecision.Enabled = true;
 
+                    gpForm.cbCreateInfiniteUnits.Enabled = false;
+
                     S.GET<CoreForm>().btnAutoCorrupt.Visible = AllSpec.VanguardSpec?.Get<bool>(VSPEC.SUPPORTS_REALTIME) ?? true;
                     break;
 
@@ -260,6 +265,8 @@ namespace RTCV.UI
                     RtcCore.SelectedEngine = CorruptionEngine.PIPE;
                     PipeEngineControl.Visible = true;
                     cbCustomPrecision.Enabled = true;
+
+                    gpForm.cbCreateInfiniteUnits.Enabled = false;
 
                     S.GET<CoreForm>().btnAutoCorrupt.Visible = AllSpec.VanguardSpec?.Get<bool>(VSPEC.SUPPORTS_REALTIME) ?? true;
                     break;
@@ -305,7 +312,7 @@ namespace RTCV.UI
 
                     S.GET<CoreForm>().AutoCorrupt = false;
                     S.GET<CoreForm>().btnAutoCorrupt.Visible = false;
-                    S.GET<GeneralParametersForm>().Hide();
+                    gpForm.Hide();
                     S.GET<MemoryDomainsForm>().Hide();
                     S.GET<GlitchHarvesterIntensityForm>().Hide();
                     break;
