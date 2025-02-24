@@ -263,6 +263,7 @@ namespace RTCV.CorruptCore
         public static readonly string CONFIG_PATHS = nameof(CONFIG_PATHS);
         public static readonly string REPLACE_MANUALBLAST_WITH_GHCORRUPT = nameof(REPLACE_MANUALBLAST_WITH_GHCORRUPT);
         public static readonly string LOADSTATE_USES_CALLBACKS = nameof(LOADSTATE_USES_CALLBACKS);
+        public static readonly string RELOAD_ON_SAVESTATE = nameof(RELOAD_ON_SAVESTATE);
     }
 
     [SuppressMessage("Microsoft.Design", "CA1707", Justification = "UISPEC names may have underscores since changing this would break serialization.")]
