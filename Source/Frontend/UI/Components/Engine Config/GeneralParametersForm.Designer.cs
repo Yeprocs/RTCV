@@ -235,7 +235,7 @@
 		public System.Windows.Forms.Label labelBlastRadius;
 		public UI.Components.Controls.MultiTrackBar multiTB_Intensity;
 		public UI.Components.Controls.MultiTrackBar multiTB_ErrorDelay;
-        private System.Windows.Forms.Button btnClearAllFreezes;
+        public System.Windows.Forms.Button btnClearAllFreezes;
         public System.Windows.Forms.CheckBox cbCreateInfiniteUnits;
         public System.Windows.Forms.CheckBox cbClearFreezesOnRewind;
         private System.Windows.Forms.Label lbMaxFreeze;

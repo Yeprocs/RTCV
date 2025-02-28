@@ -49,6 +49,18 @@ namespace RTCV.UI
             InitializeComponent();
             undockedSizable = false;
 
+            /*
+             this would make more sense in the GeneralParametersForm constructor, but depending on where it's first
+             initialized, that can cause a catastrophic chain of events that ends with S.GET<GPForm> being called for a
+             second time after the first gpform is first created, but before its constructor returns, causing a new
+             gpform to be created, put into the grid, and assigned to the singleton, just for it to then be replaced
+             by the first gpform when control returns to S.GET().
+             the moral of the story is that shit's fucked, yo.
+            */
+            var gpForm = S.GET<GeneralParametersForm>();
+            gpForm.btnClearAllFreezes.Click += ClearCheats;
+            gpForm.cbClearFreezesOnRewind.CheckedChanged += OnClearRewindToggle;
+
             var engineControlLocation = new Point(gbSelectedEngine.Location.X, gbSelectedEngine.Location.Y);
 
             FreezeEngineControl = new Components.EngineConfig.EngineControls.FreezeEngineControl(this);

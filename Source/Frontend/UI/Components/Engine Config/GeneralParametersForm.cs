@@ -19,10 +19,6 @@ namespace RTCV.UI
             multiTB_Intensity.registerSlave(S.GET<GlitchHarvesterIntensityForm>().multiTB_Intensity);
 
             multiTB_ErrorDelay.ValueChanged += (sender, args) => RtcCore.ErrorDelay = multiTB_ErrorDelay.Value;
-
-            var ceForm = S.GET<CorruptionEngineForm>();
-            btnClearAllFreezes.Click += ceForm.ClearCheats;
-            cbClearFreezesOnRewind.CheckedChanged += ceForm.OnClearRewindToggle;
         }
 
         private void OnFormLoad(object sender, EventArgs e)

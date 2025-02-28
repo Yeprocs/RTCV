@@ -104,6 +104,13 @@ namespace RTCV.Common
                     if (!instances.TryGetValue(typ, out o))
                     {
                         o = Activator.CreateInstance(typ);
+                        /*
+                         it's possible for the construction of the object to call S.GET<T>() again, causing a second
+                         instance to be created and registered. that instance will, of course, be discarded by the next
+                         line of code, causing bugs and confusion. this could be partially fixed with another of the same
+                         if statement, but that would still create an extra floating instance, which could potentially
+                         cause even subtler bugs.
+                        */
                         instances[typ] = o;
 
                         if (typ.IsSubclassOf(typeof(Form)))
