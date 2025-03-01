@@ -12,7 +12,7 @@ namespace RTCV.CorruptCore
         const string overWrite = "Overwrite";
         const string interleave = "Interleave";
 
-        public static string[] ShuffleTypes { get; private set; } = new string[] { rand, reverse, rotFW, rotBW, overWrite };
+        public static string[] ShuffleTypes { get; private set; } = new string[] { rand, reverse, rotFW, rotBW, overWrite,interleave };
 
 
         const string forwards = "Forwards";
