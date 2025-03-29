@@ -216,6 +216,8 @@ namespace RTCV.UI
         private void HandleUseAlignmentChange(object sender, EventArgs e)
         {
             if (dontUpdate) return;
+            label8.Enabled = cbUseAlignment.Checked;
+            nmAlignment.Enabled = cbUseAlignment.Checked;
             RtcCore.UseAlignment = cbUseAlignment.Checked;
         }
 

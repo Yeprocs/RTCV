@@ -135,7 +135,7 @@ namespace RTCV.UI
             SyncObjectSingleton.FormBeginExecute(() =>
             {
                 Toast toast = new Toast("Auto-saving save states...", "");
-                statesForm.ParentCanvas.ShowToast(toast);
+                statesForm.ParentCanvas?.ShowToast(toast);
 
                 Task.Run(() =>
                 {
@@ -172,7 +172,7 @@ namespace RTCV.UI
                 }
 
                 Toast toast = new Toast("Auto-saving stockpile...", "");
-                stockpileForm.ParentCanvas.ShowToast(toast);
+                stockpileForm.ParentCanvas?.ShowToast(toast);
                 
                 Task.Run(() =>
                 {

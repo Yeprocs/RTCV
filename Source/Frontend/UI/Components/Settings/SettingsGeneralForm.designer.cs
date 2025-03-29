@@ -134,7 +134,7 @@ namespace RTCV.UI
             this.label1.Font = new System.Drawing.Font("Segoe UI", 8.25F);
             this.label1.ForeColor = System.Drawing.Color.White;
             this.label1.ImageAlign = System.Drawing.ContentAlignment.TopRight;
-            this.label1.Location = new System.Drawing.Point(258, 131);
+            this.label1.Location = new System.Drawing.Point(259, 131);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(49, 13);
             this.label1.TabIndex = 118;
@@ -146,7 +146,7 @@ namespace RTCV.UI
             this.nmAutosaveSeconds.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
             this.nmAutosaveSeconds.Font = new System.Drawing.Font("Segoe UI", 8F);
             this.nmAutosaveSeconds.ForeColor = System.Drawing.Color.White;
-            this.nmAutosaveSeconds.Location = new System.Drawing.Point(225, 129);
+            this.nmAutosaveSeconds.Location = new System.Drawing.Point(226, 129);
             this.nmAutosaveSeconds.Maximum = new decimal(new int[] {
             59,
             0,
@@ -164,7 +164,7 @@ namespace RTCV.UI
             this.lbSeconds.Font = new System.Drawing.Font("Segoe UI", 8.25F);
             this.lbSeconds.ForeColor = System.Drawing.Color.White;
             this.lbSeconds.ImageAlign = System.Drawing.ContentAlignment.TopRight;
-            this.lbSeconds.Location = new System.Drawing.Point(155, 131);
+            this.lbSeconds.Location = new System.Drawing.Point(156, 131);
             this.lbSeconds.Name = "lbSeconds";
             this.lbSeconds.Size = new System.Drawing.Size(71, 13);
             this.lbSeconds.TabIndex = 116;

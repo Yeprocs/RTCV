@@ -1,3 +1,5 @@
+using System.Reflection;
+
 namespace RTCV.UI.Extensions
 {
     using System;
@@ -60,6 +62,35 @@ namespace RTCV.UI.Extensions
             }
 
             return allControls;
+        }
+        
+        internal static bool SetAnyPadding(this Control control, Padding padding)
+        {
+            if (control.Padding == padding)
+            {
+                return true;
+            }
+
+            try
+            {
+                Padding pad = new Padding(-5, -5, -5, -5);
+                Type iArrangedElement = Type.GetType("System.Windows.Forms.Layout.IArrangedElement, System.Windows.Forms");
+                Type propertyStore = Type.GetType("System.Windows.Forms.PropertyStore, System.Windows.Forms");
+                Type commonProperties = Type.GetType("System.Windows.Forms.Layout.CommonProperties, System.Windows.Forms");
+                PropertyInfo properties = iArrangedElement.GetProperties()[3];
+                MethodInfo setPadding = propertyStore.GetMethod("SetPadding");
+                FieldInfo paddingProperty = commonProperties.GetField("_paddingProperty", BindingFlags.NonPublic | BindingFlags.Static);
+                int paddingPropertyVal = (int)paddingProperty.GetValue(null);
+                object o = properties.GetValue(control);
+                setPadding.Invoke(o, new object[] { paddingPropertyVal, pad });
+                return true;
+            }
+            catch
+            {
+                //cry
+                control.Padding = new Padding(Math.Max(padding.Left, 0), Math.Max(padding.Top, 0), Math.Max(padding.Right, 0), Math.Max(padding.Bottom, 0));
+                return false;
+            }
         }
     }
 }

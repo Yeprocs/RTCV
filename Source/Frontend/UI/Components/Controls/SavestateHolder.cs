@@ -1,3 +1,5 @@
+using RTCV.UI.Extensions;
+
 namespace RTCV.UI.Components.Controls
 {
     using System;
@@ -17,6 +19,7 @@ namespace RTCV.UI.Components.Controls
             InitializeComponent();
             btnSavestate.Text = num.ToString();
             tbSavestate.Visible = false;
+            this.btnSavestate.SetAnyPadding(new Padding(-5));
         }
 
         public bool HasState()

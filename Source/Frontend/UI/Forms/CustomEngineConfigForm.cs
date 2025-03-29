@@ -86,6 +86,8 @@ namespace RTCV.UI
                 RtcCore.UseAlignment = cbUseAlignment.Checked;
             }
 
+            label8.Enabled = cbUseAlignment.Checked;
+            nmAlignment.Enabled = cbUseAlignment.Checked;
             S.GET<CorruptionEngineForm>().cbUseAlignment.Checked = cbUseAlignment.Checked;
         }
 
@@ -676,6 +678,7 @@ namespace RTCV.UI
 
                 nmAlignment.Maximum = RtcCore.CurrentPrecision - 1;
                 nmAlignment.Value = RtcCore.Alignment;
+                cbUseAlignment.Checked = RtcCore.UseAlignment;
 
                 //Todo - replace this and data-bind it
                 switch (RtcCore.CurrentPrecision)
