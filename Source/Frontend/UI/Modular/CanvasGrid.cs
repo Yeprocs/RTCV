@@ -1,3 +1,4 @@
+using RTCV.NetCore;
 using RTCV.UI.Modular;
 
 namespace RTCV.UI
@@ -75,6 +76,12 @@ namespace RTCV.UI
 
         internal void LoadToMain(bool dontAnchor = false)
         {
+            S.GET<CoreForm>().SetDefaultGrid(this);
+            if (Params.IsParamSet("GH_OPEN_MAIN"))
+            {
+                // if this actually is the GH grid, it's ok, it's set to true at the end of CoreForm.OpenGlitchHarvester()
+                S.GET<CoreForm>().pnGlitchHarvesterOpen.Visible = false;
+            }
             CanvasForm.loadTileFormMain(this, dontAnchor);
         }
 
@@ -240,7 +247,6 @@ namespace RTCV.UI
                             var coreForm = S.GET<CoreForm>();
                             if (data == "Main")
                             {
-                                coreForm.SetDefaultGrid(cuGrid);
                                 cuGrid.LoadToMain();
                             }
                             else

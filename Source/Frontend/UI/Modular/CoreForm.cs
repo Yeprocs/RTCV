@@ -335,14 +335,12 @@ This message only appears once.";
         {
             if (Params.IsParamSet("SIMPLE_MODE"))
             {
-                this.SetDefaultGrid(DefaultGrids.simpleMode);
                 DefaultGrids.simpleMode.LoadToMain();
                 SimpleModeForm smForm = S.GET<SimpleModeForm>();
                 smForm.EnteringSimpleMode();
             }
             else
             {
-                this.SetDefaultGrid(DefaultGrids.engineConfig);
                 DefaultGrids.engineConfig.LoadToMain();
             }
         }
@@ -362,8 +360,6 @@ This message only appears once.";
 
         public void OpenGlitchHarvester(object sender, EventArgs e)
         {
-            pnGlitchHarvesterOpen.Visible = true;
-
             if (Params.IsParamSet("GH_OPEN_MAIN"))
             {
                 DefaultGrids.glitchHarvester.LoadToMain();
@@ -372,6 +368,8 @@ This message only appears once.";
             {
                 DefaultGrids.glitchHarvester.LoadToNewWindow("Glitch Harvester");
             }
+            
+            pnGlitchHarvesterOpen.Visible = true;
         }
 
         public void StartAutoCorrupt(object sender, EventArgs e)
