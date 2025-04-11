@@ -335,13 +335,13 @@ This message only appears once.";
         {
             if (Params.IsParamSet("SIMPLE_MODE"))
             {
-                DefaultGrids.simpleMode.LoadToMain();
+                DefaultGrids.simpleMode.LoadToMain(false, true);
                 SimpleModeForm smForm = S.GET<SimpleModeForm>();
                 smForm.EnteringSimpleMode();
             }
             else
             {
-                DefaultGrids.engineConfig.LoadToMain();
+                DefaultGrids.engineConfig.LoadToMain(false, true);
             }
         }
 
