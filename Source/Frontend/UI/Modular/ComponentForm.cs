@@ -97,7 +97,13 @@ namespace RTCV.UI.Modular
         public void SwitchToWindow()
         {
             this.Hide();
+
+            Point p = PointToScreen(Point.Empty);
+            
             this.Parent?.Controls.Remove(this);
+            
+            p.Y -= this.PointToScreen(Point.Empty).Y - Location.Y;
+            p.X -= this.PointToScreen(Point.Empty).X - Location.X;
 
             this.TopLevel = true;
             this.TopMost = true;
@@ -113,6 +119,7 @@ namespace RTCV.UI.Modular
                 this.MaximizeBox = false;
             }
 
+            this.Location = p;
             this.Show();
 
             // ReSharper disable ArrangeThisQualifier
