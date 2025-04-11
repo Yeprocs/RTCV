@@ -74,7 +74,7 @@ namespace RTCV.UI
             componentForm.Anchor = anchor;
         }
 
-        internal void LoadToMain(bool dontAnchor = false, bool setDefault = false)
+        internal void LoadToMain(bool dontAnchor = false, bool setDefault = true)
         {
             if (setDefault)
                 S.GET<CoreForm>().SetDefaultGrid(this);
@@ -249,11 +249,11 @@ namespace RTCV.UI
                             var coreForm = S.GET<CoreForm>();
                             if (data == "Main")
                             {
-                                cuGrid.LoadToMain(false, true);
+                                cuGrid.LoadToMain();
                             }
                             else
                             {
-                                coreForm.SetDefaultGrid(cuGrid, true);
+                                coreForm.SetDefaultGrid(cuGrid);
                                 cuGrid.LoadToNewWindow("External");
                             }
 
