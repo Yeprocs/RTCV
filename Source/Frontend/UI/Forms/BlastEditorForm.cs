@@ -81,7 +81,7 @@ namespace RTCV.UI
         private ContextMenuStrip cms;
         private Dictionary<string, Control> property2ControlDico;
         private NLog.Logger logger = NLog.LogManager.GetCurrentClassLogger();
-        private List<BlastUnit> Clipboard = null;
+        private List<BlastUnit> Clipboard = new List<BlastUnit>();
 
         private enum BuProperty
         {
@@ -330,19 +330,17 @@ namespace RTCV.UI
                     dgvBlastEditor.EndEdit();
                 }
 
-                cms = new ContextMenuStrip();
-
+                var builder = new ContextMenuBuilder();
                 if (e.RowIndex != -1 && e.ColumnIndex != -1)
                 {
-                    PopulateGenericContextMenu();
+                    PopulateGenericContextMenu(builder);
                     //Can't use a switch statement because dynamic
                     if (dgvBlastEditor.Columns[e.ColumnIndex] == dgvBlastEditor.Columns[BuProperty.Address.ToString()] ||
                         dgvBlastEditor.Columns[e.ColumnIndex] == dgvBlastEditor.Columns[BuProperty.SourceAddress.ToString()])
                     {
-                        cms.Items.Add(new ToolStripSeparator());
-                        PopulateAddressContextMenu(dgvBlastEditor[e.ColumnIndex, e.RowIndex]);
+                        PopulateAddressContextMenu(dgvBlastEditor[e.ColumnIndex, e.RowIndex], builder);
                     }
-                    cms.Show(dgvBlastEditor, dgvBlastEditor.PointToClient(Cursor.Position));
+                    builder.Build().Show(dgvBlastEditor, dgvBlastEditor.PointToClient(Cursor.Position));
                 }
             }
         }
@@ -355,61 +353,57 @@ namespace RTCV.UI
             }
         }
 
-        private void PopulateGenericContextMenu()
+        private void PopulateGenericContextMenu(ContextMenuBuilder builder)
         {
-            ((ToolStripMenuItem)cms.Items.Add("Re-roll Selected Row(s)", null, new EventHandler((ob, ev) =>
-            {
-
-                //generate temporary blastlayer for batch processing
-                List<BlastUnit> layer = new List<BlastUnit>();
-                foreach (DataGridViewRow row in dgvBlastEditor.SelectedRows)
+            bool selectionExists = dgvBlastEditor.SelectedRows.Count > 0;
+            builder
+                .AddItem("Re-roll Selected Row(s)", (ob, ev) =>
                 {
-                    var bu = (BlastUnit)row.DataBoundItem;
-                    layer.Add(bu);
-                }
-                var tempBl = new BlastLayer(layer);
-
-                //Ensure reroll is tone on the Vanguard CorruptCore
-                var rerolledBl = LocalNetCoreRouter.QueryRoute<BlastLayer>(NetCore.Endpoints.CorruptCore, NetCore.Commands.Remote.RerollBlastLayer, tempBl, true);
-
-                //update BlastUnit with new data
-                for (int i =0;i< rerolledBl.Layer.Count;i++)
+                    //generate temporary blastlayer for batch processing
+                    List<BlastUnit> layer = new List<BlastUnit>();
+                    foreach (DataGridViewRow row in dgvBlastEditor.SelectedRows)
+                    {
+                        var bu = (BlastUnit)row.DataBoundItem;
+                        layer.Add(bu);
+                    }
+                    var tempBl = new BlastLayer(layer);
+    
+                    //Ensure reroll is tone on the Vanguard CorruptCore
+                    var rerolledBl = LocalNetCoreRouter.QueryRoute<BlastLayer>(Endpoints.CorruptCore, NetCore.Commands.Remote.RerollBlastLayer, tempBl);
+    
+                    //update BlastUnit with new data
+                    for (int i = 0; i < rerolledBl.Layer.Count; i++)
+                    {
+                        var bu = tempBl.Layer[i];
+                        var newBu = rerolledBl.Layer[i];
+    
+                        bu.Domain = newBu.Domain;
+                        bu.Address = newBu.Address;
+                        bu.Value = newBu.Value;
+                        bu.SourceAddress = newBu.SourceAddress;
+                        bu.SourceDomain = newBu.SourceDomain;
+                    }
+    
+                    dgvBlastEditor.Refresh();
+                    UpdateBottom();
+                }, selectionExists)
+                .AddItem("Break Down Selected Unit(s)", (ob, ev) =>
                 {
-                    var bu = tempBl.Layer[i];
-                    var newBu = rerolledBl.Layer[i];
-
-                    bu.Domain = newBu.Domain;
-                    bu.Address = newBu.Address;
-                    bu.Value = newBu.Value;
-                    bu.SourceAddress = newBu.SourceAddress;
-                    bu.SourceDomain = newBu.SourceDomain;
-                }
-
-                dgvBlastEditor.Refresh();
-                UpdateBottom();
-            }))).Enabled = true;
-
-            ((ToolStripMenuItem)cms.Items.Add("Break Down Selected Unit(s)", null, new EventHandler((ob, ev) =>
-            {
-                BreakDownUnits(true);
-            }))).Enabled = dgvBlastEditor.SelectedRows.Count > 0;
-
-            ((ToolStripMenuItem)cms.Items.Add("Bake Selected Unit(s) to VALUE", null, new EventHandler((ob, ev) =>
-            {
-                BakeBlastUnitsToValue(true);
-            }))).Enabled = dgvBlastEditor.SelectedRows.Count > 0;
-            
-            cms.Items.Add(new ToolStripSeparator());
-            
-            ((ToolStripMenuItem)cms.Items.Add("Insert Clipboard Above", null, new EventHandler((ob, ev) =>
-            {
-                InsertClipboardAt(this.dgvBlastEditor.CurrentRow.Index);
-            }))).Enabled = dgvBlastEditor.SelectedRows.Count > 0;
-            
-            ((ToolStripMenuItem)cms.Items.Add("Insert Clipboard Below", null, new EventHandler((ob, ev) =>
-            {
-                InsertClipboardAt(this.dgvBlastEditor.CurrentRow.Index + 1);
-            }))).Enabled = dgvBlastEditor.SelectedRows.Count > 0;
+                    BreakDownUnits(true);
+                }, selectionExists)
+                .AddItem("Bake Selected Unit(s) to VALUE", (ob, ev) =>
+                {
+                    BakeBlastUnitsToValue(true);
+                }, selectionExists)
+                .AddSeparator()
+                .AddItem("Insert Clipboard Above", (ob, ev) =>
+                {
+                    InsertClipboardAt(this.dgvBlastEditor.CurrentRow!.Index);
+                }, selectionExists)
+                .AddItem("Insert Clipboard Below", (ob, ev) =>
+                {
+                    InsertClipboardAt(this.dgvBlastEditor.CurrentRow!.Index + 1);
+                }, selectionExists);
         }
 
         public void BreakDownUnits(bool breakSelected = false)
@@ -454,25 +448,30 @@ namespace RTCV.UI
             UpdateBottom();
         }
 
-        private void PopulateAddressContextMenu(DataGridViewCell cell)
+        private void PopulateAddressContextMenu(DataGridViewCell cell, ContextMenuBuilder builder)
         {
-            ((ToolStripMenuItem)cms.Items.Add("Open Selected Address in Hex Editor", null, new EventHandler((ob, ev) =>
-            {
-                if (!(dgvBlastEditor.Rows[cell.RowIndex]?.DataBoundItem is BlastUnit bu))
+            builder
+                .AddSeparator()
+                .AddItem("Open Selected Address in Hex Editor", (ob, ev) =>
                 {
-                    return;
-                }
+                    if (!(dgvBlastEditor.Rows[cell.RowIndex]?.DataBoundItem is BlastUnit bu))
+                    {
+                        return;
+                    }
 
-                if (cell.OwningColumn == dgvBlastEditor.Columns[BuProperty.Address.ToString()])
-                {
-                    LocalNetCoreRouter.Route(NetCore.Endpoints.CorruptCore, NetCore.Commands.Emulator.OpenHexEditorAddress, new object[] { bu.Domain, bu.Address });
-                }
+                    if (cell.OwningColumn == dgvBlastEditor.Columns[BuProperty.Address.ToString()])
+                    {
+                        LocalNetCoreRouter.Route(Endpoints.CorruptCore,
+                            NetCore.Commands.Emulator.OpenHexEditorAddress, new object[] { bu.Domain, bu.Address });
+                    }
 
-                if (cell.OwningColumn == dgvBlastEditor.Columns[BuProperty.SourceAddress.ToString()])
-                {
-                    LocalNetCoreRouter.Route(NetCore.Endpoints.CorruptCore, NetCore.Commands.Emulator.OpenHexEditorAddress, new object[] { bu.SourceDomain, bu.SourceAddress });
-                }
-            }))).Enabled = true;
+                    if (cell.OwningColumn == dgvBlastEditor.Columns[BuProperty.SourceAddress.ToString()])
+                    {
+                        LocalNetCoreRouter.Route(Endpoints.CorruptCore,
+                            NetCore.Commands.Emulator.OpenHexEditorAddress,
+                            new object[] { bu.SourceDomain, bu.SourceAddress });
+                    }
+                });
         }
 
         private void OnBlastEditorCellValueChanged(object sender, DataGridViewCellEventArgs e)
@@ -774,12 +773,11 @@ namespace RTCV.UI
         {
             if (e.Button == MouseButtons.Right)
             {
-                headerStrip = new ContextMenuStrip();
-                headerStrip.Items.Add("Select columns to show", null, new EventHandler((ob, ev) =>
+                headerStrip = new ContextMenuBuilder().AddItem("Select Columns To Show", (ob, ev) =>
                 {
                     var cs = new ColumnSelector();
                     cs.LoadColumnSelector(dgvBlastEditor.Columns);
-                }));
+                }).Build();
 
                 headerStrip.Show(MousePosition);
             }
@@ -1555,7 +1553,8 @@ namespace RTCV.UI
 
         public void ReplaceRomFromFile(object sender, EventArgs e)
         {
-            DialogResult dialogResult = MessageBox.Show("Loading this rom will invalidate the associated savestate. You'll need to set a new savestate for the Blastlayer. Continue?", "Invalidate State?", MessageBoxButtons.YesNo);
+            DialogResult dialogResult = MessageBox.Show("Loading this rom will invalidate the associated savestate. You'll need to set a new savestate for the Blastlayer. Continue?",
+                "Invalidate State?", MessageBoxButtons.YesNo, MessageBoxIcon.Information);
             if (dialogResult == DialogResult.Yes)
             {
                 var openRomDialog = new OpenFileDialog

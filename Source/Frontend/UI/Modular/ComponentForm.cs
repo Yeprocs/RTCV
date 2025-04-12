@@ -1,3 +1,5 @@
+using RTCV.Common;
+
 namespace RTCV.UI.Modular
 {
     using System;
@@ -202,12 +204,10 @@ namespace RTCV.UI.Modular
             if (this.PopoutAllowed && e.Button == MouseButtons.Right && (sender as ComponentForm).FormBorderStyle == FormBorderStyle.None)
             {
                 var locate = new Point(((Control)sender).Location.X + e.Location.X, ((Control)sender).Location.Y + e.Location.Y);
-                var columnsMenu = new ContextMenuStrip();
-                columnsMenu.Items.Add("Detach to window", null, (ob, ev) =>
-                {
-                    (sender as ComponentForm)?.SwitchToWindow();
-                });
-                columnsMenu.Show(this, locate);
+                
+                new ContextMenuBuilder().AddItem("Detach to Window", (ob, ev)
+                    => (sender as ComponentForm)?.SwitchToWindow())
+                    .Build().Show(this, locate);
             }
         }
 
