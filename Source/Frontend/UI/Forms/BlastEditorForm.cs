@@ -64,6 +64,7 @@ namespace RTCV.UI
         private const int comboBoxFillWeight = 40;
         private const int textBoxFillWeight = 30;
         private const int numericUpDownFillWeight = 35;
+        private static List<BlastUnit> Clipboard;
 
         private Dictionary<string, MemoryInterface> _domainToMiDico;
 
@@ -81,7 +82,6 @@ namespace RTCV.UI
         private ContextMenuStrip cms;
         private Dictionary<string, Control> property2ControlDico;
         private NLog.Logger logger = NLog.LogManager.GetCurrentClassLogger();
-        private List<BlastUnit> Clipboard = new List<BlastUnit>();
 
         private enum BuProperty
         {
