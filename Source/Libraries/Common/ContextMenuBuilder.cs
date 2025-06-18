@@ -3,6 +3,7 @@
 // </copyright>
 
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 
@@ -11,6 +12,7 @@ namespace RTCV.Common
     public class ContextMenuBuilder
     {
         private readonly ContextMenuStrip _contextMenu = new ContextMenuStrip();
+        private readonly Stack<ToolStripMenuItem> _subMenus = new Stack<ToolStripMenuItem>();
         private ControlFlow _controlFlow = ControlFlow.None;
         
         public ContextMenuBuilder()
@@ -47,8 +49,15 @@ namespace RTCV.Common
             {
                 return this;
             }
-            
-            _contextMenu.Items.Add(item);
+
+            if (_subMenus.Count > 0)
+            {
+                _subMenus.Peek().DropDownItems.Add(item);
+            }
+            else
+            {
+                _contextMenu.Items.Add(item);
+            }
             return this;
         }
         public ContextMenuBuilder AddItem(string text, EventHandler onClick, bool enabled = true, bool isChecked = false)
@@ -82,11 +91,49 @@ namespace RTCV.Common
             return AddItem(new ToolStripSeparator());
         }
         
+        public ContextMenuBuilder BeginSubMenu(string text, bool enabled = true)
+        {
+            if (_controlFlow == ControlFlow.Else)
+            {
+                return this;
+            }
+            
+            var item = new ToolStripMenuItem(text);
+            item.Enabled = enabled;
+            _subMenus.Push(item);
+            return this;
+        }
+        
+        public ContextMenuBuilder EndSubMenu()
+        {
+            if (_subMenus.Count == 0)
+            {
+                throw new InvalidOperationException("EndSubMenu() called without a matching BeginSubMenu()");
+            }
+            if (_controlFlow == ControlFlow.Else)
+            {
+                return this;
+            }
+            _contextMenu.Items.Add(_subMenus.Pop());
+            return this;
+        }
+        
+        public ContextMenuBuilder DontCloseOnClick()
+        {
+            _contextMenu.Closing += (sender, e) =>
+                e.Cancel = e.CloseReason == ToolStripDropDownCloseReason.ItemClicked;
+            return this;
+        }
+        
         public ContextMenuStrip Build()
         {
             if (_controlFlow != ControlFlow.None)
             {
                 throw new InvalidOperationException("All If() calls must be closed with EndIf()");
+            }
+            if (_subMenus.Count > 0)
+            {
+                throw new InvalidOperationException("All BeginSubMenu() calls must be closed with EndSubMenu()");
             }
             return _contextMenu;
         }
