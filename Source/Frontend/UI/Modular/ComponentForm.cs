@@ -46,7 +46,8 @@ namespace RTCV.UI.Modular
 
         public void AnchorToPanel(Panel pn)
         {
-            if (defaultPanel == null)
+            bool? defaultPanelValid = defaultPanel?.Parent?.Parent?.Visible;
+            if (defaultPanelValid == null || defaultPanelValid == false)
             {
                 defaultPanel = pn;
             }
@@ -203,11 +204,9 @@ namespace RTCV.UI.Modular
 
             if (this.PopoutAllowed && e.Button == MouseButtons.Right && (sender as ComponentForm).FormBorderStyle == FormBorderStyle.None)
             {
-                var locate = new Point(((Control)sender).Location.X + e.Location.X, ((Control)sender).Location.Y + e.Location.Y);
-                
                 new ContextMenuBuilder().AddItem("Detach to Window", (ob, ev)
                     => (sender as ComponentForm)?.SwitchToWindow())
-                    .Build().Show(this, locate);
+                    .Build().Show(this, this.PointToClient(Cursor.Position));
             }
         }
 
