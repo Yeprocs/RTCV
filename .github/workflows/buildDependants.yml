@@ -188,7 +188,7 @@ jobs:
   citra:
     # Our citra fork can't yet build on Visual Studio 2022
     # It requires QtCore prebuilt binaries, which are not available in our current fork
-    runs-on:  from 3.0.2 to 3.9.3
+    runs-on: windows-2022
     steps:
     # RTCV
     - name: Checkout current build target
