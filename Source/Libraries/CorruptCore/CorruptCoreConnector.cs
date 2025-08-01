@@ -5,6 +5,7 @@ namespace RTCV.CorruptCore
     using System.Linq;
     using System.Text;
     using System.Windows.Forms;
+    using NLog;
     using RTCV.NetCore;
     using RTCV.NetCore.Commands;
 
@@ -689,7 +690,7 @@ namespace RTCV.CorruptCore
                 var limiterListHash = (string)objValues[1];
                 var sk = objValues[2] as StashKey; //Intentionally nullable
                 var allLegalAdresses = new List<long>();
-
+                
                 void a()
                 {
                     if (sk != null) //If a stashkey was passed in, we want to load then profile
@@ -700,6 +701,18 @@ namespace RTCV.CorruptCore
                     MemoryInterface mi = MemoryDomains.MemoryInterfaces[domain];
 
                     var listItemSize = Filtering.GetPrecisionFromHash(limiterListHash);
+
+                    decimal memoryDomainSize = mi.Size;
+
+                    //Verify they want to continue if the domain size is larger than 32MB
+                    if (memoryDomainSize > 0x2000000)
+                    {
+                        DialogResult result = MessageBox.Show("The domain you have selected is larger than 32MB\n The domain size is " + (memoryDomainSize / (1024 * 1024)).ToString("0.00") + "MB.\n Are you sure you want to continue?", "Large Domain Detected", MessageBoxButtons.YesNo);
+                        if (result == DialogResult.No)
+                        {
+                            return;
+                        }
+                    }
 
                     for (long i = 0; i < mi.Size; i += listItemSize)
                     {
@@ -712,7 +725,7 @@ namespace RTCV.CorruptCore
                         }
                     }
                 }
-
+                
                 //If the emulator uses callbacks and we're loading a state, we do everything on the main thread and once we're done, we unpause emulation
                 if (sk != null && ((bool?)AllSpec.VanguardSpec[VSPEC.LOADSTATE_USES_CALLBACKS] ?? false))
                 {
@@ -723,7 +736,6 @@ namespace RTCV.CorruptCore
                 {
                     SyncObjectSingleton.EmuThreadExecute(a, true);
                 }
-
                 e.setReturnValue(allLegalAdresses.ToArray());
             }
         }
