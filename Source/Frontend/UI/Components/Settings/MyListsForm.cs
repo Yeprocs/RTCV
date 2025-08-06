@@ -190,7 +190,7 @@ namespace RTCV.UI
         {
             try
             {
-                Common.CopyFile(filename, RtcCore.ListsDir, true);
+                Common.CopyFile(filename, RtcCore.ListsDir);
                 RefreshLists();
             }
             catch (Common.OverwriteCancelledException)

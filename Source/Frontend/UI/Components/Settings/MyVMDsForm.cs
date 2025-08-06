@@ -167,7 +167,7 @@ namespace RTCV.UI
         {
             try
             {
-                Common.CopyFile(filename, RtcCore.VmdsDir, true);
+                Common.CopyFile(filename, RtcCore.VmdsDir);
                 RefreshVMDs();
             }
             catch (Common.OverwriteCancelledException)

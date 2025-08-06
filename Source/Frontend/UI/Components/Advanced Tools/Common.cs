@@ -7,20 +7,23 @@ namespace RTCV.UI
 
     internal static class Common
     {
-        internal static void CopyFile(string sourcePath, string targetDirectory, bool confirmOverwrite)
+        internal static void CopyFile(string sourcePath, string targetDirectory, string folderName = null, bool confirmOverwrite = true)
         {
-            var shortPath = sourcePath.Substring(sourcePath.LastIndexOf('\\') + 1);
-            var targetPath = Path.Combine(targetDirectory, shortPath);
-            ReplaceFile(sourcePath, targetPath, confirmOverwrite);
+            string shortPath = sourcePath.Substring(sourcePath.LastIndexOf('\\') + 1);
+            string targetPath = Path.Combine(targetDirectory, shortPath);
+            string destinationName = new DirectoryInfo(targetDirectory).Name;
+            ReplaceFile(sourcePath, targetPath, folderName ?? destinationName, confirmOverwrite);
         }
 
-        internal static void ReplaceFile(string sourcePath, string targetPath, bool confirmOverwrite = false)
+        internal static void ReplaceFile(string sourcePath, string targetPath, string folderName = null, bool confirmOverwrite = false)
         {
+            string destinationName = new DirectoryInfo(Path.GetDirectoryName(targetPath)!).Name;
+            folderName ??= destinationName;
             if (File.Exists(targetPath))
             {
                 if (confirmOverwrite)
                 {
-                    var result = MessageBox.Show("This file already exist in your VMDs folder, do you want to overwrite it?", "Overwrite file?", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+                    var result = MessageBox.Show($"This file already exists in your {folderName} folder, do you want to overwrite it?", "Overwrite file?", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
                     if (result == DialogResult.No)
                     {
                         throw new OverwriteCancelledException();
