@@ -39,6 +39,7 @@ Applies for Value & should be editable
  * byte[] Value */
 
 using System.Diagnostics;
+using System.Reflection;
 
 namespace RTCV.UI
 {
@@ -257,6 +258,7 @@ namespace RTCV.UI
             if (sender is TextBox tb)
             {
                 tb.Text = getShiftedHexString(tb.Text, e.Delta / SystemInformation.MouseWheelScrollDelta, Convert.ToInt32(upDownPrecision.Value));
+                typeof(Control).GetMethod("OnValidated", BindingFlags.Instance | BindingFlags.NonPublic).Invoke(tb, new[] {EventArgs.Empty});
             }
         }
 
