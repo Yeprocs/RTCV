@@ -58,39 +58,16 @@ namespace RTCV.UI.Components
 
         protected override void UpdateEditText()
         {
-            bool masterScope = false;
-
-            if (UserEdit || masterValueUpdated)
-            {
-                if (!masterValueUpdated)
-                {
-                    masterValueUpdated = true;
-                    masterScope = true;
-                }
-
-
-                if (base.Hexadecimal)
-                {
-                    HexParseEditText();
-                }
-                else
-                {
-                    ParseEditText();
-                }
-            }
-
             if (currentValueChanged || (!string.IsNullOrEmpty(Text) && !(Text.Length == 1 && Text == "-")))
             {
+                // TODO: Figure out a better way to handle this
+                if (base.Hexadecimal && Value == 0)
+                    HexParseEditText();
+
                 currentValueChanged = false;
                 ChangingText = true;
                 Text = GetNumberText(Value);
                 ChangingText = false;
-            }
-
-            if (masterScope)
-            {
-                UserEdit = false;
-                masterValueUpdated = false;
             }
         }
 
