@@ -12,6 +12,7 @@ namespace RTCV.UI
     using RTCV.NetCore.Commands;
     using System.Threading.Tasks;
     using System.Threading;
+    using System.Collections.Generic;
 
     public static class VanguardImplementation
     {
@@ -218,12 +219,14 @@ namespace RTCV.UI
                     coreForm.Show();
 
                     //Pull any lists from the vanguard implementation
+                    List<string> dirs = new List<string>();
+                    dirs.Add(RtcCore.ListsDir);
                     if (RtcCore.EmuDir != null)
                     {
-                        UICore.LoadLists(Path.Combine(RtcCore.EmuDir, "LISTS"));
+                        dirs.Add(Path.Combine(RtcCore.EmuDir, "LISTS"));
                     }
 
-                    UICore.LoadLists(RtcCore.ListsDir);
+                    UICore.LoadLists(dirs);
 
                     Panel sidebar = coreForm.pnSideBar;
                     foreach (Control c in sidebar.Controls)
