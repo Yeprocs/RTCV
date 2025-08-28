@@ -212,7 +212,7 @@ namespace RTCV.UI
             {
                 SetBlastButtonVisibility(false);
 
-                if (!(AllSpec.UISpec[UISPEC.SELECTEDDOMAINS] is string[] domains) || domains.Length == 0)
+                if ((string)AllSpec.VanguardSpec[VSPEC.OPENROMFILENAME] != "" && (!(AllSpec.UISpec[UISPEC.SELECTEDDOMAINS] is string[] domains) || domains.Length == 0))
                 {
                     MessageBox.Show("Can't corrupt with no domains selected.");
                     return;
