@@ -48,7 +48,7 @@ namespace RTCV.UI
 
                     foreach (StashKey key in sks.StashKeys)
                     {
-                        dgvStockpile?.Rows.Add(key, key.GameName, key.SystemName, key.SystemCore, key.Note);
+                        dgvStockpile?.Rows.Add(key, key.GameName, key.SystemName, key.SystemCore, key.EmuVer, key.Note);
                     }
                 }
                 //Check for missing ref files
@@ -181,11 +181,11 @@ namespace RTCV.UI
                     .AddItem("Load on Select", (ob, ev) => S.GET<GlitchHarvesterBlastForm>().LoadOnSelect = !loadOnSelect, isChecked: loadOnSelect)
                     .AddItem("Clear Infinite Units on Rewind", (ob, ev) => S.GET<GeneralParametersForm>().cbClearFreezesOnRewind.Checked = !clearInfiniteUnitsOnRewind, isChecked: clearInfiniteUnitsOnRewind)
                     .AddItem(stripSeparator)
-                    .AddItem("Manual Inject", (ob, ev) =>
+                    .AddItem("Manual Inject", async (ob, ev) =>
                     {
                         var sk = GetSelectedStashKey();
                         StashKey newSk = (StashKey)sk.Clone();
-                        bool isCorrupted = StockpileManagerUISide.ApplyStashkey(newSk, false, false);
+                        bool isCorrupted = await StockpileManagerUISide.ApplyStashkey(newSk, false, false);
                         if (StockpileManagerUISide.CurrentStashkey != null)
                             S.GET<GlitchHarvesterBlastForm>().IsCorruptionApplied = isCorrupted;
                     }, dgvStockpile.SelectedRows.Count == 1)
@@ -205,7 +205,7 @@ namespace RTCV.UI
             }
         }
 
-        private async void LoadStockpile(string fileName)
+        private async Task LoadStockpile(string fileName)
         {
             try
             {
@@ -236,7 +236,7 @@ namespace RTCV.UI
                     {
                         foreach (StashKey key in sks.StashKeys) //Populate the dgv
                         {
-                            dgvStockpile?.Rows.Add(key, key.GameName, key.SystemName, key.SystemCore, key.Note);
+                            dgvStockpile?.Rows.Add(key, key.GameName, key.SystemName, key.SystemCore, key.EmuVer, key.Note);
                         }
                     });
                 }

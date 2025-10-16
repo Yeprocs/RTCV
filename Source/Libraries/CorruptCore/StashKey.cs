@@ -5,6 +5,7 @@ namespace RTCV.CorruptCore
     using System.Data;
     using System.IO;
     using System.Linq;
+    using System.Threading.Tasks;
     using System.Windows.Forms;
     using Ceras;
     using Newtonsoft.Json;
@@ -34,6 +35,7 @@ namespace RTCV.CorruptCore
         public string SystemName { get; set; }
         public string SystemDeepName { get; set; }
         public string SystemCore { get; set; }
+        public string EmuVer { get; set; }
         public List<string> SelectedDomains { get; set; } = new List<string>();
         public string GameName { get; set; }
         public string SyncSettings { get; set; }
@@ -55,7 +57,8 @@ namespace RTCV.CorruptCore
             var key = RtcCore.GetRandomKey();
             string parentkey = null;
             BlastLayer blastlayer = new BlastLayer();
-            StashKeyConstructor(key, parentkey, blastlayer);
+            bool useEmuVer = false;
+            StashKeyConstructor(key, parentkey, blastlayer, useEmuVer);
         }
 
         public StashKey(string key, string parentkey, BlastLayer blastlayer)
@@ -63,7 +66,7 @@ namespace RTCV.CorruptCore
             StashKeyConstructor(key, parentkey, blastlayer);
         }
 
-        private void StashKeyConstructor(string key, string parentkey, BlastLayer blastlayer)
+        private void StashKeyConstructor(string key, string parentkey, BlastLayer blastlayer, bool useEmuVer = true)
         {
             Key = key;
             ParentKey = parentkey;
@@ -74,6 +77,9 @@ namespace RTCV.CorruptCore
             SystemCore = (string)AllSpec.VanguardSpec?[VSPEC.SYSTEMCORE] ?? "ERROR";
             GameName = (string)AllSpec.VanguardSpec?[VSPEC.GAMENAME] ?? "ERROR";
             SyncSettings = (string)AllSpec.VanguardSpec?[VSPEC.SYNCSETTINGS] ?? "";
+
+            var dirCheck = useEmuVer ? !string.IsNullOrEmpty((string)AllSpec.VanguardSpec?[VSPEC.EMUDIR]) : false;
+            EmuVer = dirCheck ? new DirectoryInfo((string)AllSpec.VanguardSpec?[VSPEC.EMUDIR]).Name.ToUpper() : "";
 
             this.SelectedDomains = ((string[])AllSpec.UISpec[UISPEC.SELECTEDDOMAINS]).ToList();
         }
@@ -104,19 +110,19 @@ namespace RTCV.CorruptCore
         /// <summary>
         /// Can be called from UI Side
         /// </summary>
-        public bool Run()
+        public async Task<bool> Run()
         {
             StockpileManagerUISide.CurrentStashkey = this;
-            return StockpileManagerUISide.ApplyStashkey(this);
+            return await StockpileManagerUISide.ApplyStashkey(this);
         }
 
         /// <summary>
         /// Can be called from UI Side
         /// </summary>
-        public void RunOriginal()
+        public async Task RunOriginal()
         {
             StockpileManagerUISide.CurrentStashkey = this;
-            StockpileManagerUISide.OriginalFromStashkey(this);
+            await StockpileManagerUISide.OriginalFromStashkey(this);
         }
 
         public byte[] EmbedState()

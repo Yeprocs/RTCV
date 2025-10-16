@@ -8,6 +8,8 @@ namespace RTCV.UI
     using RTCV.NetCore;
     using RTCV.Common;
     using RTCV.UI.Modular;
+    using System.IO;
+    using System.Threading.Tasks;
 
     public partial class StashHistoryForm : ComponentForm, IBlockable
     {
@@ -68,9 +70,13 @@ namespace RTCV.UI
             string Name = "";
             string value = "";
 
+
+
             StashKey sk = (StashKey)lbStashHistory.SelectedItem;
             StockpileManagerUISide.CurrentStashkey = sk;
 
+            // Disabled with the addition of cross-emulator stockpiles
+            /*
             //If we don't support mixed stockpiles
             if (!((bool?)AllSpec.VanguardSpec[VSPEC.SUPPORTS_MIXED_STOCKPILE] ?? false))
             {
@@ -85,6 +91,7 @@ namespace RTCV.UI
                     }
                 }
             }
+            */
 
             if (askForName)
             {
@@ -131,7 +138,8 @@ namespace RTCV.UI
             dataRow.Cells["GameName"].Value = sk.GameName;
             dataRow.Cells["SystemName"].Value = sk.SystemName;
             dataRow.Cells["SystemCore"].Value = sk.SystemCore;
-
+            dataRow.Cells["EmuVer"].Value = sk.EmuVer;
+            
             S.GET<StockpileManagerForm>().RefreshNoteIcons();
 
             StockpileManagerUISide.StashHistory.Remove(sk);
@@ -238,7 +246,7 @@ namespace RTCV.UI
                         S.GET<VmdPoolForm>().RefreshVMDs();
                     }, selectionExists)
                     .AddSeparator()
-                    .AddItem("Merge Selected Stashkeys", (ob, ev) =>
+                    .AddItem("Merge Selected Stashkeys", async (ob, ev) =>
                     {
                         List<StashKey> sks = new List<StashKey>();
                         foreach (StashKey sk in lbStashHistory.SelectedItems)
@@ -246,7 +254,7 @@ namespace RTCV.UI
                             sks.Add(sk);
                         }
 
-                        StockpileManagerUISide.MergeStashkeys(sks);
+                        await StockpileManagerUISide.MergeStashkeys(sks);
 
                         RefreshStashHistorySelectLast();
                     }, selectionExists && lbStashHistory.SelectedItems.Count > 1)

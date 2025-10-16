@@ -51,7 +51,7 @@ namespace RTCV.UI
             btnSaveStockpileAs.BackColorChanged += (o, e) => UpdateSaveButtonColor(UnsavedEdits);
         }
 
-        public void HandleCellClick(object sender, DataGridViewCellEventArgs e)
+        public async void HandleCellClick(object sender, DataGridViewCellEventArgs e)
         {
             if (e == null || e.RowIndex == -1)
             {
@@ -123,7 +123,7 @@ namespace RTCV.UI
 
                     sks.Reverse();
 
-                    StockpileManagerUISide.MergeStashkeys(sks);
+                    await StockpileManagerUISide.MergeStashkeys(sks);
 
                     if (Render.RenderAtLoad && S.GET<GlitchHarvesterBlastForm>().loadBeforeOperation)
                     {
@@ -195,12 +195,12 @@ namespace RTCV.UI
                         }
                     }, rowCount == 1)
                     .AddSeparator()
-                    .AddItem("Manual Inject", (ob, ev) =>
+                    .AddItem("Manual Inject", async (ob, ev) =>
                     {
                         var sk = this.GetSelectedStashKey();
                         StashKey newSk = (StashKey)sk.Clone();
 
-                        bool isCorrupted = StockpileManagerUISide.ApplyStashkey(newSk, false, false);
+                        bool isCorrupted = await StockpileManagerUISide.ApplyStashkey(newSk, false, false);
 
                         if (StockpileManagerUISide.CurrentStashkey != null)
                             S.GET<GlitchHarvesterBlastForm>().IsCorruptionApplied = isCorrupted;
@@ -226,7 +226,7 @@ namespace RTCV.UI
                         MemoryDomains.GenerateVmdFromStashkey(sk);
                         S.GET<VmdPoolForm>().RefreshVMDs();
                     }, rowCount == 1)
-                    .AddItem("Merge Selected Stashkeys", (ob, ev) =>
+                    .AddItem("Merge Selected Stashkeys", async (ob, ev) =>
                     {
                         List<StashKey> sks = new List<StashKey>();
                         foreach (DataGridViewRow row in this.dgvStockpile.SelectedRows)
@@ -234,7 +234,7 @@ namespace RTCV.UI
                             sks.Add((StashKey)row.Cells[0].Value);
                         }
 
-                        StockpileManagerUISide.MergeStashkeys(sks);
+                        await StockpileManagerUISide.MergeStashkeys(sks);
                         S.GET<StashHistoryForm>().RefreshStashHistorySelectLast();
                     }, rowCount > 1)
                     .AddItem("Replace Associated ROM", (ob, ev) =>
@@ -396,6 +396,63 @@ namespace RTCV.UI
             }
         }
 
+        // Check if any emulators in the stockpile are not installed, and prompt the user
+        // to select an emu version if it's a legacy stockpile.
+        public bool CheckForEmulators(Stockpile sks)
+        {
+            List<string> missingEmulators = new List<string> { };
+            bool missingEmuVer = false;
+            foreach (StashKey key in sks.StashKeys)
+            {
+                if (key.EmuVer != "")
+                {
+                    string emulatorPath = Path.Combine(RtcCore.RtcDir, "..\\..\\", key.EmuVer);
+                    if (!Directory.Exists(emulatorPath) && !missingEmulators.Contains(key.EmuVer))
+                        missingEmulators.Add(key.EmuVer);
+                }
+                // Update stashkey emulator version if it's empty
+                else
+                {
+                    missingEmuVer = true;
+                }
+            }
+
+            if (missingEmulators.Count > 0)
+            {
+                string missingEmulatorsString = "";
+                foreach (string emulator in missingEmulators)
+                {
+                    missingEmulatorsString += emulator + "\n";
+                }
+                string missingEmulatorsMessage = "You are missing the following emulators used in this stockpile: \n\n" +
+                                                  String.Join(Environment.NewLine, missingEmulatorsString + "\n" +
+                                                  "Please install these emulators and then load the stockpile again.");
+                MessageBox.Show(missingEmulatorsMessage, "Operation cancelled", MessageBoxButtons.OK);
+                return false;
+            }
+            else if (missingEmuVer)
+            {
+                var form = new StockpileEmuVersionForm();
+
+                // start/show the control
+                form.ShowDialog();
+
+                if (form.SelectedVersion != null)
+                {
+                    foreach (StashKey key in sks.StashKeys)
+                    {
+                        key.EmuVer = form.SelectedVersion;
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("Emulator system and version selection was cancelled, the stockpile will not be loaded.", "Operation cancelled", MessageBoxButtons.OK);
+                    return false;
+                }
+            }
+            return true;
+        }
+
         public async void LoadStockpile(string filename)
         {
             logger.Trace("Entered LoadStockpile {0}", Thread.CurrentThread.ManagedThreadId);
@@ -427,6 +484,7 @@ namespace RTCV.UI
                 logger.Trace("Starting Load Task");
                 var r = await Task.Run(() => Stockpile.Load(filename));
                 logger.Trace("Load Task Done");
+
                 if (r.Failed)
                 {
                     logger.Trace("Load Task Failed");
@@ -440,10 +498,14 @@ namespace RTCV.UI
                     //Update the current stockpile to this one
                     StockpileManagerUISide.SetCurrentStockpile(sks);
 
+
+                    if (!CheckForEmulators(sks))
+                        return;
+
                     logger.Trace("Populating DGV");
                     foreach (StashKey key in sks.StashKeys)
                     {
-                        dgvStockpile?.Rows.Add(key, key.GameName, key.SystemName, key.SystemCore, key.Note);
+                        dgvStockpile?.Rows.Add(key, key.GameName, key.SystemName, key.SystemCore, key.EmuVer, key.Note);
                     }
 
                     btnSaveStockpile.Enabled = true;
@@ -459,7 +521,7 @@ namespace RTCV.UI
                 dgvStockpile.ClearSelection();
                 StockpileManagerUISide.StockpileChanged();
 
-                UnsavedEdits = false;
+                UnsavedEdits = true;
             }
             finally
             {
@@ -492,9 +554,12 @@ namespace RTCV.UI
                     //Populate the dgv
                     RtcCore.OnProgressBarUpdate(sks, new ProgressBarEventArgs($"Populating UI", 95));
 
+                    if (!CheckForEmulators(sks))
+                        return;
+
                     foreach (StashKey key in sks.StashKeys)
                     {
-                        dgvStockpile?.Rows.Add(key, key.GameName, key.SystemName, key.SystemCore, key.Note);
+                        dgvStockpile?.Rows.Add(key, key.GameName, key.SystemName, key.SystemCore, key.EmuVer, key.Note);
                     }
 
                     UnsavedEdits = true;
@@ -789,7 +854,7 @@ namespace RTCV.UI
             }
         }
 
-        private void StockpileUp(object sender, EventArgs e)
+        private async void StockpileUp(object sender, EventArgs e)
         {
             if (dgvStockpile.SelectedRows.Count == 0)
             {
@@ -811,11 +876,11 @@ namespace RTCV.UI
 
             if (_loadEntryWhenSelectedWithArrows)
             {
-                HandleCellClick(dgvStockpile, new DataGridViewCellEventArgs(0, dgvStockpile.SelectedRows[0].Index));
+                await Task.Run(() => HandleCellClick(dgvStockpile, new DataGridViewCellEventArgs(0, dgvStockpile.SelectedRows[0].Index)));
             }
         }
 
-        private void StockpileDown(object sender, EventArgs e)
+        private async void StockpileDown(object sender, EventArgs e)
         {
             if (dgvStockpile.SelectedRows.Count == 0)
             {
@@ -837,7 +902,7 @@ namespace RTCV.UI
 
             if (_loadEntryWhenSelectedWithArrows)
             {
-                HandleCellClick(dgvStockpile, new DataGridViewCellEventArgs(0, dgvStockpile.SelectedRows[0].Index));
+                await Task.Run(() => HandleCellClick(dgvStockpile, new DataGridViewCellEventArgs(0, dgvStockpile.SelectedRows[0].Index)));
             }
         }
 
@@ -848,6 +913,7 @@ namespace RTCV.UI
             dgvStockpile.DragEnter += HandleDragEnter;
         }
 
+        internal ToolStripButton UpdateEmuVersionButton;
         private void HandleGlitchHarvesterSettingsMouseDown(object sender, MouseEventArgs e)
         {
             Point locate = e.GetMouseLocation(sender);
@@ -857,6 +923,7 @@ namespace RTCV.UI
             bool gameNameVisible = columns["GameName"]!.Visible;
             bool systemNameVisible = columns["SystemName"]!.Visible;
             bool systemCoreVisible = columns["SystemCore"]!.Visible;
+            bool emuVerVisible = columns["EmuVer"]!.Visible;
             
             new ContextMenuBuilder()
                 .AddHeader("Stockpile Manager Settings")
@@ -891,9 +958,38 @@ namespace RTCV.UI
                 .AddItem("Show System Core", (ob, ev)
                     => columns["SystemCore"]!.Visible = !systemCoreVisible,
                     isChecked: systemCoreVisible)
+
+                .AddItem("Show Emulator Version", (ob, ev)
+                    => columns["EmuVer"]!.Visible = !emuVerVisible,
+                    isChecked: emuVerVisible)
+
+                .AddSeparator()
+
+                .AddItem("Update Emulator Version", (ob, ev)
+                    => UpdateEmuVersionButton_Click(ob, ev))
                 
                 .Build()
                 .Show(this, locate);
         }
+
+        private void UpdateEmuVersionButton_Click(object sender, EventArgs e)
+        {
+            var form = new StockpileEmuVersionForm(false);
+
+            // start/show the control
+            form.ShowDialog();
+
+            if (form.SelectedVersion != null)
+            {
+                foreach (DataGridViewRow row in dgvStockpile.SelectedRows)
+                {
+                    ((StashKey)row.Cells[0].Value).EmuVer = form.SelectedVersion;
+                    row.Cells[EmuVer.Index].Value = form.SelectedVersion;
+                }
+
+                UnsavedEdits = true;
+            }
+        }
+
     }
 }

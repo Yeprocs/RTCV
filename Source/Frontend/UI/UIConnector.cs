@@ -7,6 +7,8 @@ namespace RTCV.UI
     using RTCV.NetCore.Enums;
     using RTCV.Common;
     using RTCV.UI.Modular;
+    using NLog;
+    using System.Windows.Forms;
 
     public class UIConnector : IRoutable, IDisposable
     {
@@ -44,6 +46,12 @@ namespace RTCV.UI
         {
             if (UICore.isClosing || UICore.FirstConnect)
             {
+                return;
+            }
+
+            if (VanguardImplementation.isSwapping)
+            {
+                StockpileManagerUISide.finishedClosing.TrySetResult(true);
                 return;
             }
 

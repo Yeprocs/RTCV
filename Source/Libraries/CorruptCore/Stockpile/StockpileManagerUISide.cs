@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using RTCV.NetCore;
 
@@ -28,6 +30,12 @@ namespace RTCV.CorruptCore
                 _currentStashKey = value;
             }
         }
+
+        public static TaskCompletionSource<bool> finishedClosing;
+        public static TaskCompletionSource<bool> finishedSwapping;
+        public static int timeout = 20;
+        public static Task timeoutTask;
+
         public static StashKey CurrentSavestateStashKey { get; set; }
 
         [SuppressMessage("Microsoft.Design", "CA2211", Justification = "This field cannot be made private or const because it is used by stubs")]
@@ -64,7 +72,7 @@ namespace RTCV.CorruptCore
             });
         }
 
-        public static bool ApplyStashkey(StashKey sk, bool loadBeforeOperation = true, bool clearUnitsBeforeApply = true)
+        public static async Task<bool> ApplyStashkey(StashKey sk, bool loadBeforeOperation = true, bool clearUnitsBeforeApply = true)
         {
             PreApplyStashkey(clearUnitsBeforeApply);
 
@@ -72,7 +80,7 @@ namespace RTCV.CorruptCore
 
             if (loadBeforeOperation)
             {
-                if (!LoadState(sk))
+                if (!(await LoadState(sk)))
                 {
                     return isCorruptionApplied;
                 }
@@ -125,7 +133,8 @@ namespace RTCV.CorruptCore
                 SystemCore = psk.SystemCore,
                 GameName = psk.GameName,
                 SyncSettings = psk.SyncSettings,
-                StateLocation = psk.StateLocation
+                StateLocation = psk.StateLocation,
+                EmuVer = psk.EmuVer
             };
 
 
@@ -135,7 +144,7 @@ namespace RTCV.CorruptCore
             StashHistory.Add(CurrentStashkey);
         }
 
-        public static bool Corrupt(bool loadBeforeOperation = true)
+        public static async Task<bool> Corrupt(bool loadBeforeOperation = true)
         {
             string saveStateWord = "Savestate";
 
@@ -160,6 +169,25 @@ namespace RTCV.CorruptCore
                 return false;
             }
 
+            if (!String.Equals(psk.EmuVer, new DirectoryInfo(RtcCore.EmuDir).Name, StringComparison.OrdinalIgnoreCase))
+            {
+                CancellationTokenSource cts = new CancellationTokenSource();
+                timeoutTask = Task.Delay(TimeSpan.FromSeconds(timeout), cts.Token);
+                LocalNetCoreRouter.QueryRoute<bool>(Endpoints.UI, NetCore.Commands.Remote.SwapImplementation, new object[] { psk.EmuVer });
+
+                Task completedTask = await Task.WhenAny(StockpileManagerUISide.finishedSwapping.Task, timeoutTask).ConfigureAwait(false);
+                if (completedTask == timeoutTask)
+                {
+                    LocalNetCoreRouter.Route(Endpoints.UI, NetCore.Commands.Remote.UnlockInterface, true);
+                    return false;
+                }
+                else
+                {
+                    cts.Cancel();
+                }
+            }
+            
+
             string currentGame = (string)AllSpec.VanguardSpec[VSPEC.GAMENAME];
             string currentCore = (string)AllSpec.VanguardSpec[VSPEC.SYSTEMCORE];
             if (UseSavestates && (currentGame == null || psk.GameName != currentGame || psk.SystemCore != currentCore))
@@ -175,7 +203,8 @@ namespace RTCV.CorruptCore
                 SystemCore = psk.SystemCore,
                 GameName = psk.GameName,
                 SyncSettings = psk.SyncSettings,
-                StateLocation = psk.StateLocation
+                StateLocation = psk.StateLocation,
+                EmuVer = psk.EmuVer
             };
 
 
@@ -197,6 +226,7 @@ namespace RTCV.CorruptCore
             }
 
             PostApplyStashkey(CurrentStashkey);
+            LocalNetCoreRouter.Route(Endpoints.UI, NetCore.Commands.Remote.UnlockInterface, true);
             return isCorruptionApplied;
         }
 
@@ -205,7 +235,7 @@ namespace RTCV.CorruptCore
             StashHistory.RemoveAt(0);
         }
 
-        public static bool InjectFromStashkey(StashKey sk, bool loadBeforeOperation = true)
+        public static async Task<bool> InjectFromStashkey(StashKey sk, bool loadBeforeOperation = true)
         {
             string saveStateWord = "Savestate";
 
@@ -243,12 +273,13 @@ namespace RTCV.CorruptCore
                 SystemCore = psk.SystemCore,
                 GameName = psk.GameName,
                 SyncSettings = psk.SyncSettings,
-                StateLocation = psk.StateLocation
+                StateLocation = psk.StateLocation,
+                EmuVer = psk.EmuVer
             };
 
             if (loadBeforeOperation)
             {
-                if (!LoadState(CurrentStashkey))
+                if (!(await LoadState(CurrentStashkey)))
                 {
                     return false;
                 }
@@ -269,7 +300,7 @@ namespace RTCV.CorruptCore
             return isCorruptionApplied;
         }
 
-        public static bool OriginalFromStashkey(StashKey sk)
+        public static async Task<bool> OriginalFromStashkey(StashKey sk)
         {
             PreApplyStashkey();
 
@@ -281,7 +312,7 @@ namespace RTCV.CorruptCore
 
             bool isCorruptionApplied = false;
 
-            if (!LoadState(sk, true, false))
+            if (!(await LoadState(sk, true, false)))
             {
                 return isCorruptionApplied;
             }
@@ -290,7 +321,7 @@ namespace RTCV.CorruptCore
             return isCorruptionApplied;
         }
 
-        public static bool MergeStashkeys(List<StashKey> sks, bool loadBeforeOperation = true)
+        public async static Task<bool> MergeStashkeys(List<StashKey> sks, bool loadBeforeOperation = true)
         {
             PreApplyStashkey();
 
@@ -347,7 +378,8 @@ namespace RTCV.CorruptCore
                     SystemCore = master.SystemCore,
                     GameName = master.GameName,
                     SyncSettings = master.SyncSettings,
-                    StateLocation = master.StateLocation
+                    StateLocation = master.StateLocation,
+                    EmuVer = master.EmuVer
                 };
 
 
@@ -355,7 +387,7 @@ namespace RTCV.CorruptCore
 
                 if (loadBeforeOperation)
                 {
-                    if (!LoadState(CurrentStashkey))
+                    if (!( await LoadState(CurrentStashkey)))
                     {
                         return isCorruptionApplied;
                     }
@@ -379,9 +411,28 @@ namespace RTCV.CorruptCore
             return false;
         }
 
-        public static bool LoadState(StashKey sk, bool reloadRom = true, bool applyBlastLayer = true)
+        public static async Task<bool> LoadState(StashKey sk, bool reloadRom = true, bool applyBlastLayer = true)
         {
+            if (!String.Equals(sk.EmuVer, new DirectoryInfo(RtcCore.EmuDir).Name, StringComparison.OrdinalIgnoreCase))
+            {
+                CancellationTokenSource cts = new CancellationTokenSource();
+                timeoutTask = Task.Delay(TimeSpan.FromSeconds(timeout), cts.Token);
+                LocalNetCoreRouter.QueryRoute<bool>(Endpoints.UI, NetCore.Commands.Remote.SwapImplementation, new object[] { sk.EmuVer });
+
+                Task completedTask = await Task.WhenAny(StockpileManagerUISide.finishedSwapping.Task, timeoutTask).ConfigureAwait(false);
+                if (completedTask == timeoutTask)
+                {
+                    LocalNetCoreRouter.Route(Endpoints.UI, NetCore.Commands.Remote.UnlockInterface, true);
+                    return false;
+                }
+                else
+                {
+                    cts.Cancel();
+                }
+            }
+
             bool success = LocalNetCoreRouter.QueryRoute<bool>(NetCore.Endpoints.CorruptCore, NetCore.Commands.Remote.LoadState, new object[] { sk, reloadRom, applyBlastLayer }, true);
+            LocalNetCoreRouter.Route(Endpoints.UI, NetCore.Commands.Remote.UnlockInterface, true);
             return success;
         }
 

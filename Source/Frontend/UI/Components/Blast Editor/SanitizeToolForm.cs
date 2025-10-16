@@ -286,7 +286,8 @@ namespace RTCV.UI
                 SystemCore = oldSk.SystemCore,
                 GameName = oldSk.GameName,
                 SyncSettings = oldSk.SyncSettings,
-                StateLocation = oldSk.StateLocation
+                StateLocation = oldSk.StateLocation,
+                EmuVer = oldSk.EmuVer
             };
             newSk.BlastLayer = (BlastLayer)oldSk.BlastLayer.Clone();
             StockpileManagerUISide.StashHistory.Add(newSk);
@@ -323,7 +324,8 @@ namespace RTCV.UI
                 SystemCore = oldSk.SystemCore,
                 GameName = oldSk.GameName,
                 SyncSettings = oldSk.SyncSettings,
-                StateLocation = oldSk.StateLocation
+                StateLocation = oldSk.StateLocation,
+                EmuVer = oldSk.EmuVer
             };
             newSk.BlastLayer = (BlastLayer)oldSk.BlastLayer.Clone();
             StockpileManagerUISide.StashHistory.Add(newSk);
@@ -390,7 +392,8 @@ namespace RTCV.UI
                 SystemCore = originalStashkey.SystemCore,
                 GameName = originalStashkey.GameName,
                 SyncSettings = originalStashkey.SyncSettings,
-                StateLocation = originalStashkey.StateLocation
+                StateLocation = originalStashkey.StateLocation,
+                EmuVer = originalStashkey.EmuVer
             };
             internalSK.BlastLayer = blClone;
             OriginalLayer = blClone;
@@ -522,7 +525,7 @@ namespace RTCV.UI
         internal async Task LoadCorrupt()
         {
             internalSK.BlastLayer = new BlastLayer(shownHalf);
-            S.GET<GlitchHarvesterBlastForm>().IsCorruptionApplied = internalSK.Run();
+            S.GET<GlitchHarvesterBlastForm>().IsCorruptionApplied = await internalSK.Run();
 
             await Task.Delay(1);
         }
@@ -554,7 +557,7 @@ namespace RTCV.UI
 
         internal async Task Replay()
         {
-            S.GET<GlitchHarvesterBlastForm>().IsCorruptionApplied = internalSK.Run();
+            S.GET<GlitchHarvesterBlastForm>().IsCorruptionApplied = await internalSK.Run();
 
             await Task.Delay(1);
         }
