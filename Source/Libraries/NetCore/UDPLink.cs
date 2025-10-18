@@ -1,10 +1,14 @@
 namespace RTCV.NetCore
 {
     using System;
+    using System.Collections.Generic;
     using System.Net;
     using System.Net.Sockets;
     using System.Text;
     using System.Threading;
+    using System.Windows.Forms;
+    using Newtonsoft.Json;
+    using Newtonsoft.Json.Linq;
     using RTCV.NetCore.Enums;
 
     public class UDPLink : IDisposable
@@ -136,7 +140,20 @@ namespace RTCV.NetCore
                     }
                     if (bytes != null)
                     {
-                        spec.Connector.hub.QueueMessage(new NetCoreSimpleMessage(Encoding.ASCII.GetString(bytes, 0, bytes.Length)));
+                        string byteString = Encoding.UTF8.GetString(bytes, 0, bytes.Length);
+
+                        // if there's an objectValue, it's an advanced message
+                        if (byteString.Contains("objectValue"))
+                        {
+                            NetCoreAdvancedMessage message = JsonConvert.DeserializeObject<NetCoreAdvancedMessage>(byteString);
+                            JArray jArray = (JArray)message.objectValue;
+                            message.objectValue = jArray.ToObject<List<object>>().ToArray();
+                            spec.Connector.hub.QueueMessage(message);
+                        }
+                        else
+                        {
+                            spec.Connector.hub.QueueMessage(new NetCoreSimpleMessage(byteString));
+                        }
                     }
 
                     //Sleep if there's no more data

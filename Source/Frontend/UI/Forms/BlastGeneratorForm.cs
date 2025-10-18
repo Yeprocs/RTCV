@@ -11,6 +11,7 @@ namespace RTCV.UI
     using RTCV.NetCore;
     using RTCV.Common;
     using RTCV.UI.Components;
+    using System.Threading.Tasks;
 
     // 0  dgvBlastProtoReference
     // 1  dgvRowDirty
@@ -31,7 +32,7 @@ namespace RTCV.UI
     //TYPE = BLASTUNITTYPE
     //MODE = GENERATIONMODE
 
-    #pragma warning disable CA2213 //Component designer classes generate their own Dispose method
+#pragma warning disable CA2213 //Component designer classes generate their own Dispose method
     public partial class BlastGeneratorForm : Form, IColorize
     {
         private enum BlastGeneratorColumn
@@ -305,7 +306,7 @@ namespace RTCV.UI
             }
         }
 
-        private void LoadAndCorrupt(object sender, EventArgs e)
+        private async void LoadAndCorrupt(object sender, EventArgs e)
         {
             string saveStateWord = "Savestate";
 
@@ -339,12 +340,21 @@ namespace RTCV.UI
                         SystemCore = psk.SystemCore,
                         GameName = psk.GameName,
                         SyncSettings = psk.SyncSettings,
-                        StateLocation = psk.StateLocation
+                        StateLocation = psk.StateLocation,
+                        EmuVer = psk.EmuVer
                     };
                 }
                 else
                 {
                     newSk = (StashKey)_sk.Clone();
+                }
+
+                if (!String.Equals(newSk.EmuVer, new DirectoryInfo(RtcCore.EmuDir).Name, StringComparison.OrdinalIgnoreCase))
+                {
+                    
+                    if (!(await VanguardImplementation.SwapImplementation(newSk.EmuVer)))
+                        return;
+                    LocalNetCoreRouter.Route(Endpoints.UI, NetCore.Commands.Remote.UnlockInterface, true);
                 }
 
                 BlastLayer bl = GenerateBlastLayers(true, true);
@@ -394,7 +404,8 @@ namespace RTCV.UI
                         SystemCore = psk.SystemCore,
                         GameName = psk.GameName,
                         SyncSettings = psk.SyncSettings,
-                        StateLocation = psk.StateLocation
+                        StateLocation = psk.StateLocation,
+                        EmuVer = psk.EmuVer
                     };
                 }
                 else
@@ -518,7 +529,8 @@ namespace RTCV.UI
                             SystemCore = psk.SystemCore,
                             GameName = psk.GameName,
                             StateLocation = psk.StateLocation,
-                            SyncSettings = psk.SyncSettings
+                            SyncSettings = psk.SyncSettings,
+                            EmuVer = psk.EmuVer
                         };
                     }
                     else

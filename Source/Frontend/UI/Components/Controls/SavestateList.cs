@@ -8,6 +8,7 @@ namespace RTCV.UI.Components.Controls
     using System.Drawing.Design;
     using System.IO;
     using System.Linq;
+    using System.Threading.Tasks;
     using System.Windows.Forms;
     using CorruptCore;
     using NetCore;
@@ -255,7 +256,8 @@ namespace RTCV.UI.Components.Controls
                             SystemCore = psk.SystemCore,
                             GameName = psk.GameName,
                             SyncSettings = psk.SyncSettings,
-                            StateLocation = psk.StateLocation
+                            StateLocation = psk.StateLocation,
+                            EmuVer = psk.EmuVer
                         };
 
                         newStashkey.BlastLayer = new BlastLayer();
@@ -268,7 +270,7 @@ namespace RTCV.UI.Components.Controls
                         StashKey sk = StockpileManagerUISide.SaveState();
                         RegisterStashKeyTo(holder, sk);
                     })
-                    .AddItem("Load this entry", (ob, ev) =>
+                    .AddItem("Load this entry", async (ob, ev) =>
                     {
                         var holder = (SavestateHolder)((Button)sender).Parent;
                         StashKey psk = holder.sk;
@@ -279,7 +281,7 @@ namespace RTCV.UI.Components.Controls
                                 return;
                             }
 
-                            StockpileManagerUISide.LoadState(psk);
+                            await StockpileManagerUISide.LoadState(psk);
                         }
                         else
                         {
@@ -404,7 +406,7 @@ namespace RTCV.UI.Components.Controls
             return true;
         }
 
-        public void LoadCurrentState()
+        public async Task LoadCurrentState()
         {
             StashKey psk = SelectedHolder?.sk;
             if (psk != null)
@@ -414,7 +416,7 @@ namespace RTCV.UI.Components.Controls
                     return;
                 }
 
-                StockpileManagerUISide.LoadState(psk);
+                await StockpileManagerUISide.LoadState(psk);
             }
             else
             {
@@ -524,7 +526,7 @@ namespace RTCV.UI.Components.Controls
             }
         }
 
-        internal void LoadPreviousSavestateNow()
+        internal async Task LoadPreviousSavestateNow()
         {
             var sk = SelectedHolder?.sk;
 
@@ -549,8 +551,7 @@ namespace RTCV.UI.Components.Controls
                 return;
             }
 
-
-            StockpileManagerUISide.LoadState(prevHolder.sk);
+            await StockpileManagerUISide.LoadState(prevHolder.sk);
             StockpileManagerUISide.CurrentStashkey = null;
             S.GET<GlitchHarvesterBlastForm>().IsCorruptionApplied = false;
             LocalNetCoreRouter.Route(NetCore.Endpoints.CorruptCore, NetCore.Commands.Remote.ClearBlastlayerCache, false);

@@ -17,6 +17,7 @@ namespace RTCV.UI
     using RTCV.UI.Modular;
     using RTCV.NetCore.Commands;
     using System.Dynamic;
+    using System.Threading.Tasks;
 
     public static class UICore
     {
@@ -216,6 +217,7 @@ namespace RTCV.UI
 
                 if (focusCoreForm)
                 {
+                    cf.BringToFront();
                     cf.Focus();
                 }
             }
@@ -443,21 +445,21 @@ namespace RTCV.UI
                     break;
 
                 case "Load and Corrupt":
-                    SyncObjectSingleton.FormExecute(() =>
+                    SyncObjectSingleton.FormExecute(async () =>
                     {
                         S.GET<GlitchHarvesterBlastForm>().loadBeforeOperation = true;
-                        S.GET<GlitchHarvesterBlastForm>().Corrupt(null, null);
+                        await Task.Run(() => S.GET<GlitchHarvesterBlastForm>().Corrupt(null, null));
                     });
                     break;
 
                 case "Just Corrupt":
                     AllSpec.CorruptCoreSpec.Update(VSPEC.STEP_RUNBEFORE, true);
 
-                    SyncObjectSingleton.FormExecute(() =>
+                    SyncObjectSingleton.FormExecute(async () =>
                     {
                         bool isload = S.GET<GlitchHarvesterBlastForm>().loadBeforeOperation;
                         S.GET<GlitchHarvesterBlastForm>().loadBeforeOperation = false;
-                        S.GET<GlitchHarvesterBlastForm>().Corrupt(null, null);
+                        await Task.Run(() => S.GET<GlitchHarvesterBlastForm>().Corrupt(null, null));
                         S.GET<GlitchHarvesterBlastForm>().loadBeforeOperation = isload;
                     });
                     break;
@@ -477,11 +479,11 @@ namespace RTCV.UI
                     // COPY FROM JUST CORRUPT
                     AllSpec.CorruptCoreSpec.Update(VSPEC.STEP_RUNBEFORE, true);
 
-                    SyncObjectSingleton.FormExecute(() =>
+                    SyncObjectSingleton.FormExecute(async () =>
                     {
                         bool isload = S.GET<GlitchHarvesterBlastForm>().loadBeforeOperation;
                         S.GET<GlitchHarvesterBlastForm>().loadBeforeOperation = false;
-                        S.GET<GlitchHarvesterBlastForm>().Corrupt(null, null);
+                        await Task.Run(() => S.GET<GlitchHarvesterBlastForm>().Corrupt(null, null));
                         S.GET<GlitchHarvesterBlastForm>().loadBeforeOperation = isload;
                     });
                     //--------------------------------------
@@ -506,7 +508,7 @@ namespace RTCV.UI
 
                 case "Reload Corruption":
 
-                    SyncObjectSingleton.FormExecute(() =>
+                    SyncObjectSingleton.FormExecute(async () =>
                     {
                         var sh = S.GET<StashHistoryForm>();
                         var sm = S.GET<StockpileManagerForm>();
@@ -523,7 +525,7 @@ namespace RTCV.UI
 
                             if (rows.Count > 1)
                             {
-                                ghb.Corrupt(null, null);
+                                await Task.Run(() => ghb.Corrupt(null, null));
                             }
                             else
                             {
@@ -729,6 +731,9 @@ namespace RTCV.UI
 
                 S.GET<CoreForm>().btnAutoCorrupt.Visible = false;
             }
+
+            S.GET<GeneralParametersForm>().UpdateMaxIntensity();
+            S.GET<GlitchHarvesterIntensityForm>().UpdateMaxIntensity();
         }
 
         private static void toggleLimiterBoxSource(bool setToBindingSource)
@@ -767,18 +772,23 @@ namespace RTCV.UI
             }
         }
 
-        public static void LoadLists(string dir)
+        public static void LoadLists(List<string> dirs)
         {
-            if (!Directory.Exists(dir))
+            foreach (string dir in dirs)
             {
-                return;
+                if (!Directory.Exists(dir))
+                {
+                    return;
+                }
             }
 
 
             //x.Substring(x.LastIndexOf('\\')+1)[0] != '$'
             //checks if first char is $
 
-            string[] paths = Directory.GetFiles(dir).Where(x => x.EndsWith(".txt", StringComparison.OrdinalIgnoreCase) && x.Substring(x.LastIndexOf('\\') + 1)[0] != '$').ToArray();
+            var allFiles = dirs.SelectMany(dir => Directory.GetFiles(dir)).ToList();
+
+            string[] paths = allFiles.Where(x => x.EndsWith(".txt", StringComparison.OrdinalIgnoreCase) && x.Substring(x.LastIndexOf('\\') + 1)[0] != '$').ToArray();
             paths = paths.OrderBy(x => x).ToArray();
 
             List<string> hashes = Filtering.LoadListsFromPaths(paths);
@@ -787,6 +797,7 @@ namespace RTCV.UI
             {
                 Filtering.RegisterListInUI(Filtering.Hash2NameDico[hash], hash);
             }
+            
 
             toggleLimiterBoxSource(true);
         }
