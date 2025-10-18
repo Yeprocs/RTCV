@@ -6,11 +6,11 @@ namespace RTCV.UI
     using System.Linq;
     using System.Windows.Forms;
     using RTCV.Common;
-    using RTCV.CorruptCore;
-    using RTCV.NetCore;
-    using RTCV.NetCore.Commands;
-    using RTCV.UI.Components.Controls;
-    using RTCV.UI.Modular;
+    using CorruptCore;
+    using NetCore;
+    using NetCore.Commands;
+    using Components.Controls;
+    using Modular;
 
     [SuppressMessage("Microsoft.Designer", "CA2213:Disposable types are not disposed", Justification = "Designer classes have their own Dispose method")]
     public partial class CorruptionEngineForm : ComponentForm, IBlockable
@@ -99,24 +99,7 @@ namespace RTCV.UI
         public void ResyncAllEngines()
         {
             //dontUpdate = true;
-            switch (RtcCore.CurrentPrecision)
-            {
-                case 1:
-                    cbCustomPrecision.SelectedIndex = 0;
-                    break;
-                case 2:
-                    cbCustomPrecision.SelectedIndex = 1;
-                    break;
-                case 4:
-                    cbCustomPrecision.SelectedIndex = 2;
-                    break;
-                case 8:
-                    cbCustomPrecision.SelectedIndex = 3;
-                    break;
-                default:
-                    cbCustomPrecision.SelectedIndex = 0;
-                    break;
-            }
+            cbCustomPrecision.SelectedIndex = (int)Math.Log(RtcCore.CurrentPrecision, 2);
 
             nmAlignment.Value = Math.Max(nmAlignment.Minimum, Math.Min(nmAlignment.Maximum, RtcCore.Alignment));
             cbUseAlignment.Checked = RtcCore.UseAlignment;
@@ -401,7 +384,7 @@ namespace RTCV.UI
             cbSelectedEngine.BringToFront();
             pnCustomPrecision.BringToFront();
 
-            LocalNetCoreRouter.Route(NetCore.Endpoints.CorruptCore, NetCore.Commands.Remote.ClearStepBlastUnits, null, true);
+            LocalNetCoreRouter.Route(Endpoints.CorruptCore, Remote.ClearStepBlastUnits, null, true);
 
 
             //Calls methods for selecting and deselecting if a plugin is stored in the SelectedPluginEngine var
@@ -484,12 +467,12 @@ namespace RTCV.UI
 
         internal void ClearCheats(object sender, EventArgs e)
         {
-            LocalNetCoreRouter.Route(NetCore.Endpoints.CorruptCore, NetCore.Commands.Remote.ClearStepBlastUnits, null, true);
+            LocalNetCoreRouter.Route(Endpoints.CorruptCore, Remote.ClearStepBlastUnits, null, true);
         }
 
-        private void UpdateMinMaxBoxes(int precision)
+        private void UpdateMinMaxBoxes()
         {
-            NightmareEngineControl.UpdateMinMaxBoxes(precision);
+            NightmareEngineControl.UpdateMinMaxBoxes();
         }
 
         private void UpdateCustomPrecision(object sender, EventArgs e)
@@ -501,25 +484,10 @@ namespace RTCV.UI
             {
                 if (cbCustomPrecision.SelectedIndex != -1)
                 {
-                    int precision = 0;
-                    switch (cbCustomPrecision.SelectedIndex)
-                    {
-                        case 0:
-                            precision = 1;
-                            break;
-                        case 1:
-                            precision = 2;
-                            break;
-                        case 2:
-                            precision = 4;
-                            break;
-                        case 3:
-                            precision = 8;
-                            break;
-                    }
+                    int precision = (int)Math.Pow(2, cbCustomPrecision.SelectedIndex);
                     RtcCore.CurrentPrecision = precision;
-
-                    UpdateMinMaxBoxes(precision);
+                    UpdateMinMaxBoxes();
+                    
                     nmAlignment.Maximum = precision - 1;
                     S.GET<CustomEngineConfigForm>().cbCustomPrecision.SelectedIndex = cbCustomPrecision.SelectedIndex;
                     S.GET<CustomEngineConfigForm>().UpdateMinMaxBoxes(precision);

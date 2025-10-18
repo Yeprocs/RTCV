@@ -46,22 +46,7 @@ namespace RTCV.UI
             {
                 if (cbCustomPrecision.SelectedIndex != -1)
                 {
-                    int precision = 0;
-                    switch (cbCustomPrecision.SelectedIndex)
-                    {
-                        case 0:
-                            precision = 1;
-                            break;
-                        case 1:
-                            precision = 2;
-                            break;
-                        case 2:
-                            precision = 4;
-                            break;
-                        case 3:
-                            precision = 8;
-                            break;
-                    }
+                    int precision = (int)Math.Pow(2, cbCustomPrecision.SelectedIndex);
                     if (!DontUpdateSpec)
                     {
                         RtcCore.CurrentPrecision = precision;
@@ -577,82 +562,82 @@ namespace RTCV.UI
 
                 switch (CustomEngine.Source)
                 {
-                    case (BlastUnitSource.STORE):
+                    case BlastUnitSource.STORE:
                         rbUnitSourceStore.Checked = true;
                         break;
-                    case (BlastUnitSource.VALUE):
+                    case BlastUnitSource.VALUE:
                         rbUnitSourceValue.Checked = true;
                         break;
                 }
 
                 switch (CustomEngine.ValueSource)
                 {
-                    case (CustomValueSource.RANDOM):
+                    case CustomValueSource.RANDOM:
                         rbRandom.Checked = true;
                         break;
-                    case (CustomValueSource.VALUELIST):
+                    case CustomValueSource.VALUELIST:
                         rbValueList.Checked = true;
                         break;
-                    case (CustomValueSource.RANGE):
+                    case CustomValueSource.RANGE:
                         rbRange.Checked = true;
                         break;
                 }
 
                 switch (CustomEngine.StoreTime)
                 {
-                    case (StoreTime.IMMEDIATE):
+                    case StoreTime.IMMEDIATE:
                         rbStoreImmediate.Checked = true;
                         break;
-                    case (StoreTime.PREEXECUTE):
+                    case StoreTime.PREEXECUTE:
                         rbStoreFirstExecute.Checked = true;
                         break;
                 }
 
                 switch (CustomEngine.StoreAddress)
                 {
-                    case (CustomStoreAddress.RANDOM):
+                    case CustomStoreAddress.RANDOM:
                         rbStoreRandom.Checked = true;
                         break;
-                    case (CustomStoreAddress.SAME):
+                    case CustomStoreAddress.SAME:
                         rbStoreSame.Checked = true;
                         break;
                 }
 
                 switch (CustomEngine.StoreType)
                 {
-                    case (StoreType.ONCE):
+                    case StoreType.ONCE:
                         rbStoreOnce.Checked = true;
                         break;
-                    case (StoreType.CONTINUOUS):
+                    case StoreType.CONTINUOUS:
                         rbStoreStep.Checked = true;
                         break;
                 }
 
                 switch (CustomEngine.LimiterTime)
                 {
-                    case (LimiterTime.NONE):
+                    case LimiterTime.NONE:
                         rbLimiterNone.Checked = true;
                         break;
-                    case (LimiterTime.GENERATE):
+                    case LimiterTime.GENERATE:
                         rbLimiterGenerate.Checked = true;
                         break;
-                    case (LimiterTime.PREEXECUTE):
+                    case LimiterTime.PREEXECUTE:
                         rbLimiterFirstExecute.Checked = true;
                         break;
-                    case (LimiterTime.EXECUTE):
+                    case LimiterTime.EXECUTE:
                         rbLimiterExecute.Checked = true;
                         break;
                 }
 
                 switch (CustomEngine.StoreLimiterSource)
                 {
-                    case (StoreLimiterSource.ADDRESS):
+                    case StoreLimiterSource.ADDRESS:
                         rbStoreModeAddress.Checked = true;
                         break;
-                    case (StoreLimiterSource.SOURCEADDRESS):
+                    case StoreLimiterSource.SOURCEADDRESS:
                         rbStoreModeSource.Checked = true;
                         break;
-                    case (StoreLimiterSource.BOTH):
+                    case StoreLimiterSource.BOTH:
                         rbStoreModeBoth.Checked = true;
                         break;
                 }
@@ -681,53 +666,26 @@ namespace RTCV.UI
                 cbUseAlignment.Checked = RtcCore.UseAlignment;
 
                 //Todo - replace this and data-bind it
-                switch (RtcCore.CurrentPrecision)
-                {
-                    case 1:
-                        S.GET<CorruptionEngineForm>().cbCustomPrecision.SelectedIndex = 0;
-                        break;
-                    case 2:
-                        S.GET<CorruptionEngineForm>().cbCustomPrecision.SelectedIndex = 1;
-                        break;
-                    case 4:
-                        S.GET<CorruptionEngineForm>().cbCustomPrecision.SelectedIndex = 2;
-                        break;
-                    case 8:
-                        S.GET<CorruptionEngineForm>().cbCustomPrecision.SelectedIndex = 3;
-                        break;
-                }
+                S.GET<CorruptionEngineForm>().cbCustomPrecision.SelectedIndex =
+                    (int)Math.Log(RtcCore.CurrentPrecision, 2);
 
-                switch (RtcCore.CurrentPrecision)
+                nmMinValue.Value = RtcCore.CurrentPrecision switch
                 {
-                    case 1:
-                        nmMinValue.Value = CustomEngine.MinValue8Bit;
-                        break;
-                    case 2:
-                        nmMinValue.Value = CustomEngine.MinValue16Bit;
-                        break;
-                    case 4:
-                        nmMinValue.Value = CustomEngine.MinValue32Bit;
-                        break;
-                    case 8:
-                        nmMinValue.Value = CustomEngine.MinValue64Bit;
-                        break;
-                }
+                    1 => CustomEngine.MinValue8Bit,
+                    2 => CustomEngine.MinValue16Bit,
+                    4 => CustomEngine.MinValue32Bit,
+                    8 => CustomEngine.MinValue64Bit,
+                    _ => nmMinValue.Value
+                };
 
-                switch (RtcCore.CurrentPrecision)
+                nmMaxValue.Value = RtcCore.CurrentPrecision switch
                 {
-                    case 1:
-                        nmMaxValue.Value = CustomEngine.MaxValue8Bit;
-                        break;
-                    case 2:
-                        nmMaxValue.Value = CustomEngine.MaxValue16Bit;
-                        break;
-                    case 4:
-                        nmMaxValue.Value = CustomEngine.MaxValue32Bit;
-                        break;
-                    case 8:
-                        nmMaxValue.Value = CustomEngine.MaxValue64Bit;
-                        break;
-                }
+                    1 => CustomEngine.MaxValue8Bit,
+                    2 => CustomEngine.MaxValue16Bit,
+                    4 => CustomEngine.MaxValue32Bit,
+                    8 => CustomEngine.MaxValue64Bit,
+                    _ => nmMaxValue.Value
+                };
             }
             finally
             {

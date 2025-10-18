@@ -172,6 +172,11 @@ namespace RTCV.CorruptCore
         public static readonly string CORE_REROLLIGNOREORIGINALSOURCE = nameof(CORE_REROLLIGNOREORIGINALSOURCE);
         public static readonly string CORE_REROLLFOLLOWENGINESETTINGS = nameof(CORE_REROLLFOLLOWENGINESETTINGS);
         public static readonly string NIGHTMARE_ALGO = nameof(NIGHTMARE_ALGO);
+        public static readonly string NIGHTMARE_SHOULDUSERANGES = nameof(NIGHTMARE_SHOULDUSERANGES);
+        public static readonly string NIGHTMARE_RANGES8BIT = nameof(NIGHTMARE_RANGES8BIT);
+        public static readonly string NIGHTMARE_RANGES16BIT = nameof(NIGHTMARE_RANGES16BIT);
+        public static readonly string NIGHTMARE_RANGES32BIT = nameof(NIGHTMARE_RANGES32BIT);
+        public static readonly string NIGHTMARE_RANGES64BIT = nameof(NIGHTMARE_RANGES64BIT);
         public static readonly string NIGHTMARE_MINVALUE8BIT = nameof(NIGHTMARE_MINVALUE8BIT);
         public static readonly string NIGHTMARE_MAXVALUE8BIT = nameof(NIGHTMARE_MAXVALUE8BIT);
         public static readonly string NIGHTMARE_MAXVALUE16BIT = nameof(NIGHTMARE_MAXVALUE16BIT);

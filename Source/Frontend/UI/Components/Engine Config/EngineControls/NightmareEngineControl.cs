@@ -1,3 +1,5 @@
+using RTCV.Common;
+
 namespace RTCV.UI.Components.EngineConfig.EngineControls
 {
     using System;
@@ -9,13 +11,18 @@ namespace RTCV.UI.Components.EngineConfig.EngineControls
     using System.Text;
     using System.Threading.Tasks;
     using System.Windows.Forms;
-    using RTCV.CorruptCore;
-    using RTCV.UI.Components.EngineConfig;
+    using CorruptCore;
+    using Controls;
+    using EngineConfig;
+    using System.Linq;
+    using System.Linq.Expressions;
 
     public partial class NightmareEngineControl : EngineConfigControl
     {
         private bool updatingMinMax = false;
         private bool updatingBlastType = false;
+        private List<Range> RangeControls => flpRanges.Controls.OfType<Range>().ToList();
+        private (ulong Min, ulong Max)[] Ranges => RangeControls.Select(r => (r.Min, r.Max)).ToArray();
 
         internal NightmareEngineControl(Point location) : base(location)
         {
@@ -44,21 +51,7 @@ namespace RTCV.UI.Components.EngineConfig.EngineControls
                 //return;
             }
 
-            switch (RtcCore.CurrentPrecision)
-            {
-                case 1:
-                    NightmareEngine.MinValue8Bit = minValue;
-                    break;
-                case 2:
-                    NightmareEngine.MinValue16Bit = minValue;
-                    break;
-                case 4:
-                    NightmareEngine.MinValue32Bit = minValue;
-                    break;
-                case 8:
-                    NightmareEngine.MinValue64Bit = minValue;
-                    break;
-            }
+            NightmareEngine.MinValue = minValue;
         }
 
         private void UpdateMaxValue(object sender, EventArgs e)
@@ -79,21 +72,7 @@ namespace RTCV.UI.Components.EngineConfig.EngineControls
                 //return;
             }
 
-            switch (RtcCore.CurrentPrecision)
-            {
-                case 1:
-                    NightmareEngine.MaxValue8Bit = maxValue;
-                    break;
-                case 2:
-                    NightmareEngine.MaxValue16Bit = maxValue;
-                    break;
-                case 4:
-                    NightmareEngine.MaxValue32Bit = maxValue;
-                    break;
-                case 8:
-                    NightmareEngine.MaxValue64Bit = maxValue;
-                    break;
-            }
+            NightmareEngine.MaxValue = maxValue;
         }
 
         private void UpdateBlastType(object sender, EventArgs e)
@@ -101,74 +80,95 @@ namespace RTCV.UI.Components.EngineConfig.EngineControls
             switch (cbBlastType.SelectedItem.ToString())
             {
                 case "RANDOM":
-                    if (!updatingBlastType) CorruptCore.NightmareEngine.Algo = NightmareAlgo.RANDOM;
+                    if (!updatingBlastType) NightmareEngine.Algo = NightmareAlgo.RANDOM;
                     nmMinValueNightmare.Enabled = true;
                     nmMaxValueNightmare.Enabled = true;
                     break;
 
                 case "RANDOMTILT":
-                    if (!updatingBlastType) CorruptCore.NightmareEngine.Algo = NightmareAlgo.RANDOMTILT;
+                    if (!updatingBlastType) NightmareEngine.Algo = NightmareAlgo.RANDOMTILT;
                     nmMinValueNightmare.Enabled = true;
                     nmMaxValueNightmare.Enabled = true;
                     break;
 
                 case "TILT":
-                    if (!updatingBlastType) CorruptCore.NightmareEngine.Algo = NightmareAlgo.TILT;
+                    if (!updatingBlastType) NightmareEngine.Algo = NightmareAlgo.TILT;
                     nmMinValueNightmare.Enabled = false;
                     nmMaxValueNightmare.Enabled = false;
                     break;
             }
         }
 
-        internal void UpdateMinMaxBoxes(int precision)
+        private void RangeChanged(object sender, EventArgs e)
+        {
+            if (updatingMinMax) return;
+            NightmareEngine.Ranges = Ranges;
+        }
+        
+        private void RangeRemoved(Range range)
+        {
+            flpRanges.Controls.Remove(range);
+            NightmareEngine.Ranges = Ranges;
+        }
+
+        private void ClickAddRange(object sender, EventArgs e)
+        {
+            AddRange();
+            NightmareEngine.Ranges = Ranges;
+        }
+
+        private void cbAdvanced_CheckedChanged(object sender, EventArgs e)
+        {
+            NightmareEngine.ShouldUseRanges = cbAdvanced.Checked;
+            pnAdvanced.Visible = cbAdvanced.Checked;
+        }
+        
+        private void AddRange()
+        {
+            var range = new Range(RangeChanged, RangeRemoved)
+            {
+                Precision = RtcCore.CurrentPrecision
+            };
+            flpRanges.Controls.Add(range);
+            
+            if (Parent is IColorize colorize)
+            {
+                colorize.Recolor();
+            }
+        }
+
+        internal void UpdateMinMaxBoxes()
         {
             updatingMinMax = true;
-            switch (precision)
+
+            nmMinValueNightmare.Maximum = RtcCore.CurrentPrecision switch
             {
-                case 1:
-                    nmMinValueNightmare.Maximum = byte.MaxValue;
-                    nmMaxValueNightmare.Maximum = byte.MaxValue;
+                1 => nmMaxValueNightmare.Maximum = byte.MaxValue,
+                2 => nmMaxValueNightmare.Maximum = ushort.MaxValue,
+                4 => nmMaxValueNightmare.Maximum = uint.MaxValue,
+                8 => nmMaxValueNightmare.Maximum = ulong.MaxValue,
+                _ => nmMinValueNightmare.Maximum
+            };
+            nmMinValueNightmare.Value = NightmareEngine.MinValue;
+            nmMaxValueNightmare.Value = NightmareEngine.MaxValue;
 
-                    nmMinValueNightmare.Value = CorruptCore.NightmareEngine.MinValue8Bit;
-                    nmMaxValueNightmare.Value = CorruptCore.NightmareEngine.MaxValue8Bit;
-
-                    break;
-
-                case 2:
-                    nmMinValueNightmare.Maximum = ushort.MaxValue;
-                    nmMaxValueNightmare.Maximum = ushort.MaxValue;
-
-                    nmMinValueNightmare.Value = CorruptCore.NightmareEngine.MinValue16Bit;
-                    nmMaxValueNightmare.Value = CorruptCore.NightmareEngine.MaxValue16Bit;
-
-                    break;
-                case 4:
-                    nmMinValueNightmare.Maximum = uint.MaxValue;
-                    nmMaxValueNightmare.Maximum = uint.MaxValue;
-
-                    nmMinValueNightmare.Value = CorruptCore.NightmareEngine.MinValue32Bit;
-                    nmMaxValueNightmare.Value = CorruptCore.NightmareEngine.MaxValue32Bit;
-
-                    break;
-                case 8:
-                    nmMinValueNightmare.Maximum = ulong.MaxValue;
-                    nmMaxValueNightmare.Maximum = ulong.MaxValue;
-
-                    nmMinValueNightmare.Value = CorruptCore.NightmareEngine.MinValue64Bit;
-                    nmMaxValueNightmare.Value = CorruptCore.NightmareEngine.MaxValue64Bit;
-
-                    break;
+            flpRanges.Controls.Clear();
+            foreach (var range in NightmareEngine.Ranges)
+            {
+                AddRange(); // Creates a range that already has the right precision
+                RangeControls.Last().Min = range.Min;
+                RangeControls.Last().Max = range.Max;
             }
+
             updatingMinMax = false;
         }
 
         public void ResyncEngineUI()
         {
-            UpdateMinMaxBoxes(RtcCore.CurrentPrecision);
+            UpdateMinMaxBoxes();
             updatingBlastType = true;
-            cbBlastType.SelectedIndex = cbBlastType.Items.IndexOf(CorruptCore.NightmareEngine.Algo.ToString());
+            cbBlastType.SelectedIndex = cbBlastType.Items.IndexOf(NightmareEngine.Algo.ToString());
             updatingBlastType = false;
-            //throw new NotImplementedException();
         }
     }
 }

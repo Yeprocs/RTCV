@@ -35,34 +35,39 @@ namespace RTCV.UI.Components.EngineConfig.EngineControls
             this.label15 = new System.Windows.Forms.Label();
             this.cbBlastType = new System.Windows.Forms.ComboBox();
             this.label9 = new System.Windows.Forms.Label();
+            this.pnNormal = new System.Windows.Forms.Panel();
+            this.cbAdvanced = new System.Windows.Forms.CheckBox();
+            this.pnAdvanced = new System.Windows.Forms.Panel();
+            this.btnAddRange = new System.Windows.Forms.Button();
+            this.flpRanges = new System.Windows.Forms.FlowLayoutPanel();
             this.engineGroupBox.SuspendLayout();
+            this.pnNormal.SuspendLayout();
+            this.pnAdvanced.SuspendLayout();
             this.SuspendLayout();
             // 
             // engineGroupBox
             // 
-            this.engineGroupBox.Controls.Add(this.label23);
-            this.engineGroupBox.Controls.Add(this.label24);
-            this.engineGroupBox.Controls.Add(this.nmMaxValueNightmare);
-            this.engineGroupBox.Controls.Add(this.nmMinValueNightmare);
-            this.engineGroupBox.Controls.Add(this.label15);
-            this.engineGroupBox.Controls.Add(this.cbBlastType);
+            this.engineGroupBox.Controls.Add(this.pnAdvanced);
+            this.engineGroupBox.Controls.Add(this.cbAdvanced);
             this.engineGroupBox.Controls.Add(this.label9);
+            this.engineGroupBox.Controls.Add(this.pnNormal);
+            this.engineGroupBox.Controls.Add(this.cbBlastType);
+            this.engineGroupBox.Controls.Add(this.label15);
             this.engineGroupBox.Size = new System.Drawing.Size(440, 199);
-            this.engineGroupBox.Controls.SetChildIndex(this.label9, 0);
-            this.engineGroupBox.Controls.SetChildIndex(this.cbBlastType, 0);
             this.engineGroupBox.Controls.SetChildIndex(this.label15, 0);
-            this.engineGroupBox.Controls.SetChildIndex(this.nmMinValueNightmare, 0);
-            this.engineGroupBox.Controls.SetChildIndex(this.nmMaxValueNightmare, 0);
-            this.engineGroupBox.Controls.SetChildIndex(this.label24, 0);
-            this.engineGroupBox.Controls.SetChildIndex(this.label23, 0);
             this.engineGroupBox.Controls.SetChildIndex(this.placeholderComboBox, 0);
+            this.engineGroupBox.Controls.SetChildIndex(this.cbBlastType, 0);
+            this.engineGroupBox.Controls.SetChildIndex(this.pnNormal, 0);
+            this.engineGroupBox.Controls.SetChildIndex(this.label9, 0);
+            this.engineGroupBox.Controls.SetChildIndex(this.cbAdvanced, 0);
+            this.engineGroupBox.Controls.SetChildIndex(this.pnAdvanced, 0);
             // 
             // label24
             // 
             this.label24.AutoSize = true;
             this.label24.Font = new System.Drawing.Font("Segoe UI", 8F);
             this.label24.ForeColor = System.Drawing.Color.White;
-            this.label24.Location = new System.Drawing.Point(5, 89);
+            this.label24.Location = new System.Drawing.Point(5, 30);
             this.label24.Name = "label24";
             this.label24.Size = new System.Drawing.Size(87, 13);
             this.label24.TabIndex = 151;
@@ -73,7 +78,7 @@ namespace RTCV.UI.Components.EngineConfig.EngineControls
             this.label23.AutoSize = true;
             this.label23.Font = new System.Drawing.Font("Segoe UI", 8F);
             this.label23.ForeColor = System.Drawing.Color.White;
-            this.label23.Location = new System.Drawing.Point(5, 64);
+            this.label23.Location = new System.Drawing.Point(5, 5);
             this.label23.Name = "label23";
             this.label23.Size = new System.Drawing.Size(86, 13);
             this.label23.TabIndex = 148;
@@ -85,7 +90,7 @@ namespace RTCV.UI.Components.EngineConfig.EngineControls
             this.nmMaxValueNightmare.Font = new System.Drawing.Font("Consolas", 8.25F);
             this.nmMaxValueNightmare.ForeColor = System.Drawing.Color.White;
             this.nmMaxValueNightmare.Hexadecimal = true;
-            this.nmMaxValueNightmare.Location = new System.Drawing.Point(96, 87);
+            this.nmMaxValueNightmare.Location = new System.Drawing.Point(96, 28);
             this.nmMaxValueNightmare.Maximum = new decimal(new int[] {
             -1,
             -1,
@@ -112,7 +117,7 @@ namespace RTCV.UI.Components.EngineConfig.EngineControls
             this.nmMinValueNightmare.Font = new System.Drawing.Font("Consolas", 8.25F);
             this.nmMinValueNightmare.ForeColor = System.Drawing.Color.White;
             this.nmMinValueNightmare.Hexadecimal = true;
-            this.nmMinValueNightmare.Location = new System.Drawing.Point(96, 62);
+            this.nmMinValueNightmare.Location = new System.Drawing.Point(96, 3);
             this.nmMinValueNightmare.Maximum = new decimal(new int[] {
             -1,
             -1,
@@ -174,6 +179,70 @@ namespace RTCV.UI.Components.EngineConfig.EngineControls
             this.label9.TabIndex = 144;
             this.label9.Text = "Blast type:";
             // 
+            // pnNormal
+            // 
+            this.pnNormal.Controls.Add(this.label23);
+            this.pnNormal.Controls.Add(this.nmMinValueNightmare);
+            this.pnNormal.Controls.Add(this.label24);
+            this.pnNormal.Controls.Add(this.nmMaxValueNightmare);
+            this.pnNormal.Location = new System.Drawing.Point(1, 62);
+            this.pnNormal.Name = "pnNormal";
+            this.pnNormal.Size = new System.Drawing.Size(438, 135);
+            this.pnNormal.TabIndex = 152;
+            // 
+            // cbAdvanced
+            // 
+            this.cbAdvanced.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.cbAdvanced.AutoSize = true;
+            this.cbAdvanced.Font = new System.Drawing.Font("Segoe UI", 8F);
+            this.cbAdvanced.ForeColor = System.Drawing.Color.White;
+            this.cbAdvanced.Location = new System.Drawing.Point(358, 13);
+            this.cbAdvanced.Name = "cbAdvanced";
+            this.cbAdvanced.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
+            this.cbAdvanced.Size = new System.Drawing.Size(76, 17);
+            this.cbAdvanced.TabIndex = 152;
+            this.cbAdvanced.Text = "Advanced";
+            this.cbAdvanced.UseVisualStyleBackColor = true;
+            this.cbAdvanced.CheckedChanged += new System.EventHandler(this.cbAdvanced_CheckedChanged);
+            // 
+            // pnAdvanced
+            // 
+            this.pnAdvanced.Controls.Add(this.btnAddRange);
+            this.pnAdvanced.Controls.Add(this.flpRanges);
+            this.pnAdvanced.Location = new System.Drawing.Point(1, 58);
+            this.pnAdvanced.Name = "pnAdvanced";
+            this.pnAdvanced.Size = new System.Drawing.Size(438, 139);
+            this.pnAdvanced.TabIndex = 153;
+            this.pnAdvanced.Visible = false;
+            // 
+            // btnAddRange
+            // 
+            this.btnAddRange.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnAddRange.BackColor = System.Drawing.Color.Gray;
+            this.btnAddRange.FlatAppearance.BorderSize = 0;
+            this.btnAddRange.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnAddRange.Font = new System.Drawing.Font("Segoe UI Symbol", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+            this.btnAddRange.ForeColor = System.Drawing.Color.White;
+            this.btnAddRange.Location = new System.Drawing.Point(8, 2);
+            this.btnAddRange.Name = "btnAddRange";
+            this.btnAddRange.Size = new System.Drawing.Size(72, 23);
+            this.btnAddRange.TabIndex = 181;
+            this.btnAddRange.TabStop = false;
+            this.btnAddRange.Tag = "color:light1";
+            this.btnAddRange.Text = "Add Range";
+            this.btnAddRange.UseVisualStyleBackColor = false;
+            this.btnAddRange.Click += new System.EventHandler(this.ClickAddRange);
+            // 
+            // flpRanges
+            // 
+            this.flpRanges.AutoScroll = true;
+            this.flpRanges.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
+            this.flpRanges.Location = new System.Drawing.Point(0, 26);
+            this.flpRanges.Name = "flpRanges";
+            this.flpRanges.Padding = new System.Windows.Forms.Padding(0, 0, 0, 10);
+            this.flpRanges.Size = new System.Drawing.Size(438, 113);
+            this.flpRanges.TabIndex = 0;
+            // 
             // NightmareEngineControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -182,6 +251,9 @@ namespace RTCV.UI.Components.EngineConfig.EngineControls
             this.Size = new System.Drawing.Size(440, 199);
             this.engineGroupBox.ResumeLayout(false);
             this.engineGroupBox.PerformLayout();
+            this.pnNormal.ResumeLayout(false);
+            this.pnNormal.PerformLayout();
+            this.pnAdvanced.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -195,5 +267,10 @@ namespace RTCV.UI.Components.EngineConfig.EngineControls
         private System.Windows.Forms.Label label15;
         public System.Windows.Forms.ComboBox cbBlastType;
         private System.Windows.Forms.Label label9;
+        private System.Windows.Forms.Panel pnNormal;
+        public System.Windows.Forms.CheckBox cbAdvanced;
+        private System.Windows.Forms.Panel pnAdvanced;
+        private System.Windows.Forms.FlowLayoutPanel flpRanges;
+        private System.Windows.Forms.Button btnAddRange;
     }
 }
