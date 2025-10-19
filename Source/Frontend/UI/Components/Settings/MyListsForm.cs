@@ -261,7 +261,7 @@ namespace RTCV.UI
             RefreshLists();
         }
 
-        private void RefreshVMDFiles(object sender, EventArgs e)
+        private void RefreshListFiles(object sender, EventArgs e)
         {
             Filtering.ResetLoadedListsInUI();
 

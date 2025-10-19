@@ -774,12 +774,10 @@ namespace RTCV.UI
 
         public static void LoadLists(List<string> dirs)
         {
-            foreach (string dir in dirs)
+            dirs.RemoveAll(dir => !Directory.Exists(dir));
+            if (dirs.Count == 0)
             {
-                if (!Directory.Exists(dir))
-                {
-                    return;
-                }
+                return;
             }
 
 
