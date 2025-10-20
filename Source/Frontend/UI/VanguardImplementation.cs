@@ -278,7 +278,7 @@ namespace RTCV.UI
 
                 SyncObjectSingleton.FormExecute(() => { windowSelect.CloseSubForm(); });
                 logger.Trace("Unlocking Interface");
-                UICore.UnlockInterface();
+                SyncObjectSingleton.FormExecute(UICore.UnlockInterface);
                 logger.Trace("Load cancelled");
 
                 AutoKillSwitch.Enabled = true;

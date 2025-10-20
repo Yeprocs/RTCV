@@ -784,7 +784,7 @@ namespace RTCV.UI
             //x.Substring(x.LastIndexOf('\\')+1)[0] != '$'
             //checks if first char is $
 
-            var allFiles = dirs.SelectMany(dir => Directory.GetFiles(dir)).ToList();
+            var allFiles = dirs.SelectMany(Directory.GetFiles).ToList();
 
             string[] paths = allFiles.Where(x => x.EndsWith(".txt", StringComparison.OrdinalIgnoreCase) && x.Substring(x.LastIndexOf('\\') + 1)[0] != '$').ToArray();
             paths = paths.OrderBy(x => x).ToArray();
