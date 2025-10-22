@@ -93,6 +93,7 @@ namespace RTCV.NetCore.Commands
         public const string KeySetSystemCore = nameof(Remote) + "_" + nameof(KeySetSystemCore);
 
         public const string SwapImplementation = nameof(Remote) + "_" + nameof(SwapImplementation);
+        public const string LoadFailed = nameof(Remote) + "_" + nameof(LoadFailed);
         public const string UnlockInterface = nameof(Remote) + "_" + nameof(UnlockInterface);
         
         //HOTKEYS

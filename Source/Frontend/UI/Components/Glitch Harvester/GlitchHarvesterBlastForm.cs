@@ -135,19 +135,7 @@ namespace RTCV.UI
                     return;
             }
 
-            if (ghMode == GlitchHarvesterMode.CORRUPT)
-            {
-                IsCorruptionApplied = await StockpileManagerUISide.ApplyStashkey(StockpileManagerUISide.CurrentStashkey, loadBeforeOperation);
-            }
-            else if (ghMode == GlitchHarvesterMode.INJECT)
-            {
-                IsCorruptionApplied = await StockpileManagerUISide.InjectFromStashkey(StockpileManagerUISide.CurrentStashkey, loadBeforeOperation);
-                S.GET<StashHistoryForm>().RefreshStashHistory();
-            }
-            else if (ghMode == GlitchHarvesterMode.ORIGINAL)
-            {
-                IsCorruptionApplied = await StockpileManagerUISide.OriginalFromStashkey(StockpileManagerUISide.CurrentStashkey);
-            }
+            await ServiceStashkey();
 
             if (Render.RenderAtLoad && loadBeforeOperation)
             {
@@ -165,6 +153,60 @@ namespace RTCV.UI
             AutoKillSwitch.Enabled = killswitchWasEnabled;
 
             logger.Trace("Exiting OneTimeExecute()");
+        }
+
+        public async Task ServiceStashkey()
+        {
+            Task completedTask = null;
+            CancellationTokenSource cts = new CancellationTokenSource();
+
+            Task timeoutTask = Task.Delay(TimeSpan.FromSeconds(StockpileManagerUISide.timeout), cts.Token);
+
+            if (ghMode == GlitchHarvesterMode.CORRUPT)
+            {
+                Task<bool> task = Task.Run(() => StockpileManagerUISide.ApplyStashkey(StockpileManagerUISide.CurrentStashkey, loadBeforeOperation));
+                completedTask = await Task.WhenAny(task, timeoutTask).ConfigureAwait(false);
+                if (completedTask == task)
+                {
+                    IsCorruptionApplied = task.Result;
+                    cts.Cancel();
+                }
+                else
+                {
+                    LocalNetCoreRouter.Route(Endpoints.Vanguard, NetCore.Commands.Remote.LoadFailed, true);
+                    LocalNetCoreRouter.Route(Endpoints.UI, NetCore.Commands.Remote.UnlockInterface, true);
+                    //spec.Connector.watch.Kill();
+                }
+            }
+            else if (ghMode == GlitchHarvesterMode.INJECT)
+            {
+                Task<bool> task = Task.Run(() => StockpileManagerUISide.InjectFromStashkey(StockpileManagerUISide.CurrentStashkey, loadBeforeOperation));
+                completedTask = await Task.WhenAny(task, timeoutTask).ConfigureAwait(false);
+                if (completedTask == task)
+                {
+                    IsCorruptionApplied = task.Result;
+                    S.GET<StashHistoryForm>().RefreshStashHistory();
+                }
+                else
+                {
+                    LocalNetCoreRouter.Route(Endpoints.Vanguard, NetCore.Commands.Remote.LoadFailed, true);
+                    LocalNetCoreRouter.Route(Endpoints.UI, NetCore.Commands.Remote.UnlockInterface, true);
+                }
+            }
+            else if (ghMode == GlitchHarvesterMode.ORIGINAL)
+            {
+                Task<bool> task = Task.Run(() => StockpileManagerUISide.OriginalFromStashkey(StockpileManagerUISide.CurrentStashkey));
+                completedTask = await Task.WhenAny(task, timeoutTask).ConfigureAwait(false);
+                if (completedTask == task)
+                {
+                    IsCorruptionApplied = task.Result;
+                }
+                else
+                {
+                    LocalNetCoreRouter.Route(Endpoints.Vanguard, NetCore.Commands.Remote.LoadFailed, true);
+                    LocalNetCoreRouter.Route(Endpoints.UI, NetCore.Commands.Remote.UnlockInterface, true);
+                }
+            }
         }
 
         public void RedrawActionUI()

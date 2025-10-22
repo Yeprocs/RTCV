@@ -223,15 +223,13 @@ namespace RTCV.UI
 
             Task completedTask = null;
             CancellationTokenSource cts = new CancellationTokenSource();
-            if (StockpileManagerUISide.timeoutTask == null || StockpileManagerUISide.timeoutTask.IsCanceled)
-            {
-                StockpileManagerUISide.timeoutTask = Task.Delay(TimeSpan.FromSeconds(StockpileManagerUISide.timeout), cts.Token);
-            }
+
+            Task timeoutTask = Task.Delay(TimeSpan.FromSeconds(StockpileManagerUISide.timeout), cts.Token);
 
             isSwapping = true;
             StockpileManagerUISide.finishedClosing = new TaskCompletionSource<bool>(false);
             StockpileManagerUISide.finishedSwapping = new TaskCompletionSource<bool>(false);
-
+            
             logger.Trace("different emulator found, switching");
 
             AutoKillSwitch.Enabled = false;
@@ -257,8 +255,8 @@ namespace RTCV.UI
 
             // Wait until the UI thread has confirmed the emulator has finished closing
             // This will be when RTC has lost the TCP connection with the emulator
-            completedTask = await Task.WhenAny(StockpileManagerUISide.finishedClosing.Task, StockpileManagerUISide.timeoutTask).ConfigureAwait(false);
-            if (completedTask == StockpileManagerUISide.timeoutTask && !completedTask.IsCanceled)
+            completedTask = await Task.WhenAny(StockpileManagerUISide.finishedClosing.Task, timeoutTask).ConfigureAwait(false);
+            if (completedTask == timeoutTask && !completedTask.IsCanceled)
             {
                 SwapTimeout(windowSelect);
                 return false;
@@ -295,8 +293,8 @@ namespace RTCV.UI
 
             // Wait until the UI thread has confirmed the emulator has finished opening
             // This will be once AllSpecSent() has finished
-            completedTask = await Task.WhenAny(StockpileManagerUISide.finishedSwapping.Task, StockpileManagerUISide.timeoutTask).ConfigureAwait(false);
-            if (completedTask == StockpileManagerUISide.timeoutTask && !completedTask.IsCanceled)
+            completedTask = await Task.WhenAny(StockpileManagerUISide.finishedSwapping.Task, timeoutTask).ConfigureAwait(false);
+            if (completedTask == timeoutTask && !completedTask.IsCanceled)
             {
                 SwapTimeout(windowSelect);
                 return false;

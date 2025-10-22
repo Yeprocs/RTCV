@@ -34,7 +34,6 @@ namespace RTCV.CorruptCore
         public static TaskCompletionSource<bool> finishedClosing;
         public static TaskCompletionSource<bool> finishedSwapping;
         public static int timeout = 20;
-        public static Task timeoutTask;
 
         public static StashKey CurrentSavestateStashKey { get; set; }
 
@@ -172,7 +171,7 @@ namespace RTCV.CorruptCore
             if (!String.Equals(psk.EmuVer, new DirectoryInfo(RtcCore.EmuDir).Name, StringComparison.OrdinalIgnoreCase))
             {
                 CancellationTokenSource cts = new CancellationTokenSource();
-                timeoutTask = Task.Delay(TimeSpan.FromSeconds(timeout), cts.Token);
+                Task timeoutTask = Task.Delay(TimeSpan.FromSeconds(timeout), cts.Token);
                 LocalNetCoreRouter.QueryRoute<bool>(Endpoints.UI, NetCore.Commands.Remote.SwapImplementation, new object[] { psk.EmuVer });
 
                 Task completedTask = await Task.WhenAny(StockpileManagerUISide.finishedSwapping.Task, timeoutTask).ConfigureAwait(false);
@@ -416,7 +415,7 @@ namespace RTCV.CorruptCore
             if (!String.Equals(sk.EmuVer, new DirectoryInfo(RtcCore.EmuDir).Name, StringComparison.OrdinalIgnoreCase))
             {
                 CancellationTokenSource cts = new CancellationTokenSource();
-                timeoutTask = Task.Delay(TimeSpan.FromSeconds(timeout), cts.Token);
+                Task timeoutTask = Task.Delay(TimeSpan.FromSeconds(timeout), cts.Token);
                 LocalNetCoreRouter.QueryRoute<bool>(Endpoints.UI, NetCore.Commands.Remote.SwapImplementation, new object[] { sk.EmuVer });
 
                 Task completedTask = await Task.WhenAny(StockpileManagerUISide.finishedSwapping.Task, timeoutTask).ConfigureAwait(false);
