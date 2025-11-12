@@ -618,17 +618,14 @@ namespace RTCV.UI
             
             new ContextMenuBuilder()
                 .AddHeader("Render Output")
-                .AddItem("Start/Stop Rendering", (ob, ev) =>
+                .If(Render.IsRendering).AddItem("Stop Rendering", (ob, ev) =>
                 {
-                    if (Render.IsRendering)
-                    {
-                        Render.StopRender();
-                    }
-                    else
-                    {
-                        Render.StartRender();
-                    }
-                }, isChecked: Render.IsRendering)
+                    Render.StopRender();
+                })
+                .Else().AddItem("Start Rendering", (ob, ev) =>
+                {
+                    Render.StartRender();
+                }).EndIf()
                 .AddItem("Open RENDEROUTPUT Folder", (ob, ev) =>
                 {
                     Process.Start(Path.Combine(RtcCore.RtcDir, "RENDEROUTPUT"));
