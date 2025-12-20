@@ -10,21 +10,22 @@ using System.Security.Policy;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using RTCV.UI.Modular;
 
 namespace RTCV.UI
 {
-    public partial class StockpileEmuVersionForm : Form
+    public partial class StockpileEmuVersionForm : ColorizedForm
     {
         public string SelectedVersion;
         public StockpileEmuVersionForm(bool detected = true)
         {
             InitializeComponent();
 
-            string detected_text = "RTC has detected this stockpile does not have an associated emulator system and version. Please select the system and version this stockpile was created in.";
-            string default_text = "Please select the system and version the selected stockpile items were created in.";
+            string detectedText = "RTC has detected this stockpile does not have an associated emulator system and version. Please select the system and version this stockpile was created in.";
+            string defaultText = "Please select the system and version the selected stockpile items were created in.";
 
 
-            label1.Text = detected ? detected_text : default_text;
+            lbText.Text = detected ? detectedText : defaultText;
 
             var directories = Directory.GetDirectories(new DirectoryInfo(RtcCore.RtcDir).Parent.Parent.FullName);
             foreach(var dir in directories)
@@ -32,14 +33,14 @@ namespace RTCV.UI
                 var dirName = new DirectoryInfo(dir).Name;
                 if (dirName != "Launcher" && dirName != "RTCV")
                 { 
-                    EmuVersionDropDown.Items.Add(dirName);
+                    cbEmuVersion.Items.Add(dirName);
                 }
             }
         }
 
         private void comboBox1_Click(object sender, EventArgs e)
         {
-            EmuVersionDropDown.DroppedDown = true;
+            cbEmuVersion.DroppedDown = true;
         }
 
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
@@ -49,7 +50,7 @@ namespace RTCV.UI
 
         private void button1_Click(object sender, EventArgs e)
         {
-            SelectedVersion = (string)EmuVersionDropDown.SelectedItem;
+            SelectedVersion = (string)cbEmuVersion.SelectedItem;
             this.Close();
         }
 
