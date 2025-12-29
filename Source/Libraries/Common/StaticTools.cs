@@ -35,33 +35,29 @@ namespace RTCV.Common
         private static readonly ConcurrentDictionary<Type, object> instances = new ConcurrentDictionary<Type, object>();
         public static readonly FormRegister formRegister = new FormRegister();
         private static readonly object SingletonLock = new object();
-        private static readonly object ColorizablesLock = new object();
         private static readonly List<IColorize> Colorizables = new List<IColorize>();
 
         public static void RegisterColorizable(IColorize colorizable)
         {
-            lock (ColorizablesLock)
-            {
-                Colorizables.Add(colorizable);
-            }
+            Colorizables.Add(colorizable);
         }
 
         public static void DeregisterColorizable(IColorize colorizable)
         {
-            lock (ColorizablesLock)
-            {
-                Colorizables.Remove(colorizable);
-            }
+            Colorizables.Remove(colorizable);
         }
 
         public static void RecolorRegisteredColorizables()
         {
-            lock (ColorizablesLock)
+            List<IColorize> currentColorizables = Colorizables.Select(c => c).ToList();
+            foreach (var c in currentColorizables)
             {
-                foreach (var c in Colorizables)
-                {
-                    c.Recolor();
-                }
+                c.Recolor();
+            }
+            List<IColorize> newColorizables = Colorizables.Except(currentColorizables).ToList();
+            foreach (var c in newColorizables)
+            {
+                c.Recolor();
             }
         }
 
