@@ -33,7 +33,6 @@ namespace RTCV.UI
 		{
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(IntroForm));
             this.lbWelcome = new System.Windows.Forms.Label();
-            this.btnSimpleMode = new System.Windows.Forms.Button();
             this.btnExit = new System.Windows.Forms.Button();
             this.tbDisclaimerText = new System.Windows.Forms.RichTextBox();
             this.btnNormalMode = new System.Windows.Forms.Button();
@@ -52,25 +51,6 @@ namespace RTCV.UI
             this.lbWelcome.TabIndex = 187;
             this.lbWelcome.Text = "Please take a bit of time to read the following:";
             this.lbWelcome.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
-            // btnSimpleMode
-            // 
-            this.btnSimpleMode.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.btnSimpleMode.BackColor = System.Drawing.Color.Gray;
-            this.btnSimpleMode.FlatAppearance.BorderSize = 0;
-            this.btnSimpleMode.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnSimpleMode.Font = new System.Drawing.Font("Segoe UI", 10F);
-            this.btnSimpleMode.ForeColor = System.Drawing.Color.White;
-            this.btnSimpleMode.Location = new System.Drawing.Point(12, 420);
-            this.btnSimpleMode.Name = "btnSimpleMode";
-            this.btnSimpleMode.Size = new System.Drawing.Size(178, 32);
-            this.btnSimpleMode.TabIndex = 196;
-            this.btnSimpleMode.TabStop = false;
-            this.btnSimpleMode.Tag = "color:light1";
-            this.btnSimpleMode.Text = "Simple Mode";
-            this.btnSimpleMode.UseVisualStyleBackColor = false;
-            this.btnSimpleMode.Visible = false;
-            this.btnSimpleMode.Click += new System.EventHandler(this.SelectSimpleMode);
             // 
             // btnExit
             // 
@@ -116,9 +96,9 @@ namespace RTCV.UI
             this.btnNormalMode.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnNormalMode.Font = new System.Drawing.Font("Segoe UI", 10F);
             this.btnNormalMode.ForeColor = System.Drawing.Color.White;
-            this.btnNormalMode.Location = new System.Drawing.Point(202, 420);
+            this.btnNormalMode.Location = new System.Drawing.Point(12, 420);
             this.btnNormalMode.Name = "btnNormalMode";
-            this.btnNormalMode.Size = new System.Drawing.Size(177, 32);
+            this.btnNormalMode.Size = new System.Drawing.Size(367, 32);
             this.btnNormalMode.TabIndex = 199;
             this.btnNormalMode.TabStop = false;
             this.btnNormalMode.Tag = "color:light1";
@@ -160,7 +140,6 @@ namespace RTCV.UI
             this.ClientSize = new System.Drawing.Size(481, 464);
             this.Controls.Add(this.lbStartupMode);
             this.Controls.Add(this.cbAgree);
-            this.Controls.Add(this.btnSimpleMode);
             this.Controls.Add(this.btnNormalMode);
             this.Controls.Add(this.tbDisclaimerText);
             this.Controls.Add(this.btnExit);
@@ -181,7 +160,6 @@ namespace RTCV.UI
 
 		#endregion
         private Label lbWelcome;
-        private Button btnSimpleMode;
         private Button btnExit;
         private RichTextBox tbDisclaimerText;
         private Button btnNormalMode;

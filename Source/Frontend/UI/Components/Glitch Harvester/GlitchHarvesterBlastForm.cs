@@ -77,9 +77,6 @@ namespace RTCV.UI
                 S.GET<StockpilePlayerForm>().btnBlastToggle.ForeColor = Color.Black;
                 S.GET<StockpilePlayerForm>().btnBlastToggle.Text = "BlastLayer : ON     (Attempts to uncorrupt/recorrupt in real-time)";
 
-                S.GET<SimpleModeForm>().btnBlastToggle.BackColor = Color.FromArgb(224, 128, 128);
-                S.GET<SimpleModeForm>().btnBlastToggle.ForeColor = Color.Black;
-                S.GET<SimpleModeForm>().btnBlastToggle.Text = "BlastLayer : ON     (Attempts to uncorrupt/recorrupt in real-time)";
             }
             else
             {
@@ -91,9 +88,6 @@ namespace RTCV.UI
                 S.GET<StockpilePlayerForm>().btnBlastToggle.ForeColor = Color.White;
                 S.GET<StockpilePlayerForm>().btnBlastToggle.Text = "BlastLayer : OFF    (Attempts to uncorrupt/recorrupt in real-time)";
 
-                S.GET<SimpleModeForm>().btnBlastToggle.BackColor = S.GET<CoreForm>().btnLogo.BackColor;
-                S.GET<SimpleModeForm>().btnBlastToggle.ForeColor = Color.White;
-                S.GET<SimpleModeForm>().btnBlastToggle.Text = "BlastLayer : OFF    (Attempts to uncorrupt/recorrupt in real-time)";
             }
 
             this.updatingBackColor = false;

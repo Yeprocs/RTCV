@@ -309,7 +309,6 @@ namespace RTCV.UI
             }
 
             S.GET<CorruptionEngineForm>().SetRewindBoxes(cbClearRewind.Checked);
-            S.GET<SimpleModeForm>().SetRewindBoxes(cbClearRewind.Checked);
 
             StepActions.ClearStepActionsOnRewind = cbClearRewind.Checked;
         }

@@ -491,23 +491,6 @@ namespace RTCV.UI
 
                 coreForm.Show();
 
-                if (Params.IsParamSet("SIMPLE_MODE"))
-                {
-                    bool isSpec = (AllSpec.VanguardSpec[VSPEC.NAME] as string)?.ToUpper().Contains("STUB") ?? false;
-
-                    if (isSpec) //Simple Mode cannot run on Stubs
-                    {
-                        MessageBox.Show("Unfortunately, Simple Mode is not compatible with Stubs. RTC will now switch to Normal Mode.");
-                        Params.RemoveParam("SIMPLE_MODE");
-                    }
-                    else
-                    {
-                        DefaultGrids.simpleMode.LoadToMain();
-                        SimpleModeForm smForm = S.GET<SimpleModeForm>();
-                        smForm.EnteringSimpleMode();
-                    }
-                }
-
 
                 //UI LOAD FINISHED
 

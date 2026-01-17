@@ -48,12 +48,6 @@ namespace RTCV.UI
             this.Close();
         }
 
-        private void SelectSimpleMode(object sender, EventArgs e)
-        {
-            selection = IntroAction.SIMPLEMODE;
-            Close();
-        }
-
         private void SelectNormalMode(object sender, EventArgs e)
         {
             selection = IntroAction.NORMALMODE;
@@ -64,20 +58,19 @@ namespace RTCV.UI
         {
             if (cbAgree.Checked)
             {
-                btnSimpleMode.Visible = true;
-
-                if (btnNormalMode.Text != "Continue")
-                {
-                    lbStartupMode.Visible = true;
-                    btnNormalMode.Visible = true;
-                }
+                lbStartupMode.Visible = true;
+                btnNormalMode.Visible = true;
+            }
+            else
+            {
+                lbStartupMode.Visible = false;
+                btnNormalMode.Visible = false;
             }
         }
 
         internal void DisplayRtcvDisclaimer(string disclaimer)
         {
             cbAgree.Checked = false;
-            btnSimpleMode.Visible = false;
             lbStartupMode.Visible = false;
             btnNormalMode.Visible = false;
 
@@ -90,5 +83,5 @@ namespace RTCV.UI
         }
     }
 
-    public enum IntroAction { EXIT, SIMPLEMODE, NORMALMODE }
+    public enum IntroAction { EXIT, NORMALMODE }
 }

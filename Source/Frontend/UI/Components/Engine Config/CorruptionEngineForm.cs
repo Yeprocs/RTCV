@@ -440,7 +440,6 @@ namespace RTCV.UI
             SetRewindBoxes(((CheckBox)sender).Checked);
 
             S.GET<CustomEngineConfigForm>().SetRewindBoxes(((CheckBox)sender).Checked);
-            S.GET<SimpleModeForm>().SetRewindBoxes(((CheckBox)sender).Checked);
 
             StepActions.ClearStepActionsOnRewind = FreezeEngineControl.cbClearFreezesOnRewind.Checked;
         }

@@ -44,12 +44,10 @@ namespace RTCV.UI
                 if (value)
                 {
                     btnAutoCorrupt.Text = " Stop Auto-Corrupt";
-                    S.GET<SimpleModeForm>().btnAutoCorrupt.Text = " Stop Auto-Corrupt";
                 }
                 else
                 {
                     btnAutoCorrupt.Text = " Start Auto-Corrupt";
-                    S.GET<SimpleModeForm>().btnAutoCorrupt.Text = " Start Auto-Corrupt";
                 }
 
                 RtcCore.AutoCorrupt = value;
@@ -156,18 +154,6 @@ This message only appears once.";
                 S.GET<IntroForm>().DisplayRtcvDisclaimer(disclaimer.Replace("[ver]", RtcCore.RtcVersion));
 
                 Params.SetParam("DISCLAIMER_READ");
-
-                if (S.GET<IntroForm>().selection == IntroAction.SIMPLEMODE)
-                {
-                    Params.SetParam("SIMPLE_MODE"); //Set RTC in Simple Mode
-
-                    if (VanguardImplementation.connector.netConn.status == NetworkStatus.CONNECTED)
-                    {
-                        DefaultGrids.simpleMode.LoadToMain();
-                        SimpleModeForm smForm = S.GET<SimpleModeForm>();
-                        smForm.EnteringSimpleMode();
-                    }
-                }
 
                 Params.SetParam("COMPRESS_STOCKPILE"); //Default param
                 Params.SetParam("COMPRESS_SAVESTATES"); //Default param
@@ -329,16 +315,7 @@ This message only appears once.";
 
         public void OpenEngineConfig(object sender, EventArgs e)
         {
-            if (Params.IsParamSet("SIMPLE_MODE"))
-            {
-                DefaultGrids.simpleMode.LoadToMain();
-                SimpleModeForm smForm = S.GET<SimpleModeForm>();
-                smForm.EnteringSimpleMode();
-            }
-            else
-            {
-                DefaultGrids.engineConfig.LoadToMain();
-            }
+            DefaultGrids.engineConfig.LoadToMain();
         }
 
         private void OnAutoKillSwitchButtonMouseHover(object sender, EventArgs e)
@@ -427,26 +404,12 @@ This message only appears once.";
 
         private void OnStartEasyModeClick(object sender, MouseEventArgs e)
         {
-            bool simpleModeVisible = S.GET<SimpleModeForm>().Visible;
-
             Point locate = e.GetMouseLocation(sender);
 
             new ContextMenuBuilder()
-                .AddItem("Switch to Simple Mode", (ob, ev) =>
-                {
-                    if ((AllSpec.VanguardSpec[VSPEC.NAME] as string)?.ToUpper().Contains("SPEC") ?? false)
-                    {
-                        MessageBox.Show("Simple Mode is currently only supported on Vanguard implementations.");
-                        return;
-                    }
-                    
-                    DefaultGrids.simpleMode.LoadToMain();
-                    SimpleModeForm smForm = S.GET<SimpleModeForm>();
-                    smForm.EnteringSimpleMode();
-                }, !simpleModeVisible)
                 .AddItem("Start Auto-Corrupt With Recommended Settings for Loaded Game", (ob, ev)
                     => StartEasyMode(true),
-                    (bool)AllSpec.VanguardSpec[VSPEC.SUPPORTS_SAVESTATES] && !simpleModeVisible)
+                    (bool)AllSpec.VanguardSpec[VSPEC.SUPPORTS_SAVESTATES])
                 .AddSeparator()
                 .AddItem("Watch a Tutorial Video", (ob, ev) => Process.Start("http://rtctutorialvideo.r5x.cc/"))
                 .AddItem("Open the Online Wiki", (ob, ev) => Process.Start("https://corrupt.wiki/"))
