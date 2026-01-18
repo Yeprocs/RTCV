@@ -195,6 +195,38 @@ namespace RTCV.CorruptCore
                             allRoms.AddRange(binFiles.Select(file => Path.Combine(cueFolder, file)));
                         }
 
+                        //If it's a gdi file, find the bins
+                        if (key.RomFilename.IndexOf(".GDI", StringComparison.OrdinalIgnoreCase) >= 0)
+                        {
+                            string gdiFolder = Path.GetDirectoryName(key.RomFilename);
+                            string[] gdiLines = File.ReadAllLines(key.RomFilename);
+                            List<string> binFiles = new List<string>();
+
+                            string[] fixedGdi = new string[gdiLines.Length];
+                            for (int i = 0; i < gdiLines.Length; i++)
+                            {
+                                if (gdiLines[i].Contains(".bin"))
+                                {
+                                    int startFilename;
+                                    int endFilename = gdiLines[i].LastIndexOf('"');
+
+                                    //Just copy the old gdi into the new one
+                                    startFilename = gdiLines[i].IndexOf('"') + 1;
+                                    fixedGdi[i] = gdiLines[i];
+
+                                    binFiles.Add(gdiLines[i].Substring(startFilename, endFilename - startFilename));
+                                }
+                                else
+                                {
+                                    fixedGdi[i] = gdiLines[i];
+                                }
+                            }
+                            //Write our new gdi
+                            File.WriteAllLines(key.RomFilename, fixedGdi);
+
+                            allRoms.AddRange(binFiles.Select(file => Path.Combine(gdiFolder, file)));
+                        }
+
                         if (key.RomFilename.IndexOf(".CCD", StringComparison.OrdinalIgnoreCase) >= 0)
                         {
                             List<string> binFiles = new List<string>();
