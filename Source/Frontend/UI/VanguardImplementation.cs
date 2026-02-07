@@ -270,6 +270,7 @@ namespace RTCV.UI
                 FileName = Path.Combine(newEmuDir, "RESTARTDETACHEDRTC.bat"),
             };
 
+            // If we couldn't open the emulator for some reason, fall back to the old emulator
             if (!File.Exists(info.FileName))
             {
                 MessageBox.Show($"Couldn't find {info.FileName}! Killswitch will not work.");
@@ -278,6 +279,18 @@ namespace RTCV.UI
                 logger.Trace("Unlocking Interface");
                 SyncObjectSingleton.FormExecute(UICore.UnlockInterface);
                 logger.Trace("Load cancelled");
+
+                CorruptCore.RtcCore.EmuDir = oldEmuDir;
+
+                // Re-open the old emulator
+                var infoOldEmu = new System.Diagnostics.ProcessStartInfo()
+                {
+                    UseShellExecute = false,
+                    WorkingDirectory = oldEmuDir,
+                    FileName = Path.Combine(oldEmuDir, "RESTARTDETACHEDRTC.bat"),
+                };
+                RtcCore.OnProgressBarUpdate(null, new ProgressBarEventArgs($"Swapping back to " + new DirectoryInfo(oldEmuDir).Name, 50));
+                System.Diagnostics.Process.Start(infoOldEmu);
 
                 AutoKillSwitch.Enabled = true;
                 VanguardImplementation.isSwapping = false;
