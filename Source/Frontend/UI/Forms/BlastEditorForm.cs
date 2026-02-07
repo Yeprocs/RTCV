@@ -383,16 +383,8 @@ namespace RTCV.UI
 
         private void OnBlastEditorCellMouseClick(object sender, DataGridViewCellMouseEventArgs e)
         {
-            // Note handling
-            if (e != null
-                && e.Button == MouseButtons.Left
-                && e.ColumnIndex == dgvBlastEditor.Columns[BuProperty.Note.ToString()]?.Index
-                && e.RowIndex != -1
-                && dgvBlastEditor.Rows[e.RowIndex].DataBoundItem is BlastUnit bu)
-            {
-                S.SET(new NoteEditorForm(bu, dgvBlastEditor[e.ColumnIndex, e.RowIndex]));
-                S.GET<NoteEditorForm>().Show();
-            }
+            if (e == null)
+                return;
 
             if (e.Button == MouseButtons.Left)
             {
@@ -400,6 +392,25 @@ namespace RTCV.UI
                 {
                     dgvBlastEditor.EndEdit();
                     dgvBlastEditor.ClearSelection();
+                }
+                else
+                {
+                    // Note handling
+                    if (e.ColumnIndex == dgvBlastEditor.Columns[BuProperty.Note.ToString()]?.Index
+                        && dgvBlastEditor.Rows[e.RowIndex].DataBoundItem is BlastUnit bu)
+                    {
+                        S.SET(new NoteEditorForm(bu, dgvBlastEditor[e.ColumnIndex, e.RowIndex]));
+                        S.GET<NoteEditorForm>().Show();
+                    }
+
+                    // Drop downs should immediately open when clicked on
+                    if (dgvBlastEditor.CurrentCell is DataGridViewComboBoxCell)
+                    {
+                        dgvBlastEditor.BeginEdit(true);
+                        ((ComboBox)dgvBlastEditor.EditingControl).DropDownClosed -= OnDropDownClosed;
+                        ((ComboBox)dgvBlastEditor.EditingControl).DropDownClosed += OnDropDownClosed;
+                        ((ComboBox)dgvBlastEditor.EditingControl).DroppedDown = true;
+                    }
                 }
             }
             else if (e.Button == MouseButtons.Right)
@@ -423,6 +434,10 @@ namespace RTCV.UI
                     builder.Build().Show(dgvBlastEditor, dgvBlastEditor.PointToClient(Cursor.Position));
                 }
             }
+        }
+        private void OnDropDownClosed(object sender, EventArgs e)
+        {
+            dgvBlastEditor.EndEdit();
         }
 
         private void OnBlastEditorCellMouseDoubleClick(object sender, DataGridViewCellMouseEventArgs e)

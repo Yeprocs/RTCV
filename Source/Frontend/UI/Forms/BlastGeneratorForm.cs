@@ -969,41 +969,60 @@ namespace RTCV.UI
 
         private void OnCellMouseClick(object sender, DataGridViewCellMouseEventArgs e)
         {
-            // Note handling
-            if (e != null)
+            if (e == null)
+                return;
+
+            DataGridView senderGrid = (DataGridView)sender;
+
+            if (e.Button == MouseButtons.Left)
             {
-                DataGridView senderGrid = (DataGridView)sender;
-
-                if (e.Button == MouseButtons.Left)
+                if (senderGrid.Columns[e.ColumnIndex] is DataGridViewButtonColumn &&
+                    e.RowIndex >= 0)
                 {
-                    if (senderGrid.Columns[e.ColumnIndex] is DataGridViewButtonColumn &&
-                        e.RowIndex >= 0)
                     {
-                        {
-                            DataGridViewCell textCell = dgvBlastGenerator.Rows[e.RowIndex].Cells["dgvNoteText"];
-                            DataGridViewCell buttonCell = dgvBlastGenerator.Rows[e.RowIndex].Cells["dgvNoteButton"];
+                        DataGridViewCell textCell = dgvBlastGenerator.Rows[e.RowIndex].Cells["dgvNoteText"];
+                        DataGridViewCell buttonCell = dgvBlastGenerator.Rows[e.RowIndex].Cells["dgvNoteButton"];
 
-                            NoteItem note = new NoteItem(textCell.Value == null ? "" : textCell.Value.ToString());
-                            textCell.Value = note;
-                            S.SET(new NoteEditorForm(note, buttonCell));
-                            S.GET<NoteEditorForm>().Show();
-                            return;
-                        }
+                        NoteItem note = new NoteItem(textCell.Value == null ? "" : textCell.Value.ToString());
+                        textCell.Value = note;
+                        S.SET(new NoteEditorForm(note, buttonCell));
+                        S.GET<NoteEditorForm>().Show();
+                        return;
                     }
                 }
-                else if (e.Button == MouseButtons.Right)
+
+                // Drop downs should immediately open when clicked on
+                if (dgvBlastGenerator.CurrentCell is DataGridViewComboBoxCell)
                 {
-                    cms = new ContextMenuBuilder()
-                        .If(e.RowIndex != -1 && e.ColumnIndex != -1 && e.ColumnIndex == dgvBlastGenerator.Columns["dgvSeed"].Index)
-                        .AddItem("Reroll Seed", (ob, ev) =>
-                        {
-                            var cell = dgvBlastGenerator[e.ColumnIndex, e.RowIndex];
-                            cell.Value = RtcCore.RND.Next(int.MinValue, int.MaxValue);
-                        }).EndIf().Build();
-                    cms.Show(dgvBlastGenerator, dgvBlastGenerator.PointToClient(Cursor.Position));
+                    dgvBlastGenerator.BeginEdit(true);
+                    ((ComboBox)dgvBlastGenerator.EditingControl).DropDownClosed -= OnDropDownClosed;
+                    ((ComboBox)dgvBlastGenerator.EditingControl).DropDownClosed += OnDropDownClosed;
+                    ((ComboBox)dgvBlastGenerator.EditingControl).DroppedDown = true;
                 }
             }
+            else if (e.Button == MouseButtons.Right)
+            {
+                //End the edit if they're right clicking somewhere else
+                if (dgvBlastGenerator.CurrentCell != null && dgvBlastGenerator.CurrentCell.ColumnIndex != e.ColumnIndex)
+                {
+                    dgvBlastGenerator.EndEdit();
+                }
+
+                cms = new ContextMenuBuilder()
+                    .If(e.RowIndex != -1 && e.ColumnIndex != -1 && e.ColumnIndex == dgvBlastGenerator.Columns["dgvSeed"].Index)
+                    .AddItem("Reroll Seed", (ob, ev) =>
+                    {
+                        var cell = dgvBlastGenerator[e.ColumnIndex, e.RowIndex];
+                        cell.Value = RtcCore.RND.Next(int.MinValue, int.MaxValue);
+                    }).EndIf().Build();
+                cms.Show(dgvBlastGenerator, dgvBlastGenerator.PointToClient(Cursor.Position));
+            }
         }
+        private void OnDropDownClosed(object sender, EventArgs e)
+        {
+            dgvBlastGenerator.EndEdit();
+        }
+
 
         private void OnCellMouseDoubleClick(object sender, DataGridViewCellMouseEventArgs e)
         {
