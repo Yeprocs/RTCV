@@ -517,8 +517,8 @@ namespace RTCV.UI.Components.Controls
                 new ContextMenuBuilder()
                     .AddItem("New Savestate", (ob, ev)
                         => NewSavestateNow())
-                    .If(stockpileHasSelection).AddItem("Import State From Selected Stockpile Item", (ob, ev)
-                        => NewSavestateFromStockpile()).EndIf()
+                    .If(stockpileHasSelection).AddItem("Import State From Selected Stockpile Item", async (ob, ev)
+                        => await NewSavestateFromStockpile()).EndIf()
                     .AddItem("Import State from File", (ob, ev)
                         => NewSavestateFromFile())
                     .Build()
@@ -557,7 +557,7 @@ namespace RTCV.UI.Components.Controls
             LocalNetCoreRouter.Route(NetCore.Endpoints.CorruptCore, NetCore.Commands.Remote.ClearBlastlayerCache, false);
         }
 
-        public void NewSavestateFromStockpile()
+        public async Task NewSavestateFromStockpile()
         {
             //yes this automates the UI. ew.
 
@@ -599,7 +599,7 @@ namespace RTCV.UI.Components.Controls
                     File.Copy(skspath, workingpath);
 
                 StockpileManagerUISide.CurrentStashkey = sk;
-                StockpileManagerUISide.OriginalFromStashkey(sk);
+                await StockpileManagerUISide.OriginalFromStashkey(sk);
 
                 //var t = StockpileManagerUISide.LoadState(newSk, true, false); //will cause problems with heavy emus
                 //t.Wait();
