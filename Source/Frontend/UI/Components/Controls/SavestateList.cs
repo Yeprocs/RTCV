@@ -583,7 +583,7 @@ namespace RTCV.UI.Components.Controls
                 var newSk = (StashKey)sk.Clone();
 
                 newSk.Key = newSk.ParentKey;
-                newSk.ParentKey = null;
+                newSk.ParentKey = RtcCore.GetRandomKey();
                 newSk.BlastLayer = new BlastLayer();
                 //newSk.StateShortFilename = Path.GetFileName(newSk.GetSavestateFullPath());
                 //newSk.StateData = File.ReadAllBytes(newSk.GetSavestateFullPath());
