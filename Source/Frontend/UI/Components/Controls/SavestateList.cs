@@ -235,6 +235,11 @@ namespace RTCV.UI.Components.Controls
                     .AddItem("Delete Entry", (ob, ev) =>
                     {
                         _dataSource.RemoveAt(indexToRemove);
+
+                        SelectedHolder?.SetSelected(false);
+                        SelectedHolder = _controlList[holderIndex];
+                        SelectedHolder.SetSelected(true);
+
                         S.GET<SavestateManagerForm>().UnsavedEdits = true;
                     }).EndIf()
                     .If(holder.sk != null).AddItem("New Blastlayer From This Savestate (Blast Editor)", (ob, ev) =>
