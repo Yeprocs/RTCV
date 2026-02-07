@@ -14,6 +14,9 @@ namespace RTCV.CorruptCore
         [Exclude]
         public IMemoryDomain MD { get; private set; } = null;
 
+        public bool Visible { get; set; } 
+        public bool AutoDomainSelect { get; set; }
+
         public override long Size { get; set; }
         //non-rpc constructor
         public MemoryDomainProxy(IMemoryDomain md)
@@ -22,6 +25,9 @@ namespace RTCV.CorruptCore
 
             bool rpc = false;
             bool ro = false;
+
+            Visible = true;
+            AutoDomainSelect = true;
 
             Size = MD.Size;
             Name = MD.ToString();

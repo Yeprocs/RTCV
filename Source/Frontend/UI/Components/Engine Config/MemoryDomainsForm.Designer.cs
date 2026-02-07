@@ -34,6 +34,7 @@
             this.btnSelectAll = new System.Windows.Forms.Button();
             this.lbMemoryDomains = new RTCV.UI.Components.Controls.ListBoxExtended();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+            this.btnDomainConfig = new System.Windows.Forms.Button();
             this.tableLayoutPanel1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -48,7 +49,7 @@
             this.btnAutoSelectDomains.ForeColor = System.Drawing.Color.White;
             this.btnAutoSelectDomains.Location = new System.Drawing.Point(12, 12);
             this.btnAutoSelectDomains.Name = "btnAutoSelectDomains";
-            this.btnAutoSelectDomains.Size = new System.Drawing.Size(200, 25);
+            this.btnAutoSelectDomains.Size = new System.Drawing.Size(169, 25);
             this.btnAutoSelectDomains.TabIndex = 18;
             this.btnAutoSelectDomains.TabStop = false;
             this.btnAutoSelectDomains.Tag = "color:light1";
@@ -117,8 +118,8 @@
             this.lbMemoryDomains.TabIndex = 15;
             this.lbMemoryDomains.Tag = "color:dark2";
             this.lbMemoryDomains.SelectedIndexChanged += new System.EventHandler(this.HandleMemoryDomainSelectionChange);
-            this.lbMemoryDomains.MouseDown += new System.Windows.Forms.MouseEventHandler(this.HandleMemoryDomainsMouseDown);
             this.lbMemoryDomains.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.lbMemoryDomains_DoubleClick);
+            this.lbMemoryDomains.MouseDown += new System.Windows.Forms.MouseEventHandler(this.HandleMemoryDomainsMouseDown);
             // 
             // tableLayoutPanel1
             // 
@@ -135,13 +136,32 @@
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableLayoutPanel1.Size = new System.Drawing.Size(200, 24);
             this.tableLayoutPanel1.TabIndex = 20;
-            //
+            // 
+            // btnDomainConfig
+            // 
+            this.btnDomainConfig.BackColor = System.Drawing.Color.Gray;
+            this.btnDomainConfig.FlatAppearance.BorderColor = System.Drawing.Color.Black;
+            this.btnDomainConfig.FlatAppearance.BorderSize = 0;
+            this.btnDomainConfig.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnDomainConfig.Font = new System.Drawing.Font("Segoe UI", 8F);
+            this.btnDomainConfig.ForeColor = System.Drawing.Color.OrangeRed;
+            this.btnDomainConfig.Image = ((System.Drawing.Image)(resources.GetObject("btnDomainConfig.Image")));
+            this.btnDomainConfig.Location = new System.Drawing.Point(187, 12);
+            this.btnDomainConfig.Name = "btnDomainConfig";
+            this.btnDomainConfig.Size = new System.Drawing.Size(25, 25);
+            this.btnDomainConfig.TabIndex = 172;
+            this.btnDomainConfig.TabStop = false;
+            this.btnDomainConfig.Tag = "color:light1";
+            this.btnDomainConfig.UseVisualStyleBackColor = false;
+            this.btnDomainConfig.Click += new System.EventHandler(this.btnDomainConfig_Click);
+            // 
             // MemoryDomainsForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
             this.ClientSize = new System.Drawing.Size(224, 296);
+            this.Controls.Add(this.btnDomainConfig);
             this.Controls.Add(this.tableLayoutPanel1);
             this.Controls.Add(this.lbMemoryDomains);
             this.Controls.Add(this.btnAutoSelectDomains);
@@ -165,5 +185,6 @@
 		private System.Windows.Forms.Button btnRefreshDomains;
 		private System.Windows.Forms.Button btnSelectAll;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
+        public System.Windows.Forms.Button btnDomainConfig;
     }
 }

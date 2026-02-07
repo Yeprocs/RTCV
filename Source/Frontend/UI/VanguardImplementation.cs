@@ -14,6 +14,8 @@ namespace RTCV.UI
     using System.Threading;
     using System.Timers;
     using System.Collections.Generic;
+    using NLog.Targets;
+    using Newtonsoft.Json;
 
     public static class VanguardImplementation
     {
@@ -75,7 +77,9 @@ namespace RTCV.UI
                         GenerateVmdText(advancedMessage, ref e);
                         break;
                     case Remote.EventDomainsUpdated:
-                        DomainsUpdated();
+                        var eventArgs = (object[])(advancedMessage.objectValue as object[]);
+                        var domainsChanged = (bool)eventArgs[0];
+                        DomainsUpdated(domainsChanged);
                         break;
                     case Remote.GetBlastGeneratorLayer:
                         GetBlastGeneratorLayer(ref e);
@@ -582,11 +586,69 @@ namespace RTCV.UI
             e.setReturnValue(true);
         }
 
-        private static void DomainsUpdated()
+        private static void DomainsUpdated(bool domainsChanged = false)
         {
             SyncObjectSingleton.FormExecute(() =>
             {
                 S.GET<MemoryDomainsForm>().RefreshDomains();
+
+                // If we have a game running, update the domain config
+                if (AllSpec.VanguardSpec[VSPEC.SYSTEMCORE] != null)
+                {
+                    string systemCore = AllSpec.VanguardSpec[VSPEC.SYSTEMCORE].ToString();
+
+                    string configFileName = new DirectoryInfo(CorruptCore.RtcCore.EmuDir).Name + "_DOMAINS_CONFIG";
+
+                    DomainConfigRoot config = new DomainConfigRoot();
+                    DomainConfigSystem configSystem = new DomainConfigSystem();
+
+                    // If we have a config file already, we only want to keep the settings if the domains have changed (i.e. we're loading them)
+                    // or if it's another core that isn't currently being used (so we save it back to the json file)
+                    if (Params.IsParamSet(configFileName))
+                    {
+                        var configFile = File.ReadAllText(Path.Combine(Params.ParamsDir, configFileName));
+                        var jsonString = JsonConvert.DeserializeObject<DomainConfigRoot>(configFile);
+
+                        foreach (string system in jsonString.DomainConfigSystem.Keys)
+                        {
+                            if (domainsChanged || system != systemCore)
+                            {
+                                config.DomainConfigSystem[system] = new DomainConfigSystem();
+                                config.DomainConfigSystem[system].DomainConfig = jsonString.DomainConfigSystem[system].DomainConfig;
+                            }
+                        }
+                    }
+
+                    foreach (KeyValuePair<string, MemoryDomainProxy> domain in MemoryDomains.MemoryInterfaces)
+                    {
+                        configSystem.DomainConfig[domain.Key] = new DomainConfig(domain.Value.Visible, domain.Value.AutoDomainSelect);
+                    }
+
+                    // If we don't have a config file yet or we're updating the domains from the settings form, save to the json config file
+                    if (!Params.IsParamSet(configFileName) || (domainsChanged && !config.DomainConfigSystem.ContainsKey(systemCore)) || (!domainsChanged && configSystem.DomainConfig.Count > 0))
+                    {
+                        config.DomainConfigSystem[systemCore] = configSystem;
+                        string jsonString = JsonConvert.SerializeObject(config, Formatting.Indented);
+
+                        NetCore.Params.SetParams(configFileName, jsonString);
+                    }
+
+                    // If the domains changed, update them with the latest settings from the config file then refresh the domains
+                    if (domainsChanged)
+                    {
+                        foreach (KeyValuePair<string, MemoryDomainProxy> domain in MemoryDomains.MemoryInterfaces)
+                        {
+                            domain.Value.Visible = config.DomainConfigSystem[systemCore].DomainConfig[domain.Key].VISIBLE;
+                            domain.Value.AutoDomainSelect = config.DomainConfigSystem[systemCore].DomainConfig[domain.Key].AUTOSELECT;
+                        }
+                        string[] blacklistedDomains = MemoryDomains.MemoryInterfaces.Keys.Where(key => MemoryDomains.MemoryInterfaces[key].AutoDomainSelect == false).ToArray();
+                        AllSpec.VanguardSpec.Update(VSPEC.MEMORYDOMAINS_BLACKLISTEDDOMAINS, blacklistedDomains);
+
+                        S.GET<MemoryDomainsForm>().RefreshDomains();
+                        S.GET<MemoryDomainsForm>().SetMemoryDomainsAllButSelectedDomains((string[])AllSpec.VanguardSpec[VSPEC.MEMORYDOMAINS_BLACKLISTEDDOMAINS] ?? new string[] { });
+                    }
+
+                }
                 S.GET<MemoryDomainsForm>().SetMemoryDomainsAllButSelectedDomains(AllSpec.VanguardSpec[VSPEC.MEMORYDOMAINS_BLACKLISTEDDOMAINS] as string[] ?? new string[] { });
             });
 

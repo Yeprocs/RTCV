@@ -76,7 +76,7 @@
             this.btnLoadDomains.ForeColor = System.Drawing.Color.White;
             this.btnLoadDomains.Location = new System.Drawing.Point(0, 0);
             this.btnLoadDomains.Name = "btnLoadDomains";
-            this.btnLoadDomains.Size = new System.Drawing.Size(154, 25);
+            this.btnLoadDomains.Size = new System.Drawing.Size(63, 25);
             this.btnLoadDomains.TabIndex = 126;
             this.btnLoadDomains.TabStop = false;
             this.btnLoadDomains.Tag = "color:light1";
@@ -96,7 +96,7 @@
             this.cbSelectedMemoryDomain.FormattingEnabled = true;
             this.cbSelectedMemoryDomain.Location = new System.Drawing.Point(0, 36);
             this.cbSelectedMemoryDomain.Name = "cbSelectedMemoryDomain";
-            this.cbSelectedMemoryDomain.Size = new System.Drawing.Size(154, 25);
+            this.cbSelectedMemoryDomain.Size = new System.Drawing.Size(63, 25);
             this.cbSelectedMemoryDomain.TabIndex = 125;
             this.cbSelectedMemoryDomain.Tag = "color:dark1";
             this.cbSelectedMemoryDomain.SelectedIndexChanged += new System.EventHandler(this.UpdateSelectedMemoryDomain);
@@ -113,7 +113,7 @@
             this.btnActiveTableDumpsReset.ForeColor = System.Drawing.Color.White;
             this.btnActiveTableDumpsReset.Location = new System.Drawing.Point(0, 0);
             this.btnActiveTableDumpsReset.Name = "btnActiveTableDumpsReset";
-            this.btnActiveTableDumpsReset.Size = new System.Drawing.Size(235, 25);
+            this.btnActiveTableDumpsReset.Size = new System.Drawing.Size(326, 25);
             this.btnActiveTableDumpsReset.TabIndex = 83;
             this.btnActiveTableDumpsReset.Tag = "color:light1";
             this.btnActiveTableDumpsReset.Text = "Initialize Dump Collection";
@@ -194,7 +194,7 @@
             this.btnActiveTableAddDump.ForeColor = System.Drawing.Color.White;
             this.btnActiveTableAddDump.Location = new System.Drawing.Point(0, 36);
             this.btnActiveTableAddDump.Name = "btnActiveTableAddDump";
-            this.btnActiveTableAddDump.Size = new System.Drawing.Size(235, 25);
+            this.btnActiveTableAddDump.Size = new System.Drawing.Size(326, 25);
             this.btnActiveTableAddDump.TabIndex = 121;
             this.btnActiveTableAddDump.Tag = "color:light1";
             this.btnActiveTableAddDump.Text = "Add domain dump";
@@ -232,7 +232,7 @@
             this.splitContainer1.Panel2.Controls.Add(this.btnActiveTableDumpsReset);
             this.splitContainer1.Panel2.Controls.Add(this.btnActiveTableAddDump);
             this.splitContainer1.Size = new System.Drawing.Size(400, 61);
-            this.splitContainer1.SplitterDistance = 154;
+            this.splitContainer1.SplitterDistance = 63;
             this.splitContainer1.SplitterWidth = 11;
             this.splitContainer1.TabIndex = 128;
             // 

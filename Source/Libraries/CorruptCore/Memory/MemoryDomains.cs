@@ -2,10 +2,12 @@ namespace RTCV.CorruptCore
 {
     using System;
     using System.Collections.Generic;
+    using System.Configuration.Internal;
     using System.IO;
     using System.Linq;
     using System.Text;
     using System.Windows.Forms;
+    using Newtonsoft.Json;
     using RTCV.NetCore;
 
     public static class MemoryDomains
@@ -105,7 +107,7 @@ namespace RTCV.CorruptCore
 
             if (domainsChanged)
             {
-                LocalNetCoreRouter.Route(NetCore.Endpoints.UI, NetCore.Commands.Remote.EventDomainsUpdated, true);
+                LocalNetCoreRouter.Route(NetCore.Endpoints.UI, NetCore.Commands.Remote.EventDomainsUpdated, new object[] { true }, true);
             }
         }
 
@@ -277,7 +279,7 @@ namespace RTCV.CorruptCore
             LocalNetCoreRouter.Route(NetCore.Endpoints.CorruptCore, NetCore.Commands.Remote.DomainVMDAdd, VMD.Proto, true);
             
             if(!silently)
-                LocalNetCoreRouter.Route(NetCore.Endpoints.UI, NetCore.Commands.Remote.EventDomainsUpdated);
+                LocalNetCoreRouter.Route(NetCore.Endpoints.UI, NetCore.Commands.Remote.EventDomainsUpdated, new object[] { false });
         }
 
         public static void AddVMDFromRemote(VmdPrototype proto)
@@ -330,7 +332,7 @@ namespace RTCV.CorruptCore
             LocalNetCoreRouter.Route(NetCore.Endpoints.CorruptCore, NetCore.Commands.Remote.DomainVMDRemove, vmdName, true);
 
             if(!silently)
-                LocalNetCoreRouter.Route(NetCore.Endpoints.UI, NetCore.Commands.Remote.EventDomainsUpdated);
+                LocalNetCoreRouter.Route(NetCore.Endpoints.UI, NetCore.Commands.Remote.EventDomainsUpdated, new object[] { false });
         }
 
         public static void RemoveVMDFromRemote(string vmdName)

@@ -110,7 +110,7 @@ namespace RTCV.UI
 
         private void AutoSelectDomains(object sender, EventArgs e)
         {
-            LocalNetCoreRouter.Route(NetCore.Endpoints.Vanguard, NetCore.Commands.Remote.DomainRefreshDomains, true);
+            //LocalNetCoreRouter.Route(NetCore.Endpoints.Vanguard, NetCore.Commands.Remote.DomainRefreshDomains, true);
             RefreshDomains();
             SetMemoryDomainsAllButSelectedDomains((string[])AllSpec.VanguardSpec[VSPEC.MEMORYDOMAINS_BLACKLISTEDDOMAINS] ?? new string[] { });
         }
@@ -121,7 +121,7 @@ namespace RTCV.UI
             lbMemoryDomains.Items.Clear();
             if (MemoryDomains.MemoryInterfaces != null)
             {
-                lbMemoryDomains.Items.AddRange(MemoryDomains.MemoryInterfaces?.Keys.ToArray());
+                lbMemoryDomains.Items.AddRange(MemoryDomains.MemoryInterfaces?.Keys.Where(key => MemoryDomains.MemoryInterfaces[key].Visible == true).ToArray());
             }
 
             if (MemoryDomains.VmdPool.Count > 0)
@@ -317,6 +317,12 @@ namespace RTCV.UI
                     lbMemoryDomains.SetSelected(i, state);
                 }
             }
+        }
+
+        private void btnDomainConfig_Click(object sender, EventArgs e)
+        {
+            var domainSelectionConfigForm = new DomainSelectionConfigForm();
+            domainSelectionConfigForm.Show();
         }
     }
 }

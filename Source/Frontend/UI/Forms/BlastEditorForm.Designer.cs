@@ -39,9 +39,12 @@ namespace RTCV.UI
             this.panelBottom = new System.Windows.Forms.Panel();
             this.panel9 = new System.Windows.Forms.Panel();
             this.label20 = new System.Windows.Forms.Label();
+            this.upDownLoopTiming = new RTCV.UI.Components.NumericUpDownHexFix();
             this.label16 = new System.Windows.Forms.Label();
+            this.upDownLifetime = new RTCV.UI.Components.NumericUpDownHexFix();
             this.label1 = new System.Windows.Forms.Label();
             this.cbLoop = new System.Windows.Forms.CheckBox();
+            this.upDownExecuteFrame = new RTCV.UI.Components.NumericUpDownHexFix();
             this.label5 = new System.Windows.Forms.Label();
             this.panel5 = new System.Windows.Forms.Panel();
             this.btnNote = new System.Windows.Forms.Button();
@@ -53,13 +56,16 @@ namespace RTCV.UI
             this.label18 = new System.Windows.Forms.Label();
             this.cbLimiterList = new System.Windows.Forms.ComboBox();
             this.label19 = new System.Windows.Forms.Label();
+            this.tbTiltValue = new RTCV.UI.Components.NumericTextBox();
             this.label15 = new System.Windows.Forms.Label();
             this.label11 = new System.Windows.Forms.Label();
             this.cbSource = new System.Windows.Forms.ComboBox();
             this.panel6 = new System.Windows.Forms.Panel();
             this.label12 = new System.Windows.Forms.Label();
+            this.tbValue = new RTCV.UI.Components.Controls.HexTextBox();
             this.panel7 = new System.Windows.Forms.Panel();
             this.cbSourceDomain = new System.Windows.Forms.ComboBox();
+            this.upDownSourceAddress = new RTCV.UI.Components.NumericUpDownHexFix();
             this.label13 = new System.Windows.Forms.Label();
             this.label14 = new System.Windows.Forms.Label();
             this.cbStoreTime = new System.Windows.Forms.ComboBox();
@@ -67,7 +73,9 @@ namespace RTCV.UI
             this.cbStoreType = new System.Windows.Forms.ComboBox();
             this.label7 = new System.Windows.Forms.Label();
             this.label10 = new System.Windows.Forms.Label();
+            this.upDownPrecision = new RTCV.UI.Components.NumericUpDownHexFix();
             this.label9 = new System.Windows.Forms.Label();
+            this.upDownAddress = new RTCV.UI.Components.NumericUpDownHexFix();
             this.label8 = new System.Windows.Forms.Label();
             this.cbDomain = new System.Windows.Forms.ComboBox();
             this.label2 = new System.Windows.Forms.Label();
@@ -90,6 +98,7 @@ namespace RTCV.UI
             this.cbShiftBlastlayer = new System.Windows.Forms.ComboBox();
             this.btnShiftBlastLayerDown = new System.Windows.Forms.Button();
             this.btnShiftBlastLayerUp = new System.Windows.Forms.Button();
+            this.updownShiftBlastLayerAmount = new RTCV.UI.Components.NumericUpDownHexFix();
             this.pnMemoryTargetting = new System.Windows.Forms.Panel();
             this.lbBlastLayerSize = new System.Windows.Forms.Label();
             this.btnHelp = new System.Windows.Forms.Button();
@@ -124,35 +133,26 @@ namespace RTCV.UI
             this.bakeBlastunitsToVALUEToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.breakDownAllBlastunitsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openBlastGeneratorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.upDownLoopTiming = new RTCV.UI.Components.NumericUpDownHexFix();
-            this.upDownLifetime = new RTCV.UI.Components.NumericUpDownHexFix();
-            this.upDownExecuteFrame = new RTCV.UI.Components.NumericUpDownHexFix();
-            this.tbTiltValue = new RTCV.UI.Components.NumericTextBox();
-            this.tbValue = new RTCV.UI.Components.Controls.HexTextBox();
-            this.upDownSourceAddress = new RTCV.UI.Components.NumericUpDownHexFix();
-            this.upDownPrecision = new RTCV.UI.Components.NumericUpDownHexFix();
-            this.upDownAddress = new RTCV.UI.Components.NumericUpDownHexFix();
-            this.updownShiftBlastLayerAmount = new RTCV.UI.Components.NumericUpDownHexFix();
             ((System.ComponentModel.ISupportInitialize)(this.dgvBlastEditor)).BeginInit();
             this.panel2.SuspendLayout();
             this.panelBottom.SuspendLayout();
             this.panel9.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.upDownLoopTiming)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.upDownLifetime)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.upDownExecuteFrame)).BeginInit();
             this.panel5.SuspendLayout();
             this.panel8.SuspendLayout();
             this.panel6.SuspendLayout();
             this.panel7.SuspendLayout();
-            this.panel4.SuspendLayout();
-            this.panelSidebar.SuspendLayout();
-            this.panel1.SuspendLayout();
-            this.pnMemoryTargetting.SuspendLayout();
-            this.menuStripEx1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.upDownLoopTiming)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.upDownLifetime)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.upDownExecuteFrame)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.upDownSourceAddress)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.upDownPrecision)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.upDownAddress)).BeginInit();
+            this.panel4.SuspendLayout();
+            this.panelSidebar.SuspendLayout();
+            this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.updownShiftBlastLayerAmount)).BeginInit();
+            this.pnMemoryTargetting.SuspendLayout();
+            this.menuStripEx1.SuspendLayout();
             this.SuspendLayout();
             // 
             // dgvBlastEditor
@@ -259,6 +259,28 @@ namespace RTCV.UI
             this.label20.TabIndex = 28;
             this.label20.Text = "Loop Timing";
             // 
+            // upDownLoopTiming
+            // 
+            this.upDownLoopTiming.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(32)))), ((int)(((byte)(32)))), ((int)(((byte)(32)))));
+            this.upDownLoopTiming.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.upDownLoopTiming.ForeColor = System.Drawing.Color.White;
+            this.upDownLoopTiming.Location = new System.Drawing.Point(4, 125);
+            this.upDownLoopTiming.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            -2147483648});
+            this.upDownLoopTiming.Name = "upDownLoopTiming";
+            this.upDownLoopTiming.Size = new System.Drawing.Size(109, 22);
+            this.upDownLoopTiming.TabIndex = 27;
+            this.upDownLoopTiming.Tag = "color:dark1";
+            this.upDownLoopTiming.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            -2147483648});
+            this.upDownLoopTiming.Validated += new System.EventHandler(this.OnLoopTimingValidated);
+            // 
             // label16
             // 
             this.label16.AutoSize = true;
@@ -267,6 +289,18 @@ namespace RTCV.UI
             this.label16.Size = new System.Drawing.Size(47, 13);
             this.label16.TabIndex = 26;
             this.label16.Text = "Lifetime";
+            // 
+            // upDownLifetime
+            // 
+            this.upDownLifetime.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(32)))), ((int)(((byte)(32)))), ((int)(((byte)(32)))));
+            this.upDownLifetime.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.upDownLifetime.ForeColor = System.Drawing.Color.White;
+            this.upDownLifetime.Location = new System.Drawing.Point(3, 65);
+            this.upDownLifetime.Name = "upDownLifetime";
+            this.upDownLifetime.Size = new System.Drawing.Size(109, 22);
+            this.upDownLifetime.TabIndex = 25;
+            this.upDownLifetime.Tag = "color:dark1";
+            this.upDownLifetime.Validated += new System.EventHandler(this.OnLifetimeValidated);
             // 
             // label1
             // 
@@ -287,6 +321,18 @@ namespace RTCV.UI
             this.cbLoop.Text = "Loop";
             this.cbLoop.UseVisualStyleBackColor = true;
             this.cbLoop.Validated += new System.EventHandler(this.OnLoopValidated);
+            // 
+            // upDownExecuteFrame
+            // 
+            this.upDownExecuteFrame.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(32)))), ((int)(((byte)(32)))), ((int)(((byte)(32)))));
+            this.upDownExecuteFrame.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.upDownExecuteFrame.ForeColor = System.Drawing.Color.White;
+            this.upDownExecuteFrame.Location = new System.Drawing.Point(3, 26);
+            this.upDownExecuteFrame.Name = "upDownExecuteFrame";
+            this.upDownExecuteFrame.Size = new System.Drawing.Size(109, 22);
+            this.upDownExecuteFrame.TabIndex = 12;
+            this.upDownExecuteFrame.Tag = "color:dark1";
+            this.upDownExecuteFrame.Validated += new System.EventHandler(this.OnExecuteFrameValidated);
             // 
             // label5
             // 
@@ -431,6 +477,21 @@ namespace RTCV.UI
             this.label19.TabIndex = 7;
             this.label19.Text = "Limiter List";
             // 
+            // tbTiltValue
+            // 
+            this.tbTiltValue.AllowDecimal = false;
+            this.tbTiltValue.AllowNegative = true;
+            this.tbTiltValue.AllowSpace = false;
+            this.tbTiltValue.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(32)))), ((int)(((byte)(32)))), ((int)(((byte)(32)))));
+            this.tbTiltValue.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.tbTiltValue.ForeColor = System.Drawing.Color.White;
+            this.tbTiltValue.Location = new System.Drawing.Point(4, 141);
+            this.tbTiltValue.Name = "tbTiltValue";
+            this.tbTiltValue.Size = new System.Drawing.Size(108, 22);
+            this.tbTiltValue.TabIndex = 24;
+            this.tbTiltValue.Tag = "color:dark1";
+            this.tbTiltValue.Validated += new System.EventHandler(this.OnTiltValueValidated);
+            // 
             // label15
             // 
             this.label15.AutoSize = true;
@@ -481,6 +542,23 @@ namespace RTCV.UI
             this.label12.TabIndex = 13;
             this.label12.Text = "Value";
             // 
+            // tbValue
+            // 
+            this.tbValue.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(32)))), ((int)(((byte)(32)))), ((int)(((byte)(32)))));
+            this.tbValue.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.tbValue.CharacterCasing = System.Windows.Forms.CharacterCasing.Upper;
+            this.tbValue.Font = new System.Drawing.Font("Consolas", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+            this.tbValue.ForeColor = System.Drawing.Color.White;
+            this.tbValue.Location = new System.Drawing.Point(3, 17);
+            this.tbValue.MaxLength = 16348;
+            this.tbValue.Name = "tbValue";
+            this.tbValue.Nullable = true;
+            this.tbValue.Size = new System.Drawing.Size(100, 20);
+            this.tbValue.TabIndex = 0;
+            this.tbValue.Tag = "color:dark1";
+            this.tbValue.Text = "FFFFFFFF";
+            this.tbValue.Validated += new System.EventHandler(this.OnValueValidated);
+            // 
             // panel7
             // 
             this.panel7.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
@@ -509,6 +587,20 @@ namespace RTCV.UI
             this.cbSourceDomain.TabIndex = 11;
             this.cbSourceDomain.Tag = "color:dark1";
             this.cbSourceDomain.Validated += new System.EventHandler(this.OnSourceDomainValidated);
+            // 
+            // upDownSourceAddress
+            // 
+            this.upDownSourceAddress.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(32)))), ((int)(((byte)(32)))), ((int)(((byte)(32)))));
+            this.upDownSourceAddress.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.upDownSourceAddress.Font = new System.Drawing.Font("Consolas", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+            this.upDownSourceAddress.ForeColor = System.Drawing.Color.White;
+            this.upDownSourceAddress.Hexadecimal = true;
+            this.upDownSourceAddress.Location = new System.Drawing.Point(95, 58);
+            this.upDownSourceAddress.Name = "upDownSourceAddress";
+            this.upDownSourceAddress.Size = new System.Drawing.Size(109, 22);
+            this.upDownSourceAddress.TabIndex = 13;
+            this.upDownSourceAddress.Tag = "color:dark1";
+            this.upDownSourceAddress.Validated += new System.EventHandler(this.OnSourceAddressValidated);
             // 
             // label13
             // 
@@ -581,6 +673,28 @@ namespace RTCV.UI
             this.label10.TabIndex = 12;
             this.label10.Text = "Precision";
             // 
+            // upDownPrecision
+            // 
+            this.upDownPrecision.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(32)))), ((int)(((byte)(32)))), ((int)(((byte)(32)))));
+            this.upDownPrecision.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.upDownPrecision.ForeColor = System.Drawing.Color.White;
+            this.upDownPrecision.Location = new System.Drawing.Point(3, 101);
+            this.upDownPrecision.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.upDownPrecision.Name = "upDownPrecision";
+            this.upDownPrecision.Size = new System.Drawing.Size(109, 22);
+            this.upDownPrecision.TabIndex = 11;
+            this.upDownPrecision.Tag = "color:dark1";
+            this.upDownPrecision.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.upDownPrecision.Validated += new System.EventHandler(this.OnPrecisionValidated);
+            // 
             // label9
             // 
             this.label9.AutoSize = true;
@@ -589,6 +703,20 @@ namespace RTCV.UI
             this.label9.Size = new System.Drawing.Size(48, 13);
             this.label9.TabIndex = 10;
             this.label9.Text = "Address";
+            // 
+            // upDownAddress
+            // 
+            this.upDownAddress.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(32)))), ((int)(((byte)(32)))), ((int)(((byte)(32)))));
+            this.upDownAddress.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.upDownAddress.Font = new System.Drawing.Font("Consolas", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+            this.upDownAddress.ForeColor = System.Drawing.Color.White;
+            this.upDownAddress.Hexadecimal = true;
+            this.upDownAddress.Location = new System.Drawing.Point(4, 59);
+            this.upDownAddress.Name = "upDownAddress";
+            this.upDownAddress.Size = new System.Drawing.Size(109, 22);
+            this.upDownAddress.TabIndex = 9;
+            this.upDownAddress.Tag = "color:dark1";
+            this.upDownAddress.Validated += new System.EventHandler(this.OnAddressValidated);
             // 
             // label8
             // 
@@ -926,6 +1054,19 @@ namespace RTCV.UI
             this.btnShiftBlastLayerUp.UseVisualStyleBackColor = false;
             this.btnShiftBlastLayerUp.Click += new System.EventHandler(this.ShiftBlastLayerUp);
             // 
+            // updownShiftBlastLayerAmount
+            // 
+            this.updownShiftBlastLayerAmount.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.updownShiftBlastLayerAmount.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.updownShiftBlastLayerAmount.Font = new System.Drawing.Font("Consolas", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+            this.updownShiftBlastLayerAmount.ForeColor = System.Drawing.Color.White;
+            this.updownShiftBlastLayerAmount.Hexadecimal = true;
+            this.updownShiftBlastLayerAmount.Location = new System.Drawing.Point(38, 33);
+            this.updownShiftBlastLayerAmount.Name = "updownShiftBlastLayerAmount";
+            this.updownShiftBlastLayerAmount.Size = new System.Drawing.Size(59, 22);
+            this.updownShiftBlastLayerAmount.TabIndex = 145;
+            this.updownShiftBlastLayerAmount.Tag = "color:dark1";
+            // 
             // pnMemoryTargetting
             // 
             this.pnMemoryTargetting.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
@@ -1258,147 +1399,6 @@ namespace RTCV.UI
             this.openBlastGeneratorToolStripMenuItem.Text = "Open Blast Generator";
             this.openBlastGeneratorToolStripMenuItem.Click += new System.EventHandler(this.OpenBlastGenerator);
             // 
-            // upDownLoopTiming
-            // 
-            this.upDownLoopTiming.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(32)))), ((int)(((byte)(32)))), ((int)(((byte)(32)))));
-            this.upDownLoopTiming.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.upDownLoopTiming.ForeColor = System.Drawing.Color.White;
-            this.upDownLoopTiming.Location = new System.Drawing.Point(4, 125);
-            this.upDownLoopTiming.Minimum = new decimal(new int[] {
-            1,
-            0,
-            0,
-            -2147483648});
-            this.upDownLoopTiming.Name = "upDownLoopTiming";
-            this.upDownLoopTiming.Size = new System.Drawing.Size(109, 22);
-            this.upDownLoopTiming.TabIndex = 27;
-            this.upDownLoopTiming.Tag = "color:dark1";
-            this.upDownLoopTiming.Value = new decimal(new int[] {
-            1,
-            0,
-            0,
-            -2147483648});
-            this.upDownLoopTiming.Validated += new System.EventHandler(this.OnLoopTimingValidated);
-            // 
-            // upDownLifetime
-            // 
-            this.upDownLifetime.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(32)))), ((int)(((byte)(32)))), ((int)(((byte)(32)))));
-            this.upDownLifetime.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.upDownLifetime.ForeColor = System.Drawing.Color.White;
-            this.upDownLifetime.Location = new System.Drawing.Point(3, 65);
-            this.upDownLifetime.Name = "upDownLifetime";
-            this.upDownLifetime.Size = new System.Drawing.Size(109, 22);
-            this.upDownLifetime.TabIndex = 25;
-            this.upDownLifetime.Tag = "color:dark1";
-            this.upDownLifetime.Validated += new System.EventHandler(this.OnLifetimeValidated);
-            // 
-            // upDownExecuteFrame
-            // 
-            this.upDownExecuteFrame.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(32)))), ((int)(((byte)(32)))), ((int)(((byte)(32)))));
-            this.upDownExecuteFrame.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.upDownExecuteFrame.ForeColor = System.Drawing.Color.White;
-            this.upDownExecuteFrame.Location = new System.Drawing.Point(3, 26);
-            this.upDownExecuteFrame.Name = "upDownExecuteFrame";
-            this.upDownExecuteFrame.Size = new System.Drawing.Size(109, 22);
-            this.upDownExecuteFrame.TabIndex = 12;
-            this.upDownExecuteFrame.Tag = "color:dark1";
-            this.upDownExecuteFrame.Validated += new System.EventHandler(this.OnExecuteFrameValidated);
-            // 
-            // tbTiltValue
-            // 
-            this.tbTiltValue.AllowDecimal = false;
-            this.tbTiltValue.AllowNegative = true;
-            this.tbTiltValue.AllowSpace = false;
-            this.tbTiltValue.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(32)))), ((int)(((byte)(32)))), ((int)(((byte)(32)))));
-            this.tbTiltValue.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.tbTiltValue.ForeColor = System.Drawing.Color.White;
-            this.tbTiltValue.Location = new System.Drawing.Point(4, 141);
-            this.tbTiltValue.Name = "tbTiltValue";
-            this.tbTiltValue.Size = new System.Drawing.Size(108, 22);
-            this.tbTiltValue.TabIndex = 24;
-            this.tbTiltValue.Tag = "color:dark1";
-            this.tbTiltValue.Validated += new System.EventHandler(this.OnTiltValueValidated);
-            // 
-            // tbValue
-            // 
-            this.tbValue.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(32)))), ((int)(((byte)(32)))), ((int)(((byte)(32)))));
-            this.tbValue.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.tbValue.CharacterCasing = System.Windows.Forms.CharacterCasing.Upper;
-            this.tbValue.Font = new System.Drawing.Font("Consolas", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-            this.tbValue.ForeColor = System.Drawing.Color.White;
-            this.tbValue.Location = new System.Drawing.Point(3, 17);
-            this.tbValue.MaxLength = 16348;
-            this.tbValue.Name = "tbValue";
-            this.tbValue.Nullable = true;
-            this.tbValue.Size = new System.Drawing.Size(100, 20);
-            this.tbValue.TabIndex = 0;
-            this.tbValue.Tag = "color:dark1";
-            this.tbValue.Text = "FFFFFFFF";
-            this.tbValue.Validated += new System.EventHandler(this.OnValueValidated);
-            // 
-            // upDownSourceAddress
-            // 
-            this.upDownSourceAddress.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(32)))), ((int)(((byte)(32)))), ((int)(((byte)(32)))));
-            this.upDownSourceAddress.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.upDownSourceAddress.Font = new System.Drawing.Font("Consolas", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-            this.upDownSourceAddress.ForeColor = System.Drawing.Color.White;
-            this.upDownSourceAddress.Hexadecimal = true;
-            this.upDownSourceAddress.Location = new System.Drawing.Point(95, 58);
-            this.upDownSourceAddress.Name = "upDownSourceAddress";
-            this.upDownSourceAddress.Size = new System.Drawing.Size(109, 22);
-            this.upDownSourceAddress.TabIndex = 13;
-            this.upDownSourceAddress.Tag = "color:dark1";
-            this.upDownSourceAddress.Validated += new System.EventHandler(this.OnSourceAddressValidated);
-            // 
-            // upDownPrecision
-            // 
-            this.upDownPrecision.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(32)))), ((int)(((byte)(32)))), ((int)(((byte)(32)))));
-            this.upDownPrecision.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.upDownPrecision.ForeColor = System.Drawing.Color.White;
-            this.upDownPrecision.Location = new System.Drawing.Point(3, 101);
-            this.upDownPrecision.Minimum = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.upDownPrecision.Name = "upDownPrecision";
-            this.upDownPrecision.Size = new System.Drawing.Size(109, 22);
-            this.upDownPrecision.TabIndex = 11;
-            this.upDownPrecision.Tag = "color:dark1";
-            this.upDownPrecision.Value = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.upDownPrecision.Validated += new System.EventHandler(this.OnPrecisionValidated);
-            // 
-            // upDownAddress
-            // 
-            this.upDownAddress.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(32)))), ((int)(((byte)(32)))), ((int)(((byte)(32)))));
-            this.upDownAddress.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.upDownAddress.Font = new System.Drawing.Font("Consolas", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-            this.upDownAddress.ForeColor = System.Drawing.Color.White;
-            this.upDownAddress.Hexadecimal = true;
-            this.upDownAddress.Location = new System.Drawing.Point(4, 59);
-            this.upDownAddress.Name = "upDownAddress";
-            this.upDownAddress.Size = new System.Drawing.Size(109, 22);
-            this.upDownAddress.TabIndex = 9;
-            this.upDownAddress.Tag = "color:dark1";
-            this.upDownAddress.Validated += new System.EventHandler(this.OnAddressValidated);
-            // 
-            // updownShiftBlastLayerAmount
-            // 
-            this.updownShiftBlastLayerAmount.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
-            this.updownShiftBlastLayerAmount.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.updownShiftBlastLayerAmount.Font = new System.Drawing.Font("Consolas", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-            this.updownShiftBlastLayerAmount.ForeColor = System.Drawing.Color.White;
-            this.updownShiftBlastLayerAmount.Hexadecimal = true;
-            this.updownShiftBlastLayerAmount.Location = new System.Drawing.Point(38, 33);
-            this.updownShiftBlastLayerAmount.Name = "updownShiftBlastLayerAmount";
-            this.updownShiftBlastLayerAmount.Size = new System.Drawing.Size(59, 22);
-            this.updownShiftBlastLayerAmount.TabIndex = 145;
-            this.updownShiftBlastLayerAmount.Tag = "color:dark1";
-            // 
             // BlastEditorForm
             // 
             this.AllowDrop = true;
@@ -1428,6 +1428,9 @@ namespace RTCV.UI
             this.panelBottom.PerformLayout();
             this.panel9.ResumeLayout(false);
             this.panel9.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.upDownLoopTiming)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.upDownLifetime)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.upDownExecuteFrame)).EndInit();
             this.panel5.ResumeLayout(false);
             this.panel5.PerformLayout();
             this.panel8.ResumeLayout(false);
@@ -1436,21 +1439,18 @@ namespace RTCV.UI
             this.panel6.PerformLayout();
             this.panel7.ResumeLayout(false);
             this.panel7.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.upDownSourceAddress)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.upDownPrecision)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.upDownAddress)).EndInit();
             this.panel4.ResumeLayout(false);
             this.panel4.PerformLayout();
             this.panelSidebar.ResumeLayout(false);
             this.panelSidebar.PerformLayout();
             this.panel1.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.updownShiftBlastLayerAmount)).EndInit();
             this.pnMemoryTargetting.ResumeLayout(false);
             this.menuStripEx1.ResumeLayout(false);
             this.menuStripEx1.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.upDownLoopTiming)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.upDownLifetime)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.upDownExecuteFrame)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.upDownSourceAddress)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.upDownPrecision)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.upDownAddress)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.updownShiftBlastLayerAmount)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
