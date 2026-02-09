@@ -587,7 +587,7 @@
             this.dgvSeed,
             this.dgvNoteButton});
             this.dgvBlastGenerator.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.dgvBlastGenerator.EditMode = System.Windows.Forms.DataGridViewEditMode.EditOnEnter;
+            this.dgvBlastGenerator.EditMode = System.Windows.Forms.DataGridViewEditMode.EditProgrammatically;
             this.dgvBlastGenerator.Location = new System.Drawing.Point(0, 24);
             this.dgvBlastGenerator.Margin = new System.Windows.Forms.Padding(2);
             this.dgvBlastGenerator.Name = "dgvBlastGenerator";
@@ -597,6 +597,7 @@
             this.dgvBlastGenerator.Size = new System.Drawing.Size(872, 365);
             this.dgvBlastGenerator.TabIndex = 167;
             this.dgvBlastGenerator.Tag = "color:normal hex";
+            this.dgvBlastGenerator.CurrentCellDirtyStateChanged += new System.EventHandler(this.OnBlastGeneratorCurrentCellDirtyStateChanged);
             // 
             // dgvBlastProtoReference
             // 

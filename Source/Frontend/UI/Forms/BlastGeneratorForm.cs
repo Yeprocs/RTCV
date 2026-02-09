@@ -66,6 +66,7 @@ namespace RTCV.UI
 
         private static Dictionary<string, MemoryInterface> domainToMiDico = new Dictionary<string, MemoryInterface>();
         private string[] domains = MemoryDomains.MemoryInterfaces?.Keys?.Concat(MemoryDomains.VmdPool.Values.Select(it => it.ToString())).ToArray();
+        private DataGridViewCell lastSelectedCell = null;
 
         public BlastGeneratorForm()
         {
@@ -976,29 +977,46 @@ namespace RTCV.UI
 
             if (e.Button == MouseButtons.Left)
             {
-                if (senderGrid.Columns[e.ColumnIndex] is DataGridViewButtonColumn &&
-                    e.RowIndex >= 0)
+                if (e.RowIndex == -1)
                 {
+                    dgvBlastGenerator.EndEdit();
+                    dgvBlastGenerator.ClearSelection();
+                }
+                else
+                {
+                    if (dgvBlastGenerator.CurrentCell != null)
                     {
-                        DataGridViewCell textCell = dgvBlastGenerator.Rows[e.RowIndex].Cells["dgvNoteText"];
-                        DataGridViewCell buttonCell = dgvBlastGenerator.Rows[e.RowIndex].Cells["dgvNoteButton"];
+                        if (dgvBlastGenerator.CurrentCell == lastSelectedCell)
+                        {
+                            dgvBlastGenerator.BeginEdit(true);
+                        }
+                        else
+                            dgvBlastGenerator.EndEdit();
+                    }
 
-                        NoteItem note = new NoteItem(textCell.Value == null ? "" : textCell.Value.ToString());
-                        textCell.Value = note;
-                        S.SET(new NoteEditorForm(note, buttonCell));
-                        S.GET<NoteEditorForm>().Show();
-                        return;
+                    if (senderGrid.Columns[e.ColumnIndex] is DataGridViewButtonColumn &&
+                    e.RowIndex >= 0)
+                    {
+                        {
+                            DataGridViewCell textCell = dgvBlastGenerator.Rows[e.RowIndex].Cells["dgvNoteText"];
+                            DataGridViewCell buttonCell = dgvBlastGenerator.Rows[e.RowIndex].Cells["dgvNoteButton"];
+
+                            NoteItem note = new NoteItem(textCell.Value == null ? "" : textCell.Value.ToString());
+                            textCell.Value = note;
+                            S.SET(new NoteEditorForm(note, buttonCell));
+                            S.GET<NoteEditorForm>().Show();
+                            return;
+                        }
+                    }
+
+                    // Drop downs should immediately open when clicked on
+                    if (dgvBlastGenerator.CurrentCell is DataGridViewComboBoxCell)
+                    {
+                        dgvBlastGenerator.BeginEdit(true);
+                        ((ComboBox)dgvBlastGenerator.EditingControl).DroppedDown = true;
                     }
                 }
-
-                // Drop downs should immediately open when clicked on
-                if (dgvBlastGenerator.CurrentCell is DataGridViewComboBoxCell)
-                {
-                    dgvBlastGenerator.BeginEdit(true);
-                    ((ComboBox)dgvBlastGenerator.EditingControl).DropDownClosed -= OnDropDownClosed;
-                    ((ComboBox)dgvBlastGenerator.EditingControl).DropDownClosed += OnDropDownClosed;
-                    ((ComboBox)dgvBlastGenerator.EditingControl).DroppedDown = true;
-                }
+                lastSelectedCell = dgvBlastGenerator.CurrentCell;
             }
             else if (e.Button == MouseButtons.Right)
             {
@@ -1018,9 +1036,16 @@ namespace RTCV.UI
                 cms.Show(dgvBlastGenerator, dgvBlastGenerator.PointToClient(Cursor.Position));
             }
         }
-        private void OnDropDownClosed(object sender, EventArgs e)
+        private void OnBlastGeneratorCurrentCellDirtyStateChanged(object sender, EventArgs e)
         {
-            dgvBlastGenerator.EndEdit();
+            if (dgvBlastGenerator.IsCurrentCellDirty)
+            {
+                if (dgvBlastGenerator.CurrentCell is DataGridViewComboBoxCell)
+                {
+                    dgvBlastGenerator.CommitEdit(DataGridViewDataErrorContexts.Commit);
+                    dgvBlastGenerator.EndEdit();
+                }
+            }
         }
 
 

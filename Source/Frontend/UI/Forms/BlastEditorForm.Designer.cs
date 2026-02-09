@@ -164,7 +164,7 @@ namespace RTCV.UI
             this.dgvBlastEditor.ClipboardCopyMode = System.Windows.Forms.DataGridViewClipboardCopyMode.Disable;
             this.dgvBlastEditor.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dgvBlastEditor.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.dgvBlastEditor.EditMode = System.Windows.Forms.DataGridViewEditMode.EditOnEnter;
+            this.dgvBlastEditor.EditMode = System.Windows.Forms.DataGridViewEditMode.EditProgrammatically;
             this.dgvBlastEditor.Location = new System.Drawing.Point(0, 24);
             this.dgvBlastEditor.Margin = new System.Windows.Forms.Padding(2);
             this.dgvBlastEditor.Name = "dgvBlastEditor";
@@ -179,6 +179,7 @@ namespace RTCV.UI
             this.dgvBlastEditor.CellMouseDoubleClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.OnBlastEditorCellMouseDoubleClick);
             this.dgvBlastEditor.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.OnBlastEditorCellValueChanged);
             this.dgvBlastEditor.ColumnHeaderMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.OnBlastEditorColumnHeaderMouseClick);
+            this.dgvBlastEditor.CurrentCellDirtyStateChanged += new System.EventHandler(this.OnBlastEditorCurrentCellDirtyStateChanged);
             this.dgvBlastEditor.DataError += new System.Windows.Forms.DataGridViewDataErrorEventHandler(this.OnBlastEditorDataError);
             this.dgvBlastEditor.RowsAdded += new System.Windows.Forms.DataGridViewRowsAddedEventHandler(this.OnBlastEditorRowsAdded);
             this.dgvBlastEditor.RowsRemoved += new System.Windows.Forms.DataGridViewRowsRemovedEventHandler(this.OnBlastEditorRowsRemoved);

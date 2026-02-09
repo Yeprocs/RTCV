@@ -85,6 +85,7 @@ namespace RTCV.UI
         private ContextMenuStrip cms;
         private Dictionary<string, Control> property2ControlDico;
         private NLog.Logger logger = NLog.LogManager.GetCurrentClassLogger();
+        private DataGridViewCell lastSelectedCell = null;
 
         private enum BuProperty
         {
@@ -395,6 +396,16 @@ namespace RTCV.UI
                 }
                 else
                 {
+                    if (dgvBlastEditor.CurrentCell != null)
+                    {
+                        if (dgvBlastEditor.CurrentCell == lastSelectedCell)
+                        {
+                            dgvBlastEditor.BeginEdit(true);
+                        }
+                        else
+                            dgvBlastEditor.EndEdit();
+                    }
+
                     // Note handling
                     if (e.ColumnIndex == dgvBlastEditor.Columns[BuProperty.Note.ToString()]?.Index
                         && dgvBlastEditor.Rows[e.RowIndex].DataBoundItem is BlastUnit bu)
@@ -407,8 +418,6 @@ namespace RTCV.UI
                     if (dgvBlastEditor.CurrentCell is DataGridViewComboBoxCell)
                     {
                         dgvBlastEditor.BeginEdit(true);
-                        ((ComboBox)dgvBlastEditor.EditingControl).DropDownClosed -= OnDropDownClosed;
-                        ((ComboBox)dgvBlastEditor.EditingControl).DropDownClosed += OnDropDownClosed;
                         ((ComboBox)dgvBlastEditor.EditingControl).DroppedDown = true;
                     }
                 }
@@ -434,10 +443,18 @@ namespace RTCV.UI
                     builder.Build().Show(dgvBlastEditor, dgvBlastEditor.PointToClient(Cursor.Position));
                 }
             }
+            lastSelectedCell = dgvBlastEditor.CurrentCell;
         }
-        private void OnDropDownClosed(object sender, EventArgs e)
+        private void OnBlastEditorCurrentCellDirtyStateChanged(object sender, EventArgs e)
         {
-            dgvBlastEditor.EndEdit();
+            if (dgvBlastEditor.IsCurrentCellDirty)
+            {
+                if (dgvBlastEditor.CurrentCell is DataGridViewComboBoxCell)
+                {
+                    dgvBlastEditor.CommitEdit(DataGridViewDataErrorContexts.Commit);
+                    dgvBlastEditor.EndEdit();
+                }
+            }
         }
 
         private void OnBlastEditorCellMouseDoubleClick(object sender, DataGridViewCellMouseEventArgs e)
@@ -2416,5 +2433,10 @@ namespace RTCV.UI
         private void BakeBlastUnitsToValue(object sender, EventArgs e) => BakeBlastUnitsToValue();
         private void RunRomWithoutBlastLayer(object sender, EventArgs e) => currentSK.RunOriginal();
         private void RasterizeVMDs(object sender, EventArgs e) => RasterizeVMDs();
+
+        private void dgvBlastEditor_CellEndEdit(object sender, DataGridViewCellEventArgs e)
+        {
+            MessageBox.Show(e.RowIndex.ToString() + e.ColumnIndex.ToString());
+        }
     }
 }
