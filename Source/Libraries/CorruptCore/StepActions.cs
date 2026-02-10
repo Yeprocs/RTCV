@@ -150,7 +150,8 @@ namespace RTCV.CorruptCore
             lock (executeLock)
             {
                 BlastLayer bl = new BlastLayer();
-                foreach (List<BlastUnit> buList in buListCollection)
+                var allAppliedUnits = queued.Concat(appliedInfinite.Concat(appliedLifetime));
+                foreach (List<BlastUnit> buList in allAppliedUnits)
                 {
                     foreach (BlastUnit bu in buList)
                     {

@@ -173,6 +173,8 @@ namespace RTCV.CorruptCore
 
             bl.Layer.AddRange(StepActions.GetRawBlastLayer().Layer);
 
+            // redundant code now that we're checking every blast unit in every domain
+            /*
             string thisSystem = (string)AllSpec.VanguardSpec[VSPEC.SYSTEM];
             string romFilename = (string)AllSpec.VanguardSpec[VSPEC.OPENROMFILENAME];
 
@@ -228,7 +230,7 @@ namespace RTCV.CorruptCore
                     }
                 }
             }
-
+            */
             sk.BlastLayer = bl;
 
             return sk;
