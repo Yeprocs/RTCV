@@ -89,6 +89,7 @@ namespace RTCV.CorruptCore
             object sk = ObjectCopierCeras.Clone(this);
             ((StashKey)sk).Key = RtcCore.GetRandomKey();
             ((StashKey)sk).Alias = null;
+            ((StashKey)sk).EmuVer = new DirectoryInfo((string)AllSpec.VanguardSpec?[VSPEC.EMUDIR]).Name.ToUpper();
             return sk;
         }
 

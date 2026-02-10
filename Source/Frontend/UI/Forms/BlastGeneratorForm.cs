@@ -342,12 +342,20 @@ namespace RTCV.UI
                         GameName = psk.GameName,
                         SyncSettings = psk.SyncSettings,
                         StateLocation = psk.StateLocation,
-                        EmuVer = psk.EmuVer
+                        EmuVer = new DirectoryInfo((string)AllSpec.VanguardSpec?[VSPEC.EMUDIR]).Name.ToUpper()
                     };
                 }
                 else
                 {
                     newSk = (StashKey)_sk.Clone();
+                }
+
+                if (string.IsNullOrEmpty(newSk.EmuVer))
+                {
+                    MessageBox.Show("The current stash key does not have an emulator version associated with it! This should never happen.\n" +
+                        "You should probably send a copy of this error and what you did to cause it to the RTC devs.", "Emulator Version Not Found", MessageBoxButtons.OK, MessageBoxIcon.Error,
+                                                                  MessageBoxDefaultButton.Button1, MessageBoxOptions.DefaultDesktopOnly);
+                    return;
                 }
 
                 if (!String.Equals(newSk.EmuVer, new DirectoryInfo(RtcCore.EmuDir).Name, StringComparison.OrdinalIgnoreCase))

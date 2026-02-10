@@ -2113,6 +2113,13 @@ namespace RTCV.UI
             }
 
             var newSk = (StashKey)currentSK.Clone();
+            if (string.IsNullOrEmpty(newSk.EmuVer))
+            {
+                MessageBox.Show("The current stash key does not have an emulator version associated with it! This should never happen.\n" +
+                    "You should probably send a copy of this error and what you did to cause it to the RTC devs.", "Emulator Version Not Found", MessageBoxButtons.OK, MessageBoxIcon.Error,
+                                                              MessageBoxDefaultButton.Button1, MessageBoxOptions.DefaultDesktopOnly);
+                return;
+            }
 
             if (!String.Equals(newSk.EmuVer, new DirectoryInfo(RtcCore.EmuDir).Name, StringComparison.OrdinalIgnoreCase))
             {
