@@ -82,8 +82,6 @@ namespace RTCV.UI
         {
             dgvBlastGenerator.MouseClick += OnBlastGeneratorDGVMouseClick;
             dgvBlastGenerator.CellValueChanged += UpdateSelectedBlastGenerator;
-            dgvBlastGenerator.CellMouseClick += OnCellMouseClick;
-            dgvBlastGenerator.CellMouseDoubleClick += OnCellMouseDoubleClick;
 
             getAllControls(this);
         }
@@ -976,7 +974,7 @@ namespace RTCV.UI
             System.Diagnostics.Process.Start(sInfo);
         }
 
-        private void OnCellMouseClick(object sender, DataGridViewCellMouseEventArgs e)
+        private void OnBlastGeneratorCellMouseClick(object sender, DataGridViewCellMouseEventArgs e)
         {
             if (e == null)
                 return;
@@ -1017,6 +1015,12 @@ namespace RTCV.UI
                         }
                     }
 
+                    // Check boxes should react in one click
+                    if (dgvBlastGenerator.CurrentCell is DataGridViewCheckBoxCell)
+                    {
+                        dgvBlastGenerator.BeginEdit(true);
+                    }
+
                     // Drop downs should immediately open when clicked on
                     if (dgvBlastGenerator.CurrentCell is DataGridViewComboBoxCell)
                     {
@@ -1043,7 +1047,9 @@ namespace RTCV.UI
                     }).EndIf().Build();
                 cms.Show(dgvBlastGenerator, dgvBlastGenerator.PointToClient(Cursor.Position));
             }
+
         }
+
         private void OnBlastGeneratorCurrentCellDirtyStateChanged(object sender, EventArgs e)
         {
             if (dgvBlastGenerator.IsCurrentCellDirty)
@@ -1055,17 +1061,11 @@ namespace RTCV.UI
                 }
             }
         }
-
-
-        private void OnCellMouseDoubleClick(object sender, DataGridViewCellMouseEventArgs e)
+        private void OnBlastGeneratorCellMouseDoubleClick(object sender, DataGridViewCellMouseEventArgs e)
         {
             if (e.Button == MouseButtons.Left)
             {
-                if (e.RowIndex == -1)
-                {
-                    dgvBlastGenerator.EndEdit();
-                    dgvBlastGenerator.ClearSelection();
-                }
+                dgvBlastGenerator.BeginEdit(false);
             }
         }
 

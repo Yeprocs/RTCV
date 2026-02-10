@@ -597,6 +597,8 @@
             this.dgvBlastGenerator.Size = new System.Drawing.Size(872, 365);
             this.dgvBlastGenerator.TabIndex = 167;
             this.dgvBlastGenerator.Tag = "color:normal hex";
+            this.dgvBlastGenerator.CellMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.OnBlastGeneratorCellMouseClick);
+            this.dgvBlastGenerator.CellMouseDoubleClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.OnBlastGeneratorCellMouseDoubleClick);
             this.dgvBlastGenerator.CurrentCellDirtyStateChanged += new System.EventHandler(this.OnBlastGeneratorCurrentCellDirtyStateChanged);
             // 
             // dgvBlastProtoReference

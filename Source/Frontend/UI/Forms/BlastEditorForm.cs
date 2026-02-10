@@ -414,6 +414,12 @@ namespace RTCV.UI
                         S.GET<NoteEditorForm>().Show();
                     }
 
+                    // Check boxes should react in one click
+                    if (dgvBlastEditor.CurrentCell is DataGridViewCheckBoxCell)
+                    {
+                        dgvBlastEditor.BeginEdit(true);
+                    }
+
                     // Drop downs should immediately open when clicked on
                     if (dgvBlastEditor.CurrentCell is DataGridViewComboBoxCell)
                     {
