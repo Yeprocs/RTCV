@@ -33,7 +33,10 @@ namespace RTCV.Plugins.HexEditor
                                 S.SET(new HexEditor());
                             }
                             S.GET<HexEditor>().Restart();
+                            // Why does this form refuse to be on top unless it's restored? ¯\_(ツ)_/¯
+                            S.GET<HexEditor>().WindowState = System.Windows.Forms.FormWindowState.Minimized;
                             S.GET<HexEditor>().Show();
+                            S.GET<HexEditor>().WindowState = System.Windows.Forms.FormWindowState.Normal;
                         });
                     }
                     break;
