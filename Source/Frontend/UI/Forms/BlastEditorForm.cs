@@ -455,7 +455,7 @@ namespace RTCV.UI
         {
             if (dgvBlastEditor.IsCurrentCellDirty)
             {
-                if (dgvBlastEditor.CurrentCell is DataGridViewComboBoxCell)
+                if (dgvBlastEditor.CurrentCell is DataGridViewComboBoxCell || dgvBlastEditor.CurrentCell is DataGridViewCheckBoxCell)
                 {
                     dgvBlastEditor.CommitEdit(DataGridViewDataErrorContexts.Commit);
                     dgvBlastEditor.EndEdit();
