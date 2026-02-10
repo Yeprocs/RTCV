@@ -55,12 +55,16 @@ namespace RTCV.Plugins.HexEditor
 
                         SyncObjectSingleton.FormExecute(() =>
                         {
+                            if (!S.GET<HexEditor>().Visible)
+                                S.GET<HexEditor>().WindowState = System.Windows.Forms.FormWindowState.Minimized;
+
                             if (S.GET<HexEditor>().IsDisposed)
                             {
                                 S.SET(new HexEditor());
                             }
                             S.GET<HexEditor>().Restart();
                             S.GET<HexEditor>().Show();
+                            S.GET<HexEditor>().WindowState = System.Windows.Forms.FormWindowState.Normal;
                             S.GET<HexEditor>().SetDomain(mi);
                             S.GET<HexEditor>().GoToAddress(address);
                         });
