@@ -85,7 +85,7 @@ namespace RTCV.CorruptCore
                 data.Add(PeekByte(i));
             }
 
-            if (raw || BigEndian)
+            if (!raw || !BigEndian)
             {
                 return data.ToArray();
             }
@@ -107,7 +107,7 @@ namespace RTCV.CorruptCore
             else
             {
 
-                if (!raw || BigEndian)
+                if (raw || BigEndian)
                 {
                     value.FlipBytes();
                 }
