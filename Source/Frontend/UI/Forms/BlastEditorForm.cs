@@ -125,12 +125,12 @@ namespace RTCV.UI
                 registerValueStringScrollEvents();
 
                 //On today's episode of "why is the designer overriding these values every time I build"
-                upDownExecuteFrame.Maximum = int.MaxValue;
-                upDownLoopTiming.Maximum = int.MaxValue;
+                upDownExecuteFrame.Maximum = decimal.MaxValue;
+                upDownLoopTiming.Maximum = decimal.MaxValue;
                 upDownPrecision.Maximum = 16348; //Textbox doesn't like more than ~20k
-                upDownLifetime.Maximum = int.MaxValue;
-                upDownSourceAddress.Maximum = int.MaxValue;
-                upDownAddress.Maximum = int.MaxValue;
+                upDownLifetime.Maximum = decimal.MaxValue;
+                upDownSourceAddress.Maximum = decimal.MaxValue;
+                upDownAddress.Maximum = decimal.MaxValue;
                 dontShowBlastlayerNameInTitleToolStripMenuItem.Checked = Params.IsParamSet("DONT_SHOW_BLASTLAYER_NAME_IN_EDITOR");
             }
             catch (Exception ex)
