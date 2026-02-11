@@ -11,20 +11,24 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using RTCV.UI.Modular;
+using RTCV.Common;
 
 namespace RTCV.UI
 {
-    public partial class StockpileEmuVersionForm : ColorizedForm
+    public partial class UpdateEmuVersionForm : ColorizedForm
     {
         private string defaultString = "--select--";
 
         public string SelectedVersion;
-        public StockpileEmuVersionForm(bool detected = true)
+        public UpdateEmuVersionForm(bool detected = true)
         {
             InitializeComponent();
 
-            string detectedText = "RTC has detected some entries in this file do not have an associated emulator system and version.\r\n";
-            string defaultText = "Please select the system and version this file was created in.";
+            TopLevel = true;
+            TopMost = true;
+
+            string detectedText = "RTC has detected some entries in this file do not have an associated emulator system and version. Please select the system and version the entries were created in.";
+            string defaultText = "Please select the system and version the selected files were created in.";
 
 
             lbText.Text = detected ? detectedText : defaultText;
@@ -33,6 +37,8 @@ namespace RTCV.UI
 
             cbEmuVersion.Items.Add("--select--");
             cbEmuVersion.SelectedIndex = 0;
+
+            btnOk.Enabled = false;
 
             foreach(var dir in directories)
             {
@@ -49,21 +55,26 @@ namespace RTCV.UI
             cbEmuVersion.DroppedDown = true;
         }
 
-        private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
-        {
-
-        }
-
         private void button1_Click(object sender, EventArgs e)
         {
             if ((string)cbEmuVersion.SelectedItem != defaultString && (string)cbEmuVersion.SelectedItem != null)
                 SelectedVersion = (string)cbEmuVersion.SelectedItem;
-            this.Close();
+            this.DialogResult = DialogResult.OK;
         }
 
         private void button2_Click(object sender, EventArgs e)
         {
-            this.Close();
+            this.DialogResult = DialogResult.Cancel;
+        }
+
+        private void UpdateEmuVersionForm_Shown(object sender, EventArgs e)
+        {
+            this.Activate();
+        }
+
+        private void cbEmuVersion_SelectionChangeCommitted(object sender, EventArgs e)
+        {
+            btnOk.Enabled = cbEmuVersion.SelectedIndex == 0 ? false : true;
         }
     }
 }

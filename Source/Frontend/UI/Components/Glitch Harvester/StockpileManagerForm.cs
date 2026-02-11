@@ -432,7 +432,7 @@ namespace RTCV.UI
             }
             else if (missingEmuVer)
             {
-                var form = new StockpileEmuVersionForm();
+                var form = new UpdateEmuVersionForm();
 
                 // start/show the control
                 form.ShowDialog();
@@ -974,7 +974,7 @@ namespace RTCV.UI
 
         private void UpdateEmuVersionButton_Click(object sender, EventArgs e)
         {
-            var form = new StockpileEmuVersionForm(false);
+            var form = new UpdateEmuVersionForm(false);
 
             // start/show the control
             form.ShowDialog();
