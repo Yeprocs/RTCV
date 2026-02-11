@@ -75,6 +75,14 @@ namespace RTCV.UI
             //For some godforsaken reason, xmlSerializer deserialization wont fill this in as a bool so just use a string god help us all
             (dgvBlastGenerator.Columns["dgvEnabled"]).ValueType = typeof(string);
 
+            dgvInterval.Maximum = int.MaxValue;
+            dgvStartAddress.Maximum = int.MaxValue;
+            dgvEndAddress.Maximum = int.MaxValue;
+            dgvParam1.Maximum = int.MaxValue;
+            dgvParam2.Maximum = int.MaxValue;
+            dgvLifetime.Maximum = int.MaxValue;
+            dgvExecuteFrame.Maximum = int.MaxValue;
+
             Colors.SetRTCColor(Colors.GeneralColor, this);
         }
 
