@@ -630,7 +630,7 @@ namespace RTCV.UI
                         config.DomainConfigSystem[systemCore] = configSystem;
                         string jsonString = JsonConvert.SerializeObject(config, Formatting.Indented);
 
-                        NetCore.Params.SetParams(configFileName, jsonString);
+                        Params.SetParam(configFileName, jsonString);
                     }
 
                     // If the domains changed, update them with the latest settings from the config file then refresh the domains

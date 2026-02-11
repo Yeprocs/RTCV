@@ -1,10 +1,6 @@
 ﻿namespace RTCV.NetCore
 {
-    using Newtonsoft.Json;
-    using System.Collections.Generic;
     using System.IO;
-    using System.Text;
-    using System.Windows.Forms;
 
     public static class Params
     {
@@ -32,21 +28,6 @@
         }
 
         public static void SetParam(string paramName, string data = null)
-        {
-            if (data == null)
-            {
-                if (!IsParamSet(paramName))
-                {
-                    SetParam(paramName, "");
-                }
-            }
-            else
-            {
-                File.WriteAllText(Path.Combine(ParamsDir, paramName), data);
-            }
-        }
-
-        public static void SetParams(string paramName, string data = null)
         {
             if (data == null)
             {
