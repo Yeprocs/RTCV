@@ -16,18 +16,24 @@ namespace RTCV.UI
 {
     public partial class StockpileEmuVersionForm : ColorizedForm
     {
+        private string defaultString = "--select--";
+
         public string SelectedVersion;
         public StockpileEmuVersionForm(bool detected = true)
         {
             InitializeComponent();
 
-            string detectedText = "RTC has detected this stockpile does not have an associated emulator system and version. Please select the system and version this stockpile was created in.";
-            string defaultText = "Please select the system and version the selected stockpile items were created in.";
+            string detectedText = "RTC has detected some entries in this file do not have an associated emulator system and version.\r\n";
+            string defaultText = "Please select the system and version this file was created in.";
 
 
             lbText.Text = detected ? detectedText : defaultText;
 
             var directories = Directory.GetDirectories(new DirectoryInfo(RtcCore.RtcDir).Parent.Parent.FullName);
+
+            cbEmuVersion.Items.Add("--select--");
+            cbEmuVersion.SelectedIndex = 0;
+
             foreach(var dir in directories)
             {
                 var dirName = new DirectoryInfo(dir).Name;
@@ -50,18 +56,14 @@ namespace RTCV.UI
 
         private void button1_Click(object sender, EventArgs e)
         {
-            SelectedVersion = (string)cbEmuVersion.SelectedItem;
+            if ((string)cbEmuVersion.SelectedItem != defaultString && (string)cbEmuVersion.SelectedItem != null)
+                SelectedVersion = (string)cbEmuVersion.SelectedItem;
             this.Close();
         }
 
         private void button2_Click(object sender, EventArgs e)
         {
             this.Close();
-        }
-
-        private void label1_Click(object sender, EventArgs e)
-        {
-
         }
     }
 }

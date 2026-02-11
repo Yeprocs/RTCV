@@ -44,12 +44,11 @@
             this.lbText.Location = new System.Drawing.Point(7, 7);
             this.lbText.MaximumSize = new System.Drawing.Size(800, 0);
             this.lbText.Name = "lbText";
-            this.lbText.Size = new System.Drawing.Size(788, 108);
+            this.lbText.Size = new System.Drawing.Size(797, 108);
             this.lbText.TabIndex = 0;
-            this.lbText.Text = "RTC has detected some stockpile entries do not have an associated emulator system" +
-    " and version. Please select the system and version this stockpile was created in" +
-    ".\r\n";
-            this.lbText.Click += new System.EventHandler(this.label1_Click);
+            this.lbText.Text = "RTC has detected some entries in this file do not have an associated emulator sys" +
+    "tem and version. Please select the system and version this file was created in.\r" +
+    "\n";
             // 
             // cbEmuVersion
             // 

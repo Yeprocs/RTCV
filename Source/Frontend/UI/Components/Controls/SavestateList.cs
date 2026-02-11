@@ -524,8 +524,8 @@ namespace RTCV.UI.Components.Controls
                         => NewSavestateNow())
                     .If(stockpileHasSelection).AddItem("Import State From Selected Stockpile Item", async (ob, ev)
                         => await NewSavestateFromStockpile()).EndIf()
-                    .AddItem("Import State from File", (ob, ev)
-                        => NewSavestateFromFile())
+                    .AddItem("Import State from File", async (ob, ev)
+                        => await NewSavestateFromFile())
                     .Build()
                     .Show((Control)sender, locate);
             }
@@ -613,7 +613,7 @@ namespace RTCV.UI.Components.Controls
             }
         }
 
-        private void NewSavestateFromFile()
+        private async Task NewSavestateFromFile()
         {
             var openSavestateDialog = new OpenFileDialog
             {
@@ -668,7 +668,7 @@ namespace RTCV.UI.Components.Controls
                 File.Copy(skspath, workingpath);
 
             StockpileManagerUISide.CurrentStashkey = sk;
-            StockpileManagerUISide.OriginalFromStashkey(sk);
+            await StockpileManagerUISide.OriginalFromStashkey(sk);
 
             RegisterStashKeyToSelected(newSk);
         }
