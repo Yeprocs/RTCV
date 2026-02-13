@@ -46,21 +46,6 @@
             }
         }
 
-        public static void SetParams(string paramName, string data = null)
-        {
-            if (data == null)
-            {
-                if (!IsParamSet(paramName))
-                {
-                    SetParam(paramName, "");
-                }
-            }
-            else
-            {
-                File.WriteAllText(Path.Combine(ParamsDir, paramName), data);
-            }
-        }
-
         public static void RemoveParam(string paramName)
         {
             if (IsParamSet(paramName))

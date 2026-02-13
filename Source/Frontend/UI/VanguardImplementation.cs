@@ -619,9 +619,17 @@ namespace RTCV.UI
                         }
                     }
 
+                    // Grab the default blacklisted domains
+                    string[] defaultBlacklistedDomains = (string[])AllSpec.VanguardSpec[VSPEC.MEMORYDOMAINS_BLACKLISTEDDOMAINS];
                     foreach (KeyValuePair<string, MemoryDomainProxy> domain in MemoryDomains.MemoryInterfaces)
                     {
-                        configSystem.DomainConfig[domain.Key] = new DomainConfig(domain.Value.Visible, domain.Value.AutoDomainSelect);
+                        // If we haven't saved this core to the settings yet, fall back to the default blacklisted domains
+                        if (domainsChanged && !config.DomainConfigSystem.ContainsKey(systemCore))
+                        {
+                            configSystem.DomainConfig[domain.Key] = new DomainConfig(domain.Value.Visible, !defaultBlacklistedDomains.ToList().Any(d => d == domain.Key));
+                        }
+                        else
+                            configSystem.DomainConfig[domain.Key] = new DomainConfig(domain.Value.Visible, domain.Value.AutoDomainSelect);
                     }
 
                     // If we don't have a config file yet or we're updating the domains from the settings form, save to the json config file
@@ -630,7 +638,7 @@ namespace RTCV.UI
                         config.DomainConfigSystem[systemCore] = configSystem;
                         string jsonString = JsonConvert.SerializeObject(config, Formatting.Indented);
 
-                        NetCore.Params.SetParams(configFileName, jsonString);
+                        NetCore.Params.SetParam(configFileName, jsonString);
                     }
 
                     // If the domains changed, update them with the latest settings from the config file then refresh the domains
