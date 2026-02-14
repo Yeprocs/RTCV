@@ -321,12 +321,12 @@ namespace RTCV.UI
 
         private void btnDomainConfig_Click(object sender, EventArgs e)
         {
-            if (Application.OpenForms.OfType<DomainSelectionConfigForm>().Any())
-                Application.OpenForms.OfType<DomainSelectionConfigForm>().First().Activate();
+            if (S.GET<DomainSelectionConfigForm>().Visible)
+                S.GET<DomainSelectionConfigForm>().Activate();
             else
             {
-                var domainSelectionConfigForm = new DomainSelectionConfigForm();
-                domainSelectionConfigForm.Show();
+                S.SET(new DomainSelectionConfigForm());
+                S.GET<DomainSelectionConfigForm>().Show();
             }
         }
     }
