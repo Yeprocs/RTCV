@@ -292,7 +292,8 @@ namespace RTCV.UI
                 Title = "Save VMD to File",
                 Filter = "VMD file|*.vmd",
                 FileName = fixedName,
-                RestoreDirectory = true
+                RestoreDirectory = true,
+                InitialDirectory = RtcCore.VmdsDir ?? ""
             };
 
             if (saveFileDialog1.ShowDialog() == DialogResult.OK)
@@ -335,7 +336,8 @@ namespace RTCV.UI
                 Multiselect = true,
                 Title = "Open VMD File",
                 Filter = "VMD files|*.vmd",
-                RestoreDirectory = true
+                RestoreDirectory = true,
+                InitialDirectory = RtcCore.VmdsDir ?? ""
             };
             if (ofd.ShowDialog() == DialogResult.OK)
             {

@@ -15,6 +15,7 @@ namespace RTCV.UI
 
     public partial class DomainSelectionConfigForm : Modular.ColorizedForm
     {
+        private bool settingChangedInForm = false;
         public DomainSelectionConfigForm()
         {
             InitializeComponent();
@@ -22,6 +23,13 @@ namespace RTCV.UI
 
         public void UpdateDomainsList()
         {
+            // If we end up clicking on a setting in the form directly, we don't need to update the entire table
+            if (settingChangedInForm)
+            {
+                settingChangedInForm = false;
+                return;
+            }
+
             tableLayoutPanel1.Visible = false;
             tableLayoutPanel1.Controls.Clear();
             tableLayoutPanel1.SuspendLayout();
@@ -49,6 +57,25 @@ namespace RTCV.UI
                 i++;
             }
 
+            var vmds = MemoryDomains.VmdPool;
+            foreach (KeyValuePair<string, VirtualMemoryDomain> vmd in vmds)
+            {
+                tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Absolute, 46));
+
+                tableLayoutPanel1.Controls.Add(new Label { Text = vmd.Key, TextAlign = ContentAlignment.MiddleCenter, Font = new Font("Segoe UI", 14), Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right, Margin = new Padding(2, 2, 2, 2) }, 0, i);
+
+                var showInRtcCheckbox = new CheckBox { Checked = vmds[vmd.Key].Visible, CheckAlign = ContentAlignment.MiddleCenter, Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right, AutoSize = true };
+                showInRtcCheckbox.Click += new System.EventHandler((sender, e) => OnShowInRtcCheckbox(sender, e, vmd.Key));
+                tableLayoutPanel1.Controls.Add(showInRtcCheckbox, 1, i);
+
+                var autoDomainCheckbox = new CheckBox { Checked = vmds[vmd.Key].AutoDomainSelect, CheckAlign = ContentAlignment.MiddleCenter, Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right, AutoSize = true };
+                autoDomainCheckbox.Click += new System.EventHandler((sender, e) => OnAutoDomainCheckbox(sender, e, vmd.Key));
+                tableLayoutPanel1.Controls.Add(autoDomainCheckbox, 2, i);
+
+                i++;
+
+            }
+
 
             tableLayoutPanel1.ResumeLayout();
             tableLayoutPanel1.Visible = true;
@@ -67,21 +94,30 @@ namespace RTCV.UI
 
         private void OnShowInRtcCheckbox(object sender, EventArgs e, string domainName)
         {
+            settingChangedInForm = true;
             CheckBox checkBox = sender as CheckBox;
 
-            MemoryDomains.MemoryInterfaces[domainName].Visible = checkBox.Checked;
+            if (domainName.Contains("[V]"))
+                MemoryDomains.VmdPool[domainName].Visible = checkBox.Checked;
+            else
+                MemoryDomains.MemoryInterfaces[domainName].Visible = checkBox.Checked;
             LocalNetCoreRouter.Route(NetCore.Endpoints.UI, NetCore.Commands.Remote.EventDomainsUpdated, new object[] { false }, true);
         }
 
         private void OnAutoDomainCheckbox(object sender, EventArgs e, string domainName)
         {
+            settingChangedInForm = true;
             CheckBox checkBox = sender as CheckBox;
 
-            MemoryDomains.MemoryInterfaces[domainName].AutoDomainSelect = checkBox.Checked;
+            if (domainName.Contains("[V]"))
+                MemoryDomains.VmdPool[domainName].AutoDomainSelect = checkBox.Checked;
+            else
+                MemoryDomains.MemoryInterfaces[domainName].AutoDomainSelect = checkBox.Checked;
 
-            string[] blacklistedDomains = MemoryDomains.MemoryInterfaces.Keys.Where(key => MemoryDomains.MemoryInterfaces[key].AutoDomainSelect == false).ToArray();
+            var blacklistedDomains = MemoryDomains.MemoryInterfaces.Keys.Where(key => MemoryDomains.MemoryInterfaces[key].AutoDomainSelect == false);
+            blacklistedDomains = blacklistedDomains.Concat(MemoryDomains.VmdPool.Keys.Where(key => MemoryDomains.VmdPool[key].AutoDomainSelect == false));
 
-            AllSpec.VanguardSpec.Update(VSPEC.MEMORYDOMAINS_BLACKLISTEDDOMAINS, blacklistedDomains);
+            AllSpec.VanguardSpec.Update(VSPEC.MEMORYDOMAINS_BLACKLISTEDDOMAINS, blacklistedDomains.ToArray());
             LocalNetCoreRouter.Route(NetCore.Endpoints.UI, NetCore.Commands.Remote.EventDomainsUpdated, new object[] { false }, true);
         }
 
@@ -94,12 +130,13 @@ namespace RTCV.UI
             var result = MessageBox.Show("Are you sure you want to reset to the default domains configuration?", "Reset Confirmation", MessageBoxButtons.YesNo);
             if (result == DialogResult.Yes)
             {
-                string configFileName = "DEFAULT_" + new DirectoryInfo(CorruptCore.RtcCore.EmuDir).Name + "_DOMAINS_CONFIG";
+                string configFileName = new DirectoryInfo(CorruptCore.RtcCore.EmuDir).Name + "_DOMAINS_CONFIG";
+                string defaultConfigFileName = "DEFAULT_" + configFileName;
                 string systemCore = AllSpec.VanguardSpec[VSPEC.SYSTEMCORE].ToString();
 
-                if (Params.IsParamSet(configFileName))
+                if (Params.IsParamSet(defaultConfigFileName))
                 {
-                    var configFile = File.ReadAllText(Path.Combine(Params.ParamsDir, configFileName));
+                    var configFile = File.ReadAllText(Path.Combine(Params.ParamsDir, defaultConfigFileName));
                     var jsonString = JsonConvert.DeserializeObject<DomainConfigRoot>(configFile);
 
                     List<string> defaultDomains = new List<string>();
@@ -107,16 +144,21 @@ namespace RTCV.UI
                     {
                         foreach (string domain in jsonString.DomainConfigSystem[systemCore].DomainConfig.Keys)
                         {
-                            if (!jsonString.DomainConfigSystem[systemCore].DomainConfig[domain].AUTOSELECT)
-                                defaultDomains.Add(domain);
+                            if (MemoryDomains.MemoryInterfaces.ContainsKey(domain))
+                            {
+                                MemoryDomains.MemoryInterfaces[domain].Visible = jsonString.DomainConfigSystem[systemCore].DomainConfig[domain].VISIBLE;
+                                MemoryDomains.MemoryInterfaces[domain].AutoDomainSelect = jsonString.DomainConfigSystem[systemCore].DomainConfig[domain].AUTOSELECT;
+                            }
                         }
                     }
-
-                    AllSpec.VanguardSpec.Update(VSPEC.MEMORYDOMAINS_BLACKLISTEDDOMAINS, defaultDomains.ToArray());
-
+                    foreach (string vmd in MemoryDomains.VmdPool.Keys)
+                    {
+                        MemoryDomains.VmdPool[vmd].Visible = true;
+                        MemoryDomains.VmdPool[vmd].AutoDomainSelect = true;
+                    }
                     Params.RemoveParam(configFileName);
 
-                    LocalNetCoreRouter.Route(RTCV.NetCore.Endpoints.UI, RTCV.NetCore.Commands.Remote.EventDomainsUpdated, new object[] { true, true }, true);
+                    LocalNetCoreRouter.Route(RTCV.NetCore.Endpoints.UI, RTCV.NetCore.Commands.Remote.EventDomainsUpdated, new object[] { false }, true);
 
                     UpdateDomainsList();
                 }
@@ -148,6 +190,10 @@ namespace RTCV.UI
             foreach (KeyValuePair<string, MemoryDomainProxy> domain in MemoryDomains.MemoryInterfaces)
             {
                 configSystem.DomainConfig[domain.Key] = new DomainConfig(domain.Value.Visible, domain.Value.AutoDomainSelect);
+            }
+            foreach (KeyValuePair<string, VirtualMemoryDomain> vmd in MemoryDomains.VmdPool)
+            {
+                configSystem.DomainConfig[vmd.Key] = new DomainConfig(vmd.Value.Visible, vmd.Value.AutoDomainSelect);
             }
             savedConfig.DomainConfigSystem[systemCore] = configSystem;
 
@@ -185,21 +231,69 @@ namespace RTCV.UI
             var configFile = File.ReadAllText(Path.Combine(Params.ParamsDir, currentFilename));
             var jsonString = JsonConvert.DeserializeObject<DomainConfigRoot>(configFile);
 
-            List<string> defaultDomains = new List<string>();
+            List<string> blacklistedDomains = new List<string>();
             if (jsonString.DomainConfigSystem.ContainsKey(systemCore))
             {
+                bool refreshVMDs = false;
+                List<string> failedLoadVMDs = new List<string>();
                 foreach (string domain in jsonString.DomainConfigSystem[systemCore].DomainConfig.Keys)
                 {
-                    if (!jsonString.DomainConfigSystem[systemCore].DomainConfig[domain].AUTOSELECT)
-                        defaultDomains.Add(domain);
+                    // If it's a vmd domain, try to find it in the vmd directory and load it if possible
+                    if (domain.Contains("[V]"))
+                    {
+                        string vmdName = domain.Remove(0, 3) + ".vmd";
+                        string path = Path.Combine(RtcCore.VmdsDir, vmdName);
+                        // If the vmd is already loaded into RTC, we can skip trying to find and load
+                        if (!MemoryDomains.VmdPool.ContainsKey(domain))
+                            {
+                            if (File.Exists(path))
+                            {
+                                S.GET<VmdPoolForm>().loadVmd(path, false);
+                                refreshVMDs = true;
+                            }
+                            else
+                            {
+                                failedLoadVMDs.Add(vmdName);
+                            }
+                        }
+
+                        if (!failedLoadVMDs.Contains(vmdName))
+                        {
+                            MemoryDomains.VmdPool[domain].Visible = jsonString.DomainConfigSystem[systemCore].DomainConfig[domain].VISIBLE;
+                            MemoryDomains.VmdPool[domain].AutoDomainSelect = jsonString.DomainConfigSystem[systemCore].DomainConfig[domain].AUTOSELECT;
+                        }
+                    }
+                    else
+                    {
+                        if (MemoryDomains.MemoryInterfaces.ContainsKey(domain))
+                        {
+                            MemoryDomains.MemoryInterfaces[domain].Visible = jsonString.DomainConfigSystem[systemCore].DomainConfig[domain].VISIBLE;
+                            MemoryDomains.MemoryInterfaces[domain].AutoDomainSelect = jsonString.DomainConfigSystem[systemCore].DomainConfig[domain].AUTOSELECT;
+                        }
+                    }
                 }
+
+                if (failedLoadVMDs.Count > 0)
+                {
+                    string missingVMDsString = "";
+                    foreach (string vmd in failedLoadVMDs)
+                    {
+                        missingVMDsString += vmd + "\n";
+                    }
+                    string missingVMDsMessage = "The following VMD files could not be found while loading the domains config: \n\n" +
+                                                      String.Join(Environment.NewLine, missingVMDsString + "\n" +
+                                                      "They will not be loaded.");
+                    MessageBox.Show(missingVMDsMessage, "Missing VMD files", MessageBoxButtons.OK, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button1, MessageBoxOptions.DefaultDesktopOnly);
+                }
+
+                if (refreshVMDs)
+                    S.GET<VmdPoolForm>().RefreshVMDs();
             }
 
-            AllSpec.VanguardSpec.Update(VSPEC.MEMORYDOMAINS_BLACKLISTEDDOMAINS, defaultDomains.ToArray());
-
             Params.RemoveParam(systemCore + "_DOMAINS_CONFIG");
+            Params.RemoveParam("VMD_DOMAINS_CONFIG");
 
-            LocalNetCoreRouter.Route(RTCV.NetCore.Endpoints.UI, RTCV.NetCore.Commands.Remote.EventDomainsUpdated, new object[] { true, true }, true);
+            LocalNetCoreRouter.Route(RTCV.NetCore.Endpoints.UI, RTCV.NetCore.Commands.Remote.EventDomainsUpdated, new object[] { false }, true);
 
             UpdateDomainsList();
         }

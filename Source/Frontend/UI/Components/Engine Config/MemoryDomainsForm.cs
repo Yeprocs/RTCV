@@ -126,7 +126,7 @@ namespace RTCV.UI
 
             if (MemoryDomains.VmdPool.Count > 0)
             {
-                lbMemoryDomains.Items.AddRange(MemoryDomains.VmdPool.Values.Select(it => it.ToString()).ToArray());
+                lbMemoryDomains.Items.AddRange(MemoryDomains.VmdPool.Keys.Where(key => MemoryDomains.VmdPool[key].Visible == true).ToArray());
             }
 
             this.Visible = oldState;

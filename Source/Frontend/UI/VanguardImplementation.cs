@@ -79,8 +79,7 @@ namespace RTCV.UI
                     case Remote.EventDomainsUpdated:
                         var eventArgs = (object[])(advancedMessage.objectValue as object[]);
                         var domainsChanged = (bool)eventArgs[0];
-                        var resetToDefault = eventArgs.Length > 1 ? (bool)eventArgs[1] : false;
-                        DomainsUpdated(domainsChanged, resetToDefault);
+                        DomainsUpdated(domainsChanged);
                         break;
                     case Remote.GetBlastGeneratorLayer:
                         GetBlastGeneratorLayer(ref e);
@@ -587,7 +586,7 @@ namespace RTCV.UI
             e.setReturnValue(true);
         }
 
-        private static void DomainsUpdated(bool domainsChanged = false, bool resetToDefault = false)
+        private static void DomainsUpdated(bool domainsChanged = false)
         {
             SyncObjectSingleton.FormExecute(() =>
             {
@@ -604,6 +603,11 @@ namespace RTCV.UI
                     // or if it's another core that isn't currently being used (so we save it back to the json file)
                     DomainConfigRoot config = GetDomainConfigParam(configFileName, systemCore, domainsChanged);
                     DomainConfigRoot defaultConfig = GetDomainConfigParam("DEFAULT_" + configFileName, systemCore, true);
+                    DomainConfigRoot vmdConfig = GetDomainConfigParam("VMD_DOMAINS_CONFIG", systemCore, true);
+
+                    // If the vmd config is for a different core, throw it away
+                    if (!vmdConfig.DomainConfigSystem.ContainsKey(systemCore))
+                        Params.RemoveParam("VMD_DOMAINS_CONFIG");
 
                     // Grab the default blacklisted domains
                     string[] defaultBlacklistedDomains = (string[])AllSpec.VanguardSpec[VSPEC.MEMORYDOMAINS_BLACKLISTEDDOMAINS];
@@ -626,22 +630,29 @@ namespace RTCV.UI
                     DomainConfigSystem configSystem = new DomainConfigSystem();
                     foreach (KeyValuePair<string, MemoryDomainProxy> domain in MemoryDomains.MemoryInterfaces)
                     {
-                        // If we're resetting or haven't saved this core to the settings yet, fall back to the default blacklisted domains
-                        if ((resetToDefault || (domainsChanged && !config.DomainConfigSystem.ContainsKey(systemCore))) && !AllSpec.VanguardSpec[VSPEC.SYSTEMCORE].ToString().Contains("ProcessStub") && !AllSpec.VanguardSpec[VSPEC.SYSTEMCORE].ToString().Contains("FileStub"))
-                        {
-                            configSystem.DomainConfig[domain.Key] = new DomainConfig(true, !defaultBlacklistedDomains.ToList().Any(d => d == domain.Key));
-                        }
-                        else
-                            configSystem.DomainConfig[domain.Key] = new DomainConfig(domain.Value.Visible, domain.Value.AutoDomainSelect);
+                        configSystem.DomainConfig[domain.Key] = new DomainConfig(domain.Value.Visible, domain.Value.AutoDomainSelect);
                     }
 
                     // If we don't have a config file yet or we're updating the domains from the settings form, save to the json config file
-                    if (resetToDefault || !Params.IsParamSet(configFileName) || (domainsChanged && !config.DomainConfigSystem.ContainsKey(systemCore)) || !domainsChanged)
+                    if (!Params.IsParamSet(configFileName) || (domainsChanged && !config.DomainConfigSystem.ContainsKey(systemCore)) || !domainsChanged)
                     {
                         config.DomainConfigSystem[systemCore] = configSystem;
                         string jsonString = JsonConvert.SerializeObject(config, Formatting.Indented);
 
-                        NetCore.Params.SetParam(configFileName, jsonString);
+                        Params.SetParam(configFileName, jsonString);
+                    }
+
+                    DomainConfigSystem vmdConfigSystem = new DomainConfigSystem();
+                    foreach (KeyValuePair<string, VirtualMemoryDomain> vmd in MemoryDomains.VmdPool)
+                    {
+                        vmdConfigSystem.DomainConfig[vmd.Key] = new DomainConfig(vmd.Value.Visible, vmd.Value.AutoDomainSelect);
+                    }
+                    if ((!Params.IsParamSet("VMD_DOMAINS_CONFIG") && vmdConfigSystem.DomainConfig.Count > 0))
+                    {
+                        vmdConfig.DomainConfigSystem[systemCore] = vmdConfigSystem;
+                        string jsonString = JsonConvert.SerializeObject(vmdConfig, Formatting.Indented);
+
+                        Params.SetParam("VMD_DOMAINS_CONFIG", jsonString);
                     }
 
                     // If the domains changed, update them with the latest settings from the config file then refresh the domains
@@ -652,11 +663,13 @@ namespace RTCV.UI
                             domain.Value.Visible = config.DomainConfigSystem[systemCore].DomainConfig[domain.Key].VISIBLE;
                             domain.Value.AutoDomainSelect = config.DomainConfigSystem[systemCore].DomainConfig[domain.Key].AUTOSELECT;
                         }
-                        string[] blacklistedDomains = MemoryDomains.MemoryInterfaces.Keys.Where(key => MemoryDomains.MemoryInterfaces[key].AutoDomainSelect == false).ToArray();
-                        AllSpec.VanguardSpec.Update(VSPEC.MEMORYDOMAINS_BLACKLISTEDDOMAINS, blacklistedDomains);
-
-                        S.GET<MemoryDomainsForm>().RefreshDomains();
                     }
+
+                    var blacklistedDomains = MemoryDomains.MemoryInterfaces.Keys.Where(key => MemoryDomains.MemoryInterfaces[key].AutoDomainSelect == false);
+                    blacklistedDomains = blacklistedDomains.Concat(MemoryDomains.VmdPool.Keys.Where(key => MemoryDomains.VmdPool[key].AutoDomainSelect == false));
+                    AllSpec.VanguardSpec.Update(VSPEC.MEMORYDOMAINS_BLACKLISTEDDOMAINS, blacklistedDomains.ToArray());
+
+                    S.GET<MemoryDomainsForm>().RefreshDomains();
                 }
                 if (S.GET<DomainSelectionConfigForm>().Visible)
                     S.GET<DomainSelectionConfigForm>().UpdateDomainsList();
