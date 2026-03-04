@@ -136,17 +136,6 @@ namespace RTCV.UI
                     return;
                 }
 
-                if (c is ListBoxExtended)
-                {
-                    // draw a red square in the middle for debugging purposes
-                    int squareSize = 10;
-                    int x = (c.ClientSize.Width - squareSize) / 2;
-                    int y = (c.ClientSize.Height - squareSize) / 2;
-                    pevent.Graphics.FillRectangle(Brushes.Red, x, y, squareSize, squareSize);
-                    
-                    return;
-                }
-
                 Control parent = c.Parent;
                 Control topParent = parent;
                 while (topParent.Parent != null)
