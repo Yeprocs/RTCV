@@ -154,7 +154,6 @@ This message only appears once.";
                 S.GET<IntroForm>().DisplayRtcvDisclaimer(disclaimer.Replace("[ver]", RtcCore.RtcVersion));
 
                 Params.SetParam("DISCLAIMER_READ");
-
                 Params.SetParam("COMPRESS_STOCKPILE"); //Default param
                 Params.SetParam("COMPRESS_SAVESTATES"); //Default param
                 Params.SetParam("INCLUDE_REFERENCED_FILES"); //Default param
@@ -162,6 +161,7 @@ This message only appears once.";
                 Params.SetParam("RASTERIZE_VMD_UPON_STOCKPILING"); //Default param
                 Params.SetParam("AUTOSAVE_INTERVAL", "300"); //Default param (5 minutes in seconds)
                 Params.SetParam("AUTOSAVE_MAX_SIZE", "2.5"); //Default param (2.5 GiB)
+                Params.SetParam("CORNER_ROUNDNESS", "5"); //Default param (5 pixels)
             }
             else if (Params.IsParamSet("RTC_AWAKE") && !Debugger.IsAttached)
             {

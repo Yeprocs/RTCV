@@ -30,10 +30,12 @@ namespace RTCV.UI
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SettingsGeneralForm));
             this.panel1 = new System.Windows.Forms.Panel();
+            this.label6 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
             this.nmSwapEmuTimeout = new System.Windows.Forms.NumericUpDown();
             this.label3 = new System.Windows.Forms.Label();
             this.nmMaxAutosaveSize = new System.Windows.Forms.NumericUpDown();
+            this.label4 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.nmAutosaveSeconds = new System.Windows.Forms.NumericUpDown();
@@ -46,26 +48,30 @@ namespace RTCV.UI
             this.cbDontCleanAtQuit = new System.Windows.Forms.CheckBox();
             this.cbAllowCrossCoreCorruption = new System.Windows.Forms.CheckBox();
             this.cbDisableEmulatorOSD = new System.Windows.Forms.CheckBox();
-            this.label4 = new System.Windows.Forms.Label();
             this.btnRefreshInputDevices = new System.Windows.Forms.Button();
             this.btnChangeRTCColor = new System.Windows.Forms.Button();
             this.btnOpenOnlineWiki = new System.Windows.Forms.Button();
             this.btnWatchTutorialVideo = new System.Windows.Forms.Button();
             this.btnResetRandomSeed = new System.Windows.Forms.Button();
+            this.nmCornerRoundness = new System.Windows.Forms.NumericUpDown();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nmSwapEmuTimeout)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nmMaxAutosaveSize)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nmAutosaveSeconds)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nmAutosaveMinutes)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nmCornerRoundness)).BeginInit();
             this.SuspendLayout();
             // 
             // panel1
             // 
             this.panel1.BackColor = System.Drawing.Color.Gray;
+            this.panel1.Controls.Add(this.nmCornerRoundness);
+            this.panel1.Controls.Add(this.label6);
             this.panel1.Controls.Add(this.label5);
             this.panel1.Controls.Add(this.nmSwapEmuTimeout);
             this.panel1.Controls.Add(this.label3);
             this.panel1.Controls.Add(this.nmMaxAutosaveSize);
+            this.panel1.Controls.Add(this.label4);
             this.panel1.Controls.Add(this.label2);
             this.panel1.Controls.Add(this.label1);
             this.panel1.Controls.Add(this.nmAutosaveSeconds);
@@ -78,11 +84,24 @@ namespace RTCV.UI
             this.panel1.Controls.Add(this.cbDontCleanAtQuit);
             this.panel1.Controls.Add(this.cbAllowCrossCoreCorruption);
             this.panel1.Controls.Add(this.cbDisableEmulatorOSD);
-            this.panel1.Location = new System.Drawing.Point(18, 197);
+            this.panel1.Location = new System.Drawing.Point(12, 12);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(323, 196);
+            this.panel1.Size = new System.Drawing.Size(308, 381);
             this.panel1.TabIndex = 138;
             this.panel1.Tag = "color:normal";
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Font = new System.Drawing.Font("Segoe UI", 8.25F);
+            this.label6.ForeColor = System.Drawing.Color.White;
+            this.label6.ImageAlign = System.Drawing.ContentAlignment.TopRight;
+            this.label6.Location = new System.Drawing.Point(8, 220);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(103, 13);
+            this.label6.TabIndex = 140;
+            this.label6.Text = "Corner roundness:";
+            this.label6.TextAlign = System.Drawing.ContentAlignment.TopRight;
             // 
             // label5
             // 
@@ -90,7 +109,7 @@ namespace RTCV.UI
             this.label5.Font = new System.Drawing.Font("Segoe UI", 8.25F);
             this.label5.ForeColor = System.Drawing.Color.White;
             this.label5.ImageAlign = System.Drawing.ContentAlignment.TopRight;
-            this.label5.Location = new System.Drawing.Point(55, 170);
+            this.label5.Location = new System.Drawing.Point(55, 195);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(218, 13);
             this.label5.TabIndex = 123;
@@ -102,7 +121,7 @@ namespace RTCV.UI
             this.nmSwapEmuTimeout.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
             this.nmSwapEmuTimeout.Font = new System.Drawing.Font("Segoe UI", 8F);
             this.nmSwapEmuTimeout.ForeColor = System.Drawing.Color.White;
-            this.nmSwapEmuTimeout.Location = new System.Drawing.Point(11, 168);
+            this.nmSwapEmuTimeout.Location = new System.Drawing.Point(11, 193);
             this.nmSwapEmuTimeout.Maximum = new decimal(new int[] {
             59,
             0,
@@ -125,9 +144,9 @@ namespace RTCV.UI
             this.label3.Font = new System.Drawing.Font("Segoe UI", 8.25F);
             this.label3.ForeColor = System.Drawing.Color.White;
             this.label3.ImageAlign = System.Drawing.ContentAlignment.TopRight;
-            this.label3.Location = new System.Drawing.Point(223, 152);
+            this.label3.Location = new System.Drawing.Point(223, 173);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(24, 13);
+            this.label3.Size = new System.Drawing.Size(25, 13);
             this.label3.TabIndex = 121;
             this.label3.Text = "GiB";
             this.label3.TextAlign = System.Drawing.ContentAlignment.TopRight;
@@ -138,7 +157,7 @@ namespace RTCV.UI
             this.nmMaxAutosaveSize.DecimalPlaces = 2;
             this.nmMaxAutosaveSize.Font = new System.Drawing.Font("Segoe UI", 8F);
             this.nmMaxAutosaveSize.ForeColor = System.Drawing.Color.White;
-            this.nmMaxAutosaveSize.Location = new System.Drawing.Point(172, 148);
+            this.nmMaxAutosaveSize.Location = new System.Drawing.Point(172, 169);
             this.nmMaxAutosaveSize.Maximum = new decimal(new int[] {
             999,
             0,
@@ -155,13 +174,26 @@ namespace RTCV.UI
             65536});
             this.nmMaxAutosaveSize.ValueChanged += new System.EventHandler(this.MaxAutosaveSizeChanged);
             // 
+            // label4
+            // 
+            this.label4.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.label4.AutoSize = true;
+            this.label4.Font = new System.Drawing.Font("Segoe UI Semibold", 9F);
+            this.label4.ForeColor = System.Drawing.Color.White;
+            this.label4.Location = new System.Drawing.Point(8, 8);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(117, 15);
+            this.label4.TabIndex = 139;
+            this.label4.Text = "General RTC Settings";
+            // 
             // label2
             // 
             this.label2.AutoSize = true;
             this.label2.Font = new System.Drawing.Font("Segoe UI", 8.25F);
             this.label2.ForeColor = System.Drawing.Color.White;
             this.label2.ImageAlign = System.Drawing.ContentAlignment.TopRight;
-            this.label2.Location = new System.Drawing.Point(8, 152);
+            this.label2.Location = new System.Drawing.Point(8, 173);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(166, 13);
             this.label2.TabIndex = 119;
@@ -174,7 +206,7 @@ namespace RTCV.UI
             this.label1.Font = new System.Drawing.Font("Segoe UI", 8.25F);
             this.label1.ForeColor = System.Drawing.Color.White;
             this.label1.ImageAlign = System.Drawing.ContentAlignment.TopRight;
-            this.label1.Location = new System.Drawing.Point(259, 131);
+            this.label1.Location = new System.Drawing.Point(257, 152);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(49, 13);
             this.label1.TabIndex = 118;
@@ -186,7 +218,7 @@ namespace RTCV.UI
             this.nmAutosaveSeconds.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
             this.nmAutosaveSeconds.Font = new System.Drawing.Font("Segoe UI", 8F);
             this.nmAutosaveSeconds.ForeColor = System.Drawing.Color.White;
-            this.nmAutosaveSeconds.Location = new System.Drawing.Point(226, 129);
+            this.nmAutosaveSeconds.Location = new System.Drawing.Point(224, 149);
             this.nmAutosaveSeconds.Maximum = new decimal(new int[] {
             59,
             0,
@@ -204,7 +236,7 @@ namespace RTCV.UI
             this.lbSeconds.Font = new System.Drawing.Font("Segoe UI", 8.25F);
             this.lbSeconds.ForeColor = System.Drawing.Color.White;
             this.lbSeconds.ImageAlign = System.Drawing.ContentAlignment.TopRight;
-            this.lbSeconds.Location = new System.Drawing.Point(156, 131);
+            this.lbSeconds.Location = new System.Drawing.Point(155, 152);
             this.lbSeconds.Name = "lbSeconds";
             this.lbSeconds.Size = new System.Drawing.Size(71, 13);
             this.lbSeconds.TabIndex = 116;
@@ -216,7 +248,7 @@ namespace RTCV.UI
             this.nmAutosaveMinutes.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
             this.nmAutosaveMinutes.Font = new System.Drawing.Font("Segoe UI", 8F);
             this.nmAutosaveMinutes.ForeColor = System.Drawing.Color.White;
-            this.nmAutosaveMinutes.Location = new System.Drawing.Point(113, 129);
+            this.nmAutosaveMinutes.Location = new System.Drawing.Point(112, 149);
             this.nmAutosaveMinutes.Maximum = new decimal(new int[] {
             999,
             0,
@@ -238,7 +270,7 @@ namespace RTCV.UI
             this.cbAutosave.AutoSize = true;
             this.cbAutosave.Font = new System.Drawing.Font("Segoe UI", 8F);
             this.cbAutosave.ForeColor = System.Drawing.Color.White;
-            this.cbAutosave.Location = new System.Drawing.Point(11, 130);
+            this.cbAutosave.Location = new System.Drawing.Point(11, 151);
             this.cbAutosave.Name = "cbAutosave";
             this.cbAutosave.Size = new System.Drawing.Size(106, 17);
             this.cbAutosave.TabIndex = 6;
@@ -251,7 +283,7 @@ namespace RTCV.UI
             this.cbRasterizeUponStockpiling.AutoSize = true;
             this.cbRasterizeUponStockpiling.Font = new System.Drawing.Font("Segoe UI", 8F);
             this.cbRasterizeUponStockpiling.ForeColor = System.Drawing.Color.White;
-            this.cbRasterizeUponStockpiling.Location = new System.Drawing.Point(11, 110);
+            this.cbRasterizeUponStockpiling.Location = new System.Drawing.Point(11, 131);
             this.cbRasterizeUponStockpiling.Name = "cbRasterizeUponStockpiling";
             this.cbRasterizeUponStockpiling.Size = new System.Drawing.Size(250, 17);
             this.cbRasterizeUponStockpiling.TabIndex = 5;
@@ -264,7 +296,7 @@ namespace RTCV.UI
             this.cbAutoUncorrupt.AutoSize = true;
             this.cbAutoUncorrupt.Font = new System.Drawing.Font("Segoe UI", 8F);
             this.cbAutoUncorrupt.ForeColor = System.Drawing.Color.White;
-            this.cbAutoUncorrupt.Location = new System.Drawing.Point(11, 90);
+            this.cbAutoUncorrupt.Location = new System.Drawing.Point(11, 111);
             this.cbAutoUncorrupt.Name = "cbAutoUncorrupt";
             this.cbAutoUncorrupt.Size = new System.Drawing.Size(221, 17);
             this.cbAutoUncorrupt.TabIndex = 4;
@@ -277,7 +309,7 @@ namespace RTCV.UI
             this.cbUncapIntensity.AutoSize = true;
             this.cbUncapIntensity.Font = new System.Drawing.Font("Segoe UI", 8F);
             this.cbUncapIntensity.ForeColor = System.Drawing.Color.White;
-            this.cbUncapIntensity.Location = new System.Drawing.Point(11, 50);
+            this.cbUncapIntensity.Location = new System.Drawing.Point(11, 71);
             this.cbUncapIntensity.Name = "cbUncapIntensity";
             this.cbUncapIntensity.Size = new System.Drawing.Size(158, 17);
             this.cbUncapIntensity.TabIndex = 3;
@@ -290,7 +322,7 @@ namespace RTCV.UI
             this.cbDontCleanAtQuit.AutoSize = true;
             this.cbDontCleanAtQuit.Font = new System.Drawing.Font("Segoe UI", 8F);
             this.cbDontCleanAtQuit.ForeColor = System.Drawing.Color.White;
-            this.cbDontCleanAtQuit.Location = new System.Drawing.Point(11, 70);
+            this.cbDontCleanAtQuit.Location = new System.Drawing.Point(11, 91);
             this.cbDontCleanAtQuit.Name = "cbDontCleanAtQuit";
             this.cbDontCleanAtQuit.Size = new System.Drawing.Size(177, 17);
             this.cbDontCleanAtQuit.TabIndex = 2;
@@ -303,7 +335,7 @@ namespace RTCV.UI
             this.cbAllowCrossCoreCorruption.AutoSize = true;
             this.cbAllowCrossCoreCorruption.Font = new System.Drawing.Font("Segoe UI", 8F);
             this.cbAllowCrossCoreCorruption.ForeColor = System.Drawing.Color.White;
-            this.cbAllowCrossCoreCorruption.Location = new System.Drawing.Point(11, 30);
+            this.cbAllowCrossCoreCorruption.Location = new System.Drawing.Point(11, 51);
             this.cbAllowCrossCoreCorruption.Name = "cbAllowCrossCoreCorruption";
             this.cbAllowCrossCoreCorruption.Size = new System.Drawing.Size(243, 17);
             this.cbAllowCrossCoreCorruption.TabIndex = 1;
@@ -318,25 +350,13 @@ namespace RTCV.UI
             this.cbDisableEmulatorOSD.CheckState = System.Windows.Forms.CheckState.Checked;
             this.cbDisableEmulatorOSD.Font = new System.Drawing.Font("Segoe UI", 8F);
             this.cbDisableEmulatorOSD.ForeColor = System.Drawing.Color.White;
-            this.cbDisableEmulatorOSD.Location = new System.Drawing.Point(11, 10);
+            this.cbDisableEmulatorOSD.Location = new System.Drawing.Point(11, 31);
             this.cbDisableEmulatorOSD.Name = "cbDisableEmulatorOSD";
             this.cbDisableEmulatorOSD.Size = new System.Drawing.Size(196, 17);
             this.cbDisableEmulatorOSD.TabIndex = 0;
             this.cbDisableEmulatorOSD.Text = "Disable the emulator OSD system";
             this.cbDisableEmulatorOSD.UseVisualStyleBackColor = true;
             this.cbDisableEmulatorOSD.CheckedChanged += new System.EventHandler(this.HandleDisableBizhawkOSDChange);
-            // 
-            // label4
-            // 
-            this.label4.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.label4.Font = new System.Drawing.Font("Segoe UI Semibold", 9F);
-            this.label4.ForeColor = System.Drawing.Color.White;
-            this.label4.Location = new System.Drawing.Point(15, 179);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(322, 15);
-            this.label4.TabIndex = 139;
-            this.label4.Text = "General RTC Settings";
             // 
             // btnRefreshInputDevices
             // 
@@ -346,13 +366,13 @@ namespace RTCV.UI
             this.btnRefreshInputDevices.Font = new System.Drawing.Font("Segoe UI", 8F);
             this.btnRefreshInputDevices.ForeColor = System.Drawing.Color.White;
             this.btnRefreshInputDevices.Image = ((System.Drawing.Image)(resources.GetObject("btnRefreshInputDevices.Image")));
-            this.btnRefreshInputDevices.ImageAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.btnRefreshInputDevices.Location = new System.Drawing.Point(18, 120);
+            this.btnRefreshInputDevices.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.btnRefreshInputDevices.Location = new System.Drawing.Point(326, 165);
             this.btnRefreshInputDevices.Name = "btnRefreshInputDevices";
-            this.btnRefreshInputDevices.Size = new System.Drawing.Size(220, 45);
+            this.btnRefreshInputDevices.Size = new System.Drawing.Size(143, 45);
             this.btnRefreshInputDevices.TabIndex = 140;
             this.btnRefreshInputDevices.Tag = "color:light1";
-            this.btnRefreshInputDevices.Text = "   Refresh Input Devices";
+            this.btnRefreshInputDevices.Text = "     Refresh Input\r\n     Devices";
             this.btnRefreshInputDevices.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.btnRefreshInputDevices.UseVisualStyleBackColor = false;
             this.btnRefreshInputDevices.Click += new System.EventHandler(this.RefreshInputDevices);
@@ -365,13 +385,13 @@ namespace RTCV.UI
             this.btnChangeRTCColor.Font = new System.Drawing.Font("Segoe UI", 8F);
             this.btnChangeRTCColor.ForeColor = System.Drawing.Color.White;
             this.btnChangeRTCColor.Image = ((System.Drawing.Image)(resources.GetObject("btnChangeRTCColor.Image")));
-            this.btnChangeRTCColor.ImageAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.btnChangeRTCColor.Location = new System.Drawing.Point(18, 69);
+            this.btnChangeRTCColor.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.btnChangeRTCColor.Location = new System.Drawing.Point(326, 216);
             this.btnChangeRTCColor.Name = "btnChangeRTCColor";
-            this.btnChangeRTCColor.Size = new System.Drawing.Size(220, 45);
+            this.btnChangeRTCColor.Size = new System.Drawing.Size(143, 45);
             this.btnChangeRTCColor.TabIndex = 136;
             this.btnChangeRTCColor.Tag = "color:light1";
-            this.btnChangeRTCColor.Text = "   Change color theme";
+            this.btnChangeRTCColor.Text = "     Change color\r\n     theme";
             this.btnChangeRTCColor.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.btnChangeRTCColor.UseVisualStyleBackColor = false;
             this.btnChangeRTCColor.Click += new System.EventHandler(this.ChangeRTCColor);
@@ -384,13 +404,13 @@ namespace RTCV.UI
             this.btnOpenOnlineWiki.Font = new System.Drawing.Font("Segoe UI", 8F);
             this.btnOpenOnlineWiki.ForeColor = System.Drawing.Color.White;
             this.btnOpenOnlineWiki.Image = ((System.Drawing.Image)(resources.GetObject("btnOpenOnlineWiki.Image")));
-            this.btnOpenOnlineWiki.ImageAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.btnOpenOnlineWiki.Location = new System.Drawing.Point(18, 18);
+            this.btnOpenOnlineWiki.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.btnOpenOnlineWiki.Location = new System.Drawing.Point(326, 12);
             this.btnOpenOnlineWiki.Name = "btnOpenOnlineWiki";
-            this.btnOpenOnlineWiki.Size = new System.Drawing.Size(220, 45);
+            this.btnOpenOnlineWiki.Size = new System.Drawing.Size(143, 45);
             this.btnOpenOnlineWiki.TabIndex = 135;
             this.btnOpenOnlineWiki.Tag = "color:light1";
-            this.btnOpenOnlineWiki.Text = "    Open the online wiki";
+            this.btnOpenOnlineWiki.Text = "  Open the online\r\n  wiki";
             this.btnOpenOnlineWiki.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.btnOpenOnlineWiki.UseVisualStyleBackColor = false;
             this.btnOpenOnlineWiki.Click += new System.EventHandler(this.OpenOnlineWiki);
@@ -403,13 +423,13 @@ namespace RTCV.UI
             this.btnWatchTutorialVideo.Font = new System.Drawing.Font("Segoe UI", 8F);
             this.btnWatchTutorialVideo.ForeColor = System.Drawing.Color.White;
             this.btnWatchTutorialVideo.Image = ((System.Drawing.Image)(resources.GetObject("btnWatchTutorialVideo.Image")));
-            this.btnWatchTutorialVideo.ImageAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.btnWatchTutorialVideo.Location = new System.Drawing.Point(244, 18);
+            this.btnWatchTutorialVideo.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.btnWatchTutorialVideo.Location = new System.Drawing.Point(326, 63);
             this.btnWatchTutorialVideo.Name = "btnWatchTutorialVideo";
-            this.btnWatchTutorialVideo.Size = new System.Drawing.Size(219, 45);
+            this.btnWatchTutorialVideo.Size = new System.Drawing.Size(143, 45);
             this.btnWatchTutorialVideo.TabIndex = 141;
             this.btnWatchTutorialVideo.Tag = "color:light1";
-            this.btnWatchTutorialVideo.Text = "    Watch a tutorial video";
+            this.btnWatchTutorialVideo.Text = "   Watch a tutorial\r\n   video";
             this.btnWatchTutorialVideo.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.btnWatchTutorialVideo.UseVisualStyleBackColor = false;
             this.btnWatchTutorialVideo.Click += new System.EventHandler(this.btnWatchTutorialVideo_Click);
@@ -422,16 +442,38 @@ namespace RTCV.UI
             this.btnResetRandomSeed.Font = new System.Drawing.Font("Segoe UI", 8F);
             this.btnResetRandomSeed.ForeColor = System.Drawing.Color.White;
             this.btnResetRandomSeed.Image = ((System.Drawing.Image)(resources.GetObject("btnResetRandomSeed.Image")));
-            this.btnResetRandomSeed.ImageAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.btnResetRandomSeed.Location = new System.Drawing.Point(244, 69);
+            this.btnResetRandomSeed.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.btnResetRandomSeed.Location = new System.Drawing.Point(326, 114);
             this.btnResetRandomSeed.Name = "btnResetRandomSeed";
-            this.btnResetRandomSeed.Size = new System.Drawing.Size(219, 45);
+            this.btnResetRandomSeed.Size = new System.Drawing.Size(143, 45);
             this.btnResetRandomSeed.TabIndex = 142;
             this.btnResetRandomSeed.Tag = "color:light1";
-            this.btnResetRandomSeed.Text = "   Reset random seed";
+            this.btnResetRandomSeed.Text = "     Reset random\r\n     seed";
             this.btnResetRandomSeed.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.btnResetRandomSeed.UseVisualStyleBackColor = false;
             this.btnResetRandomSeed.Click += new System.EventHandler(this.btnResetRandomSeed_Click);
+            // 
+            // nmCornerRoundness
+            // 
+            this.nmCornerRoundness.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.nmCornerRoundness.Font = new System.Drawing.Font("Segoe UI", 8F);
+            this.nmCornerRoundness.ForeColor = System.Drawing.Color.White;
+            this.nmCornerRoundness.Location = new System.Drawing.Point(109, 216);
+            this.nmCornerRoundness.Maximum = new decimal(new int[] {
+            25,
+            0,
+            0,
+            0});
+            this.nmCornerRoundness.Name = "nmCornerRoundness";
+            this.nmCornerRoundness.Size = new System.Drawing.Size(43, 22);
+            this.nmCornerRoundness.TabIndex = 141;
+            this.nmCornerRoundness.Tag = "color:dark1";
+            this.nmCornerRoundness.Value = new decimal(new int[] {
+            5,
+            0,
+            0,
+            0});
+            this.nmCornerRoundness.ValueChanged += new System.EventHandler(this.nmCornerRoundness_ValueChanged);
             // 
             // SettingsGeneralForm
             // 
@@ -443,7 +485,6 @@ namespace RTCV.UI
             this.Controls.Add(this.btnWatchTutorialVideo);
             this.Controls.Add(this.btnRefreshInputDevices);
             this.Controls.Add(this.panel1);
-            this.Controls.Add(this.label4);
             this.Controls.Add(this.btnChangeRTCColor);
             this.Controls.Add(this.btnOpenOnlineWiki);
             this.DoubleBuffered = true;
@@ -460,6 +501,7 @@ namespace RTCV.UI
             ((System.ComponentModel.ISupportInitialize)(this.nmMaxAutosaveSize)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nmAutosaveSeconds)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nmAutosaveMinutes)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nmCornerRoundness)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -488,5 +530,7 @@ namespace RTCV.UI
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label5;
         public System.Windows.Forms.NumericUpDown nmSwapEmuTimeout;
+        private System.Windows.Forms.Label label6;
+        public System.Windows.Forms.NumericUpDown nmCornerRoundness;
     }
 }

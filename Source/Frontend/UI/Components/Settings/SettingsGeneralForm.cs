@@ -152,6 +152,13 @@ namespace RTCV.UI
             StockpileManagerUISide.timeout = (int)nmSwapEmuTimeout.Value;
         }
 
+        private void nmCornerRoundness_ValueChanged(object sender, EventArgs e)
+        {
+            Params.SetParam("CORNER_ROUNDNESS", nmCornerRoundness.Value.ToString());
+            Colors.CornerRoundness = (int)nmCornerRoundness.Value;
+            S.RecolorRegisteredColorizables();
+        }
+
         //todo - rewrite this?
         /*
         private void btnImportKeyBindings_Click(object sender, EventArgs e)

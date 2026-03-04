@@ -1,3 +1,4 @@
+using System.Drawing.Drawing2D;
 using RTCV.Common;
 using RTCV.NetCore;
 
@@ -6,10 +7,12 @@ namespace RTCV.UI
     using System;
     using System.Collections.Generic;
     using System.Drawing;
+    using System.IO;
     using System.Linq;
     using System.Windows.Forms;
     using CorruptCore;
     using Extensions;
+    using RTCV.UI.Components.Controls;
 
     public static class Colors
     {
@@ -22,6 +25,8 @@ namespace RTCV.UI
         public static Color Dark2Color { get; private set; }
         public static Color Dark3Color { get; private set; }
         public static Color Dark4Color { get; private set; }
+
+        public static int CornerRoundness = 5;
 
         public static void SetRTCColor(Color color, Control ctr)
         {
@@ -39,6 +44,17 @@ namespace RTCV.UI
             else if (ctr is Form)
             {
                 allControls.Add(ctr);
+            }
+
+            foreach (var c in allControls)
+            {
+                c.Paint -= RoundedPaint;
+                if (CornerRoundness <= 0) continue;
+                
+                if ((c is Form f && (!f.TopLevel || !(f.Parent is null))) || (c is ListBoxExtended || c is Button || c is Panel))
+                {
+                    c.Paint += RoundedPaint;
+                }
             }
 
             float generalDarken = -0.50f;
@@ -109,6 +125,129 @@ namespace RTCV.UI
 
                 c.Invalidate();
             }
+
+            return;
+
+            void RoundedPaint(object sender, PaintEventArgs pevent)
+            {
+                Control c = (Control)sender;
+                if (c is Form f && f.Parent == null)
+                {
+                    return;
+                }
+
+                if (c is ListBoxExtended)
+                {
+                    // draw a red square in the middle for debugging purposes
+                    int squareSize = 10;
+                    int x = (c.ClientSize.Width - squareSize) / 2;
+                    int y = (c.ClientSize.Height - squareSize) / 2;
+                    pevent.Graphics.FillRectangle(Brushes.Red, x, y, squareSize, squareSize);
+                    
+                    return;
+                }
+
+                Control parent = c.Parent;
+                Control topParent = parent;
+                while (topParent.Parent != null)
+                    topParent = topParent.Parent;
+
+                Color[] cornerColors = Enumerable.Repeat(parent.BackColor, 4).ToArray();
+
+                int leftOffset = c.Left, topOffset = c.Top, rightOffset = 0, bottomOffset = 0;
+                while (parent != null && (cornerColors[0] == Color.Transparent || (leftOffset == 0 && topOffset == 0)))
+                {
+                    leftOffset += parent.Left;
+                    topOffset += parent.Top;
+                    cornerColors[0] = parent.BackColor;
+                    parent = parent.Parent;
+                }
+                cornerColors[0] = parent?.BackColor ?? cornerColors[0];
+
+                leftOffset = c.Left;
+                topOffset = c.Top;
+                rightOffset = bottomOffset = 0;
+                parent = c.Parent;
+                while (parent != null &&
+                       (cornerColors[1] == Color.Transparent || (topOffset == 0 && c.Right + rightOffset == parent.Width)))
+                {
+                    topOffset += parent.Top;
+                    rightOffset += parent.Right;
+                    cornerColors[1] = parent.BackColor;
+                    parent = parent.Parent;
+                }
+                cornerColors[1] = parent?.BackColor ?? cornerColors[1];
+
+                leftOffset = c.Left;
+                topOffset = c.Top;
+                rightOffset = bottomOffset = 0;
+                parent = c.Parent;
+                while (parent != null && (cornerColors[2] == Color.Transparent ||
+                                          (c.Right + rightOffset == parent.Width && c.Bottom + bottomOffset == parent.Height)))
+                {
+                    rightOffset += parent.Left;
+                    bottomOffset += parent.Top;
+                    cornerColors[2] = parent.BackColor;
+                    parent = parent.Parent;
+                }
+                cornerColors[2] = parent?.BackColor ?? cornerColors[2];
+
+                leftOffset = c.Left;
+                topOffset = c.Top;
+                rightOffset = bottomOffset = 0;
+                parent = c.Parent;
+                while (parent != null &&
+                       (cornerColors[3] == Color.Transparent || (leftOffset == 0 && c.Bottom + bottomOffset == parent.Height)))
+                {
+                    leftOffset += parent.Left;
+                    bottomOffset += parent.Top;
+                    cornerColors[3] = parent.BackColor;
+                    parent = parent.Parent;
+                }
+                cornerColors[3] = parent?.BackColor ?? cornerColors[3];
+
+                var controlRect = new RectangleF(-1f, -1f, c.ClientSize.Width + 1f, c.ClientSize.Height + 1f);
+                int radius = (int)Math.Min(CornerRoundness, Math.Min(controlRect.Width / 2, controlRect.Height / 2));
+
+                using (GraphicsPath pathNW = GetFigurePath(controlRect, radius, 0))
+                using (GraphicsPath pathNE = GetFigurePath(controlRect, radius, 1))
+                using (GraphicsPath pathSE = GetFigurePath(controlRect, radius, 2))
+                using (GraphicsPath pathSW = GetFigurePath(controlRect, radius, 3))
+                using (GraphicsPath pathFull = GetFigurePath(controlRect, radius, -1))
+                using (Pen pen = new Pen(Color.Magenta, 0))
+                {
+                    pevent.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
+                    c.Region = new Region(pathFull);
+                    pen.Color = cornerColors[0];
+                    pevent.Graphics.DrawPath(pen, pathNW);
+                    pen.Color = cornerColors[1];
+                    pevent.Graphics.DrawPath(pen, pathNE);
+                    pen.Color = cornerColors[2];
+                    pevent.Graphics.DrawPath(pen, pathSE);
+                    pen.Color = cornerColors[3];
+                    pevent.Graphics.DrawPath(pen, pathSW);
+                }
+            }
+
+            GraphicsPath GetFigurePath(RectangleF rect, int radius, int corner)
+            {
+                GraphicsPath path = new GraphicsPath();
+                float curveSize = radius * 2F;
+                path.StartFigure();
+                float left = rect.Left;
+                float top = rect.Top;
+                if (corner == 0 || corner == -1)
+                    path.AddArc(left, top, curveSize, curveSize, 180, 90);
+                if (corner == 1 || corner == -1)
+                    path.AddArc(rect.Right - curveSize, top, curveSize, curveSize, 270, 90);
+                if (corner == 2 || corner == -1)
+                    path.AddArc(rect.Right - curveSize, rect.Bottom - curveSize, curveSize, curveSize, 0, 90);
+                if (corner == 3 || corner == -1)
+                    path.AddArc(left, rect.Bottom - curveSize, curveSize, curveSize, 90, 90);
+                if (corner == -1)
+                    path.CloseFigure();
+                return path;
+            }
         }
 
         public static void SelectRTCColor()
@@ -118,7 +257,8 @@ namespace RTCV.UI
             ColorDialog cd = new ColorDialog
             {
                 Color = GeneralColor,
-                CustomColors = new[] { ColorTranslator.ToOle(GeneralColor), ColorTranslator.ToOle(Color.LightSteelBlue) }
+                CustomColors = new[]
+                    { ColorTranslator.ToOle(GeneralColor), ColorTranslator.ToOle(Color.LightSteelBlue) }
             };
             DialogResult result = cd.ShowDialog();
             // See if user pressed ok.
@@ -143,7 +283,8 @@ namespace RTCV.UI
             if (Params.IsParamSet("COLOR"))
             {
                 string[] bytes = Params.ReadParam("COLOR").Split(',');
-                GeneralColor = Color.FromArgb(Convert.ToByte(bytes[0]), Convert.ToByte(bytes[1]), Convert.ToByte(bytes[2]));
+                GeneralColor = Color.FromArgb(Convert.ToByte(bytes[0]), Convert.ToByte(bytes[1]),
+                    Convert.ToByte(bytes[2]));
             }
             else
             {
