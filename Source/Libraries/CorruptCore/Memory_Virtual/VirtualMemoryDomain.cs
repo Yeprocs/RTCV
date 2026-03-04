@@ -24,8 +24,13 @@ namespace RTCV.CorruptCore
 
         public bool Compacted { get; private set; } = false;
 
+        public bool Visible { get; set; }
+        public bool AutoDomainSelect { get; set; }
+
         public VirtualMemoryDomain()
         {
+            Visible = true;
+            AutoDomainSelect = true;
         }
 
         public void Compact(bool preCompacted = false)

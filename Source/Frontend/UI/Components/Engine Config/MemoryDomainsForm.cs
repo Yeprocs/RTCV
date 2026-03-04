@@ -126,7 +126,7 @@ namespace RTCV.UI
 
             if (MemoryDomains.VmdPool.Count > 0)
             {
-                lbMemoryDomains.Items.AddRange(MemoryDomains.VmdPool.Values.Select(it => it.ToString()).ToArray());
+                lbMemoryDomains.Items.AddRange(MemoryDomains.VmdPool.Keys.Where(key => MemoryDomains.VmdPool[key].Visible == true).ToArray());
             }
 
             this.Visible = oldState;
@@ -321,8 +321,13 @@ namespace RTCV.UI
 
         private void btnDomainConfig_Click(object sender, EventArgs e)
         {
-            var domainSelectionConfigForm = new DomainSelectionConfigForm();
-            domainSelectionConfigForm.Show();
+            if (S.GET<DomainSelectionConfigForm>().Visible)
+                S.GET<DomainSelectionConfigForm>().Activate();
+            else
+            {
+                S.SET(new DomainSelectionConfigForm());
+                S.GET<DomainSelectionConfigForm>().Show();
+            }
         }
     }
 }

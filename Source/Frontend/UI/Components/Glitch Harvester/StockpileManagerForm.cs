@@ -398,11 +398,11 @@ namespace RTCV.UI
 
         // Check if any emulators in the stockpile are not installed, and prompt the user
         // to select an emu version if it's a legacy stockpile.
-        public bool CheckForEmulators(Stockpile sks)
+        public bool CheckForEmulators(List<StashKey> sks)
         {
             List<string> missingEmulators = new List<string> { };
             bool missingEmuVer = false;
-            foreach (StashKey key in sks.StashKeys)
+            foreach (StashKey key in sks)
             {
                 if (key.EmuVer != "")
                 {
@@ -432,14 +432,14 @@ namespace RTCV.UI
             }
             else if (missingEmuVer)
             {
-                var form = new StockpileEmuVersionForm();
+                var form = new UpdateEmuVersionForm();
 
                 // start/show the control
                 form.ShowDialog();
 
                 if (form.SelectedVersion != null)
                 {
-                    foreach (StashKey key in sks.StashKeys)
+                    foreach (StashKey key in sks)
                     {
                         key.EmuVer = form.SelectedVersion;
                     }
@@ -499,7 +499,7 @@ namespace RTCV.UI
                     StockpileManagerUISide.SetCurrentStockpile(sks);
 
 
-                    if (!CheckForEmulators(sks))
+                    if (!CheckForEmulators(sks.StashKeys))
                         return;
 
                     logger.Trace("Populating DGV");
@@ -554,7 +554,7 @@ namespace RTCV.UI
                     //Populate the dgv
                     RtcCore.OnProgressBarUpdate(sks, new ProgressBarEventArgs($"Populating UI", 95));
 
-                    if (!CheckForEmulators(sks))
+                    if (!CheckForEmulators(sks.StashKeys))
                         return;
 
                     foreach (StashKey key in sks.StashKeys)
@@ -974,7 +974,7 @@ namespace RTCV.UI
 
         private void UpdateEmuVersionButton_Click(object sender, EventArgs e)
         {
-            var form = new StockpileEmuVersionForm(false);
+            var form = new UpdateEmuVersionForm(false);
 
             // start/show the control
             form.ShowDialog();

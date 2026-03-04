@@ -1,6 +1,6 @@
 ﻿namespace RTCV.UI
 {
-    partial class StockpileEmuVersionForm
+    partial class UpdateEmuVersionForm
     {
         /// <summary>
         /// Required designer variable.
@@ -44,12 +44,11 @@
             this.lbText.Location = new System.Drawing.Point(7, 7);
             this.lbText.MaximumSize = new System.Drawing.Size(800, 0);
             this.lbText.Name = "lbText";
-            this.lbText.Size = new System.Drawing.Size(788, 108);
+            this.lbText.Size = new System.Drawing.Size(797, 108);
             this.lbText.TabIndex = 0;
-            this.lbText.Text = "RTC has detected some stockpile entries do not have an associated emulator system" +
-    " and version. Please select the system and version this stockpile was created in" +
-    ".\r\n";
-            this.lbText.Click += new System.EventHandler(this.label1_Click);
+            this.lbText.Text = "RTC has detected some entries in this file do not have an associated emulator sys" +
+    "tem and version. Please select the system and version this file was created in.\r" +
+    "\n";
             // 
             // cbEmuVersion
             // 
@@ -65,7 +64,7 @@
             this.cbEmuVersion.Size = new System.Drawing.Size(769, 48);
             this.cbEmuVersion.TabIndex = 1;
             this.cbEmuVersion.Tag = "color:dark2";
-            this.cbEmuVersion.SelectedIndexChanged += new System.EventHandler(this.comboBox1_SelectedIndexChanged);
+            this.cbEmuVersion.SelectionChangeCommitted += new System.EventHandler(this.cbEmuVersion_SelectionChangeCommitted);
             // 
             // btnOk
             // 
@@ -99,7 +98,7 @@
             this.btnCancel.UseVisualStyleBackColor = false;
             this.btnCancel.Click += new System.EventHandler(this.button2_Click);
             // 
-            // StockpileEmuVersionForm
+            // UpdateEmuVersionForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -110,10 +109,13 @@
             this.Controls.Add(this.cbEmuVersion);
             this.Controls.Add(this.lbText);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
-            this.Name = "StockpileEmuVersionForm";
+            this.Name = "UpdateEmuVersionForm";
             this.ShowIcon = false;
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Tag = "color:dark1";
+            this.Text = "Update Emulator Version";
             this.TopMost = true;
+            this.Shown += new System.EventHandler(this.UpdateEmuVersionForm_Shown);
             this.ResumeLayout(false);
             this.PerformLayout();
 
