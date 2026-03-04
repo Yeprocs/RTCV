@@ -49,7 +49,6 @@ namespace RTCV.UI
             foreach (var c in allControls)
             {
                 c.Paint -= RoundedPaint;
-                if (CornerRoundness <= 0) continue;
                 
                 if ((c is Form f && (!f.TopLevel || !(f.Parent is null))) || (c is ListBoxExtended || c is Button || c is Panel))
                 {
@@ -198,23 +197,39 @@ namespace RTCV.UI
                 var controlRect = new RectangleF(-1f, -1f, c.ClientSize.Width + 1f, c.ClientSize.Height + 1f);
                 int radius = (int)Math.Min(CornerRoundness, Math.Min(controlRect.Width / 2, controlRect.Height / 2));
 
-                using (GraphicsPath pathNW = GetFigurePath(controlRect, radius, 0))
-                using (GraphicsPath pathNE = GetFigurePath(controlRect, radius, 1))
-                using (GraphicsPath pathSE = GetFigurePath(controlRect, radius, 2))
-                using (GraphicsPath pathSW = GetFigurePath(controlRect, radius, 3))
-                using (GraphicsPath pathFull = GetFigurePath(controlRect, radius, -1))
-                using (Pen pen = new Pen(Color.Magenta, 0))
+                if (CornerRoundness > 0)
                 {
-                    pevent.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
-                    c.Region = new Region(pathFull);
-                    pen.Color = cornerColors[0];
-                    pevent.Graphics.DrawPath(pen, pathNW);
-                    pen.Color = cornerColors[1];
-                    pevent.Graphics.DrawPath(pen, pathNE);
-                    pen.Color = cornerColors[2];
-                    pevent.Graphics.DrawPath(pen, pathSE);
-                    pen.Color = cornerColors[3];
-                    pevent.Graphics.DrawPath(pen, pathSW);
+                    using (GraphicsPath pathNW = GetFigurePath(controlRect, radius, 0))
+                    using (GraphicsPath pathNE = GetFigurePath(controlRect, radius, 1))
+                    using (GraphicsPath pathSE = GetFigurePath(controlRect, radius, 2))
+                    using (GraphicsPath pathSW = GetFigurePath(controlRect, radius, 3))
+                    using (GraphicsPath pathFull = GetFigurePath(controlRect, radius, -1))
+                    using (Pen pen = new Pen(Color.Magenta, 0))
+                    {
+                        pevent.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
+                        c.Region = new Region(pathFull);
+                        pen.Color = cornerColors[0];
+                        pevent.Graphics.DrawPath(pen, pathNW);
+                        pen.Color = cornerColors[1];
+                        pevent.Graphics.DrawPath(pen, pathNE);
+                        pen.Color = cornerColors[2];
+                        pevent.Graphics.DrawPath(pen, pathSE);
+                        pen.Color = cornerColors[3];
+                        pevent.Graphics.DrawPath(pen, pathSW);
+                    }
+                }
+                else
+                {
+                    // I don't know why this is necessary. This shouldn't be necessary.
+                    // If we don't do this, the GUI doesn't resize properly when exiting
+                    // the settings menu.
+                    using (GraphicsPath path = new GraphicsPath())
+                    {
+                        path.StartFigure();
+                        path.AddRectangle(controlRect);
+                        path.CloseFigure();
+                        c.Region = new Region(path);
+                    }
                 }
             }
 
