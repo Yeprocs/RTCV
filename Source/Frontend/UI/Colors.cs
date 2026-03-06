@@ -26,7 +26,13 @@ namespace RTCV.UI
         public static Color Dark3Color { get; private set; }
         public static Color Dark4Color { get; private set; }
 
-        public static int CornerRoundness = 5;
+        public static readonly int DefaultCornerRoundness =
+            DateTime.Now >= new DateTime(2025, 4, 1)
+            ? DateTime.Now.Month == 4 && DateTime.Now.Day == 1
+                ? 25
+                : 5
+            : 0;
+        public static int CornerRoundness = DefaultCornerRoundness;
 
         public static void SetRTCColor(Color color, Control ctr)
         {
