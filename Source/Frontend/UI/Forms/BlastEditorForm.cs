@@ -160,6 +160,12 @@ namespace RTCV.UI
             e.Effect = DragDropEffects.Link;
         }
 
+        protected override void OnShown(EventArgs e)
+        {
+            base.OnShown(e);
+            cbShiftBlastlayer.Parent.Refresh();
+        }
+
         public static bool OpenBlastEditor(StashKey sk = null, bool silent = false)
         {
             if (S.GET<BlastEditorForm>().Visible)

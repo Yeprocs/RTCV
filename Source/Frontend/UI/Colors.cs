@@ -55,7 +55,10 @@ namespace RTCV.UI
                     continue;
                 }
                 
-                if ((c is Form f && (!f.TopLevel || !(f.Parent is null))) || (c is ListBoxExtended || c is Button || c is Panel))
+                if (    (c is Form f && (!f.TopLevel || !(f.Parent is null)))
+                    ||   c is Button
+                    ||  (c is Panel p && p.BorderStyle == BorderStyle.None)
+                    &&  (!(c is TableLayoutPanel)))
                 {
                     c.Paint += RoundedPaint;
                 }

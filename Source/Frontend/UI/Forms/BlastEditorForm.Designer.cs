@@ -1405,6 +1405,7 @@ namespace RTCV.UI
             this.AllowDrop = true;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
             this.ClientSize = new System.Drawing.Size(821, 541);
             this.Controls.Add(this.dgvBlastEditor);
             this.Controls.Add(this.panel2);
@@ -1416,6 +1417,7 @@ namespace RTCV.UI
             this.Margin = new System.Windows.Forms.Padding(2);
             this.MinimumSize = new System.Drawing.Size(837, 580);
             this.Name = "BlastEditorForm";
+            this.Tag = "color:dark1";
             this.Text = "Blast Editor";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.OnFormClosing);
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.OnFormClosed);
@@ -1455,7 +1457,7 @@ namespace RTCV.UI
             this.ResumeLayout(false);
             this.PerformLayout();
 
-		}
+        }
 
 		#endregion
 
