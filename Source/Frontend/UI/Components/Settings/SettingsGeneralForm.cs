@@ -54,10 +54,16 @@ namespace RTCV.UI
                 nmSwapEmuTimeout.Value = timeoutSeconds;
             else
                 nmSwapEmuTimeout.Value = 20;
+
             if (int.TryParse(Params.ReadParam("CORNER_ROUNDNESS"), out int cornerRoundness))
                 nmCornerRoundness.Value = cornerRoundness;
             else
-                nmCornerRoundness.Value = 5;
+                nmCornerRoundness.Value = Colors.DefaultCornerRoundness;
+
+            if (Colors.DefaultCornerRoundness == 25 && nmCornerRoundness.Value == 0)
+            {
+                nmCornerRoundness.Value = Colors.DefaultCornerRoundness;
+            }
         }
 
         private void OpenOnlineWiki(object sender, EventArgs e)
