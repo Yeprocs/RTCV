@@ -90,6 +90,7 @@ namespace RTCV.UI
         private void OnShown(object sender, EventArgs e)
         {
             UpdateDomainsList();
+            this.Refresh();
         }
 
         private void OnShowInRtcCheckbox(object sender, EventArgs e, string domainName)
