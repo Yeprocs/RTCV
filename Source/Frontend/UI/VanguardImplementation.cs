@@ -636,7 +636,7 @@ namespace RTCV.UI
                     // If we don't have a config file yet or we're updating the domains from the settings form, save to the json config file
                     if (!Params.IsParamSet(configFileName) || (domainsChanged && !config.DomainConfigSystem.ContainsKey(systemCore)) || !domainsChanged)
                     {
-                        config.DomainConfigSystem[systemCore] = configSystem;
+                        config.DomainConfigSystem[systemCore] = config.DomainConfigSystem.ContainsKey(systemCore) ? configSystem : defaultConfig.DomainConfigSystem[systemCore];
                         string jsonString = JsonConvert.SerializeObject(config, Formatting.Indented);
 
                         Params.SetParam(configFileName, jsonString);
@@ -703,11 +703,8 @@ namespace RTCV.UI
 
                 foreach (string system in jsonString.DomainConfigSystem.Keys)
                 {
-                    if (domainsChanged || system != systemCore)
-                    {
-                        config.DomainConfigSystem[system] = new DomainConfigSystem();
-                        config.DomainConfigSystem[system].DomainConfig = jsonString.DomainConfigSystem[system].DomainConfig;
-                    }
+                    config.DomainConfigSystem[system] = new DomainConfigSystem();
+                    config.DomainConfigSystem[system].DomainConfig = jsonString.DomainConfigSystem[system].DomainConfig;
                 }
             }
             return config;

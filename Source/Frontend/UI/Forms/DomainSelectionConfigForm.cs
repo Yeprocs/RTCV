@@ -137,27 +137,32 @@ namespace RTCV.UI
 
                 if (Params.IsParamSet(defaultConfigFileName))
                 {
-                    var configFile = File.ReadAllText(Path.Combine(Params.ParamsDir, defaultConfigFileName));
-                    var jsonString = JsonConvert.DeserializeObject<DomainConfigRoot>(configFile);
+                    var jsonString = File.ReadAllText(Path.Combine(Params.ParamsDir, configFileName));
+                    var defaultJsonString = File.ReadAllText(Path.Combine(Params.ParamsDir, defaultConfigFileName));
+                    var config = JsonConvert.DeserializeObject<DomainConfigRoot>(jsonString);
+                    var defaultConfig = JsonConvert.DeserializeObject<DomainConfigRoot>(defaultJsonString);
 
                     List<string> defaultDomains = new List<string>();
-                    if (jsonString.DomainConfigSystem.ContainsKey(systemCore))
+                    if (defaultConfig.DomainConfigSystem.ContainsKey(systemCore))
                     {
-                        foreach (string domain in jsonString.DomainConfigSystem[systemCore].DomainConfig.Keys)
+                        foreach (string domain in defaultConfig.DomainConfigSystem[systemCore].DomainConfig.Keys)
                         {
                             if (MemoryDomains.MemoryInterfaces.ContainsKey(domain))
                             {
-                                MemoryDomains.MemoryInterfaces[domain].Visible = jsonString.DomainConfigSystem[systemCore].DomainConfig[domain].VISIBLE;
-                                MemoryDomains.MemoryInterfaces[domain].AutoDomainSelect = jsonString.DomainConfigSystem[systemCore].DomainConfig[domain].AUTOSELECT;
+                                MemoryDomains.MemoryInterfaces[domain].Visible = defaultConfig.DomainConfigSystem[systemCore].DomainConfig[domain].VISIBLE;
+                                MemoryDomains.MemoryInterfaces[domain].AutoDomainSelect = defaultConfig.DomainConfigSystem[systemCore].DomainConfig[domain].AUTOSELECT;
                             }
                         }
+                        config.DomainConfigSystem.Remove(systemCore);
+                        jsonString = JsonConvert.SerializeObject(config, Formatting.Indented);
+
+                        Params.SetParam(configFileName, jsonString);
                     }
                     foreach (string vmd in MemoryDomains.VmdPool.Keys)
                     {
                         MemoryDomains.VmdPool[vmd].Visible = true;
                         MemoryDomains.VmdPool[vmd].AutoDomainSelect = true;
                     }
-                    Params.RemoveParam(configFileName);
 
                     LocalNetCoreRouter.Route(RTCV.NetCore.Endpoints.UI, RTCV.NetCore.Commands.Remote.EventDomainsUpdated, new object[] { false }, true);
 
