@@ -670,9 +670,10 @@ namespace RTCV.UI
                     AllSpec.VanguardSpec.Update(VSPEC.MEMORYDOMAINS_BLACKLISTEDDOMAINS, blacklistedDomains.ToArray());
 
                     S.GET<MemoryDomainsForm>().RefreshDomains();
+
+                    if (S.GET<DomainSelectionConfigForm>().Visible)
+                        S.GET<DomainSelectionConfigForm>().UpdateDomainsList();
                 }
-                if (S.GET<DomainSelectionConfigForm>().Visible)
-                    S.GET<DomainSelectionConfigForm>().UpdateDomainsList();
                 S.GET<MemoryDomainsForm>().SetMemoryDomainsAllButSelectedDomains(AllSpec.VanguardSpec[VSPEC.MEMORYDOMAINS_BLACKLISTEDDOMAINS] as string[] ?? new string[] { });
             });
 

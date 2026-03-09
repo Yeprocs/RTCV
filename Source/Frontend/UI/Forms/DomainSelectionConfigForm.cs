@@ -84,7 +84,6 @@ namespace RTCV.UI
 
         private void OnLoad(object sender, EventArgs e)
         {
-            UpdateDomainsList();
         }
 
         private void OnShown(object sender, EventArgs e)
@@ -165,8 +164,6 @@ namespace RTCV.UI
                     }
 
                     LocalNetCoreRouter.Route(RTCV.NetCore.Endpoints.UI, RTCV.NetCore.Commands.Remote.EventDomainsUpdated, new object[] { false }, true);
-
-                    UpdateDomainsList();
                 }
             }
         }
