@@ -18,6 +18,13 @@ namespace RTCV.UI
         {
             InitializeComponent();
 
+            if (DateTime.Now < new DateTime(2026, 4, 1))
+            {
+                label6.Hide();
+                nmCornerRoundness.Visible = false;
+                this.Update();
+            }
+
             PopoutAllowed = false;
         }
 

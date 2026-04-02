@@ -30,6 +30,7 @@ namespace RTCV.UI
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SettingsGeneralForm));
             this.panel1 = new System.Windows.Forms.Panel();
+            this.nmCornerRoundness = new System.Windows.Forms.NumericUpDown();
             this.label6 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
             this.nmSwapEmuTimeout = new System.Windows.Forms.NumericUpDown();
@@ -53,13 +54,12 @@ namespace RTCV.UI
             this.btnOpenOnlineWiki = new System.Windows.Forms.Button();
             this.btnWatchTutorialVideo = new System.Windows.Forms.Button();
             this.btnResetRandomSeed = new System.Windows.Forms.Button();
-            this.nmCornerRoundness = new System.Windows.Forms.NumericUpDown();
             this.panel1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.nmCornerRoundness)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nmSwapEmuTimeout)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nmMaxAutosaveSize)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nmAutosaveSeconds)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nmAutosaveMinutes)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.nmCornerRoundness)).BeginInit();
             this.SuspendLayout();
             // 
             // panel1
@@ -89,6 +89,28 @@ namespace RTCV.UI
             this.panel1.Size = new System.Drawing.Size(308, 381);
             this.panel1.TabIndex = 138;
             this.panel1.Tag = "color:normal";
+            // 
+            // nmCornerRoundness
+            // 
+            this.nmCornerRoundness.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.nmCornerRoundness.Font = new System.Drawing.Font("Segoe UI", 8F);
+            this.nmCornerRoundness.ForeColor = System.Drawing.Color.White;
+            this.nmCornerRoundness.Location = new System.Drawing.Point(109, 216);
+            this.nmCornerRoundness.Maximum = new decimal(new int[] {
+            25,
+            0,
+            0,
+            0});
+            this.nmCornerRoundness.Name = "nmCornerRoundness";
+            this.nmCornerRoundness.Size = new System.Drawing.Size(43, 22);
+            this.nmCornerRoundness.TabIndex = 141;
+            this.nmCornerRoundness.Tag = "color:dark1";
+            this.nmCornerRoundness.Value = new decimal(new int[] {
+            5,
+            0,
+            0,
+            0});
+            this.nmCornerRoundness.ValueChanged += new System.EventHandler(this.nmCornerRoundness_ValueChanged);
             // 
             // label6
             // 
@@ -453,28 +475,6 @@ namespace RTCV.UI
             this.btnResetRandomSeed.UseVisualStyleBackColor = false;
             this.btnResetRandomSeed.Click += new System.EventHandler(this.btnResetRandomSeed_Click);
             // 
-            // nmCornerRoundness
-            // 
-            this.nmCornerRoundness.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
-            this.nmCornerRoundness.Font = new System.Drawing.Font("Segoe UI", 8F);
-            this.nmCornerRoundness.ForeColor = System.Drawing.Color.White;
-            this.nmCornerRoundness.Location = new System.Drawing.Point(109, 216);
-            this.nmCornerRoundness.Maximum = new decimal(new int[] {
-            25,
-            0,
-            0,
-            0});
-            this.nmCornerRoundness.Name = "nmCornerRoundness";
-            this.nmCornerRoundness.Size = new System.Drawing.Size(43, 22);
-            this.nmCornerRoundness.TabIndex = 141;
-            this.nmCornerRoundness.Tag = "color:dark1";
-            this.nmCornerRoundness.Value = new decimal(new int[] {
-            5,
-            0,
-            0,
-            0});
-            this.nmCornerRoundness.ValueChanged += new System.EventHandler(this.nmCornerRoundness_ValueChanged);
-            // 
             // SettingsGeneralForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -497,11 +497,11 @@ namespace RTCV.UI
             this.MouseDown += new System.Windows.Forms.MouseEventHandler(this.HandleMouseDown);
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.nmCornerRoundness)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nmSwapEmuTimeout)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nmMaxAutosaveSize)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nmAutosaveSeconds)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nmAutosaveMinutes)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.nmCornerRoundness)).EndInit();
             this.ResumeLayout(false);
 
         }

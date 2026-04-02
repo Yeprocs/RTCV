@@ -27,7 +27,7 @@ namespace RTCV.UI
         public static Color Dark4Color { get; private set; }
 
         public static readonly int DefaultCornerRoundness =
-            DateTime.Now >= new DateTime(2025, 4, 1)
+            DateTime.Now >= new DateTime(2026, 4, 1)
             ? DateTime.Now.Month == 4 && DateTime.Now.Day == 1
                 ? 25
                 : 5
