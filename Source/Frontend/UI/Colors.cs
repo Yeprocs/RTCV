@@ -12,6 +12,7 @@ namespace RTCV.UI
     using System.Windows.Forms;
     using CorruptCore;
     using Extensions;
+    using NLog.Targets;
     using RTCV.UI.Components.Controls;
 
     public static class Colors
@@ -34,6 +35,14 @@ namespace RTCV.UI
             : 0;
         public static int CornerRoundness = DefaultCornerRoundness;
 
+        public static bool IsRoundable(Control c)
+        {
+            return (    c is Form f && (!f.TopLevel || !(f.Parent is null)))
+                   ||   c is Button
+                   ||  (c is Panel p && p.BorderStyle == BorderStyle.None)
+                   &&(!(c is TableLayoutPanel));
+        }
+
         public static void SetRTCColor(Color color, Control ctr)
         {
             HashSet<Control> allControls = new HashSet<Control>();
@@ -55,18 +64,26 @@ namespace RTCV.UI
             foreach (var c in allControls)
             {
                 c.Paint -= RoundedPaint;
+                if (c is Form)
+                {
+                    ((Form)c).ResizeEnd -= UpdateRegions;
+                    ((Form)c).ResizeBegin -= ResetRegions;
+                }
                 if (CornerRoundness <= 0)
                 {
                     c.Region = null;
                     continue;
                 }
                 
-                if (    (c is Form f && (!f.TopLevel || !(f.Parent is null)))
-                    ||   c is Button
-                    ||  (c is Panel p && p.BorderStyle == BorderStyle.None)
-                    &&  (!(c is TableLayoutPanel)))
+                if (IsRoundable(c))
                 {
                     c.Paint += RoundedPaint;
+                }
+
+                if (c is Form)
+                {
+                    ((Form)c).ResizeEnd += UpdateRegions;
+                    ((Form)c).ResizeBegin += ResetRegions;
                 }
             }
 
@@ -140,6 +157,45 @@ namespace RTCV.UI
             }
 
             return;
+
+            void UpdateRegions(object sender, EventArgs args)
+            {
+                List<Control> controls = ((Control)sender).Controls.getControlsWithTag();
+
+                foreach (Control c in controls)
+                {
+                    if (c is Form f && f.Parent == null)
+                    {
+                        c.Region = null;
+                        return;
+                    }
+
+                    if (IsRoundable(c))
+                    {
+                        c.Paint += RoundedPaint;
+                        var controlRect = new RectangleF(-1f, -1f, c.ClientSize.Width + 1f, c.ClientSize.Height + 1f);
+                        int radius = (int)Math.Min(CornerRoundness, Math.Min(controlRect.Width / 2, controlRect.Height / 2));
+                        using (GraphicsPath pathFull = GetFigurePath(controlRect, radius, -1))
+                        {
+                            c.Region = new Region(pathFull);
+                        }
+                    }
+                }
+            }
+
+            void ResetRegions(object sender, EventArgs args)
+            {
+                List<Control> controls = ((Control)sender).Controls.getControlsWithTag();
+
+                foreach (Control c in controls)
+                {
+                    c.Region = null;
+                    if (IsRoundable(c) && CornerRoundness > 0)
+                    {
+                        c.Paint -= RoundedPaint;
+                    }
+                }
+            }
 
             void RoundedPaint(object sender, PaintEventArgs pevent)
             {
