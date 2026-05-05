@@ -132,14 +132,12 @@ namespace RTCV.UI.Components.Controls
         {
             var ssHeight = 22;
             var padding = 3;
-            //Calculate how many we can fit within the space we have.
+
             _numPerPage = ((flowPanel.Height - 2) / (ssHeight + padding)) - 1;
-            if (_numPerPage < 0)
-                _numPerPage = 0;
-            if (_controlList.Count == _numPerPage)
-                return;
-            
+            if (_numPerPage < 0) _numPerPage = 0;
+
             flowPanel.SuspendLayout();
+
             if (_numPerPage > _controlList.Count)
             {
                 for (var i = _controlList.Count; i < _numPerPage; i++)
@@ -148,22 +146,26 @@ namespace RTCV.UI.Components.Controls
                     ssh.btnSavestate.MouseDown += BtnSavestate_MouseDown;
                     flowPanel.Controls.Add(ssh);
                     _controlList.Add(ssh);
+
+                    // Recolor only the NEW control
+                    if (Parent is IColorize colorize)
+                        Colors.SetRTCColor(Colors.GeneralColor, ssh);
                 }
             }
-            else
+
+            for (int i = 0; i < _controlList.Count; i++)
             {
-                for (var i = _controlList.Count; i > _numPerPage; i--)
+                bool shouldBeVisible = i < _numPerPage;
+                if (_controlList[i].Visible != shouldBeVisible)
                 {
-                    flowPanel.Controls.Remove(_controlList[i - 1]);
-                    _controlList.RemoveAt(i - 1);
+                    _controlList[i].Visible = shouldBeVisible;
                 }
             }
-            
-            if (!(_dataSource is null))
+
+            if (_dataSource != null)
                 DataSource_PositionChanged(null, null);
-            if (Parent is IColorize colorize)
-                colorize.Recolor();
-            flowPanel.ResumeLayout();
+
+            flowPanel.ResumeLayout(false);
         }
 
         public void BtnSavestate_MouseDown(object sender, MouseEventArgs e)
