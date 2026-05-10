@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
+using System.Threading;
 using System.Windows.Forms;
 using Ceras;
 using Newtonsoft.Json;
@@ -22,6 +23,12 @@ namespace RTCV.CorruptCore
     {
         [Exclude]
         private static NLog.Logger logger = NLog.LogManager.GetCurrentClassLogger();
+
+        [Exclude]
+        private static List<RomMetadata> _storedMetadata = new List<RomMetadata>();
+
+        [Exclude]
+        public static List<RomMetadata> storedMetadata { get => _storedMetadata; set => _storedMetadata = value; }
 
         private List<StashKey> _stashKeys = new List<StashKey>();
         public List<StashKey> StashKeys { get => this._stashKeys; set => this._stashKeys = value; }
@@ -141,8 +148,39 @@ namespace RTCV.CorruptCore
             }
         }
 
+    [Serializable]
+    [MemberConfig(TargetMember.AllPublic)]
+    public class RomMetadata
+    {
+        public string Name { get; set; }
+        public long Size { get; set; }
+        public string Crc32 { get; set; }
+        public string Sha1 { get; set; }
+        public string Md5 { get; set; }
+    }
         private static void CopyReferencedFiles(Stockpile sks, bool includeReferencedFiles, ref decimal saveProgress)
         {
+            // Create metadata file for all roms
+            foreach (StashKey key in sks.StashKeys)
+            {
+                if (File.Exists(key.RomFilename))
+                {
+                    while (!StockpileManagerUISide.finishedGeneratingMetadata.Task.IsCompleted)
+                        Thread.Sleep(250);
+
+                    List<RomMetadata> metadatas = storedMetadata.FindAll(x  => x.Name.Contains(Path.GetFileNameWithoutExtension(key.RomFilename)));
+
+                    foreach (RomMetadata metadata in metadatas)
+                    {
+                        using (FileStream fs = File.Open(Path.Combine(RtcCore.workingDir, "TEMP", $"{metadata.Name}.metadata"), FileMode.OpenOrCreate))
+                        {
+                            RtcCore.OnProgressBarUpdate(metadata, new ProgressBarEventArgs($"Creating metadata file", saveProgress += 2));
+                            JsonHelper.Serialize(metadata, fs, Formatting.Indented);
+                        }
+                    }
+                }
+            }
+
             List<string> allRoms = new List<string>();
             if (includeReferencedFiles && ((bool?)AllSpec.VanguardSpec?[VSPEC.SUPPORTS_REFERENCES] ?? false))
             {

@@ -1,21 +1,26 @@
 namespace RTCV.UI
 {
+    using Newtonsoft.Json;
+    using NLog.Targets;
+    using RTCV.Common;
+    using RTCV.CorruptCore;
+    using RTCV.CorruptCore.Extensions;
+    using RTCV.NetCore;
+    using RTCV.NetCore.Commands;
+    using RTCV.UI.Components.Controls;
+    using RTCV.UI.Modular;
+    using SlimDX.DirectInput;
     using System;
+    using System.Collections.Generic;
     using System.Drawing;
     using System.IO;
     using System.Linq;
-    using System.Windows.Forms;
-    using RTCV.CorruptCore;
-    using RTCV.NetCore;
-    using RTCV.Common;
-    using RTCV.UI.Modular;
-    using RTCV.NetCore.Commands;
-    using System.Threading.Tasks;
+    using System.Security.Cryptography;
     using System.Threading;
+    using System.Threading.Tasks;
     using System.Timers;
-    using System.Collections.Generic;
-    using NLog.Targets;
-    using Newtonsoft.Json;
+    using System.Windows.Forms;
+    using static RTCV.CorruptCore.Stockpile;
 
     public static class VanguardImplementation
     {
@@ -49,6 +54,234 @@ namespace RTCV.UI
             logger.Info("Shutting down Netcore");
             connector?.Kill();
         }
+
+        private static List<string> GetCueTracks(string cueFile)
+        {
+            string cueFolder = Path.GetDirectoryName(cueFile);
+            string[] cueLines = File.ReadAllLines(cueFile);
+            List<string> binFiles = new List<string>();
+
+            for (int i = 0; i < cueLines.Length; i++)
+            {
+                if (cueLines[i].Contains("FILE") && cueLines[i].Contains("BINARY"))
+                {
+                    int startFilename;
+                    int endFilename = cueLines[i].LastIndexOf('"');
+
+                    //If it's an absolute path, convert it to a relative path then fix the cue as well
+                    if (cueLines[i].Contains(':'))
+                    {
+                        startFilename = cueLines[i].LastIndexOfAny(new char[] { '\\', '/' }) + 1;
+                    }
+                    else
+                    {
+                        //Just copy the old cue into the new one
+                        startFilename = cueLines[i].IndexOf('"') + 1;
+                    }
+
+                    binFiles.Add(cueLines[i].Substring(startFilename, endFilename - startFilename));
+                }
+            }
+
+            return binFiles.Select(file => Path.Combine(cueFolder, file)).ToList();
+        }
+
+        private static List<string> GetGdiTracks(string gdiFile)
+        {
+            string gdiFolder = Path.GetDirectoryName(gdiFile);
+            string[] gdiLines = File.ReadAllLines(gdiFile);
+            List<string> binFiles = new List<string>();
+
+            for (int i = 0; i < gdiLines.Length; i++)
+            {
+                if (gdiLines[i].Contains(".bin"))
+                {
+                    int startFilename;
+                    int endFilename = gdiLines[i].LastIndexOf('"');
+
+                    //Just copy the old gdi into the new one
+                    startFilename = gdiLines[i].IndexOf('"') + 1;
+
+                    binFiles.Add(gdiLines[i].Substring(startFilename, endFilename - startFilename));
+                }
+            }
+            return binFiles.Select(file => Path.Combine(gdiFolder, file)).ToList();
+        }
+
+        private static List<string> GetCcdTracks(string ccdFile)
+        {
+                List<string> binFiles = new List<string>();
+
+                if (File.Exists(Path.GetFileNameWithoutExtension(ccdFile) + ".sub"))
+                {
+                    binFiles.Add(Path.GetFileNameWithoutExtension(ccdFile) + ".sub");
+                }
+
+                if (File.Exists(Path.GetFileNameWithoutExtension(ccdFile) + ".img"))
+                {
+                    binFiles.Add(Path.GetFileNameWithoutExtension(ccdFile) + ".img");
+                }
+
+                return binFiles;
+        }
+
+        // Custom Crc32 hash generator since we don't have access to System.IO.Hashing
+        private static class Crc32
+        {
+            private const uint Polynomial = 0xEDB88320;
+            private static readonly uint[] Table;
+
+            static Crc32()
+            {
+                Table = new uint[256];
+                for (uint i = 0; i < 256; i++)
+                {
+                    uint entry = i;
+                    for (int j = 0; j < 8; j++)
+                        entry = (entry & 1) == 1 ? (entry >> 1) ^ Polynomial : entry >> 1;
+                    Table[i] = entry;
+                }
+            }
+
+            public static uint Calculate(uint currentCrc, byte[] buffer, int offset, int count)
+            {
+                uint crc = ~currentCrc;
+                for (int i = offset; i < offset + count; i++)
+                {
+                    crc = (crc >> 8) ^ Table[(crc ^ buffer[i]) & 0xFF];
+                }
+                return ~crc;
+            }
+        }
+
+        // Checks to see if we need to generate metadata for a game that's been opened for the first time
+        public static async void OnSpecUpdated(object sender, EventArgs e)
+        {
+            string RomFilename = AllSpec.VanguardSpec[VSPEC.OPENROMFILENAME]?.ToString();
+            List<string> RomFilenames = new List<string>();
+
+            if (String.IsNullOrEmpty(RomFilename))
+                return;
+
+            if (Stockpile.storedMetadata.Any(x => x.Name.Contains(Path.GetFileNameWithoutExtension(RomFilename))))
+            {
+                return;
+            }
+
+            if (File.Exists(RomFilename))
+            {
+                if (RomFilename.IndexOf(".CUE", StringComparison.OrdinalIgnoreCase) >= 0)
+                {
+                    RomFilenames.AddRange(GetCueTracks(RomFilename));
+                }
+                else if (RomFilename.IndexOf(".GDI", StringComparison.OrdinalIgnoreCase) >= 0)
+                {
+                    RomFilenames.AddRange(GetGdiTracks(RomFilename));
+                }
+                else
+                {
+                    RomFilenames.Add(RomFilename);
+                }
+
+                StockpileManagerUISide.finishedGeneratingMetadata = new TaskCompletionSource<bool>();
+                CancellationTokenSource cts = new CancellationTokenSource();
+                cts.CancelAfter(5000);
+
+                for (int i = 0; i < RomFilenames.Count; i++)
+                {
+                    string filename = RomFilenames[i];
+
+                    RomMetadata metadata = new RomMetadata();
+                    metadata.Name = Path.GetFileNameWithoutExtension(filename);
+                    metadata.Size = new FileInfo(filename).Length;
+
+                    logger.Trace(metadata.Name);
+
+                    // Store the initial metadata right away so that additional spec updates don't begin new threads
+                    Stockpile.storedMetadata.Add(metadata);
+
+                    var stockpileForm = S.GET<StockpileManagerForm>();
+                    SyncObjectSingleton.FormBeginExecute(() =>
+                    {
+                        Toast toast = new Toast("Creating metadata...", "");
+                        stockpileForm?.ParentCanvas?.ShowToast(toast);
+                        Task.Run(async () =>
+                        {
+                            // Open the file
+                            using (FileStream fs = new FileStream(filename, FileMode.Open, FileAccess.Read, FileShare.Read, 2 * 1024 * 1024, useAsync: true))
+                            {
+                                long totalBytes = fs.Length;
+                                byte[] buffer = new byte[2 * 1024 * 1024];
+                                int bytesRead;
+                                long totalBytesRead = 0;
+                                long totalBytesReadLast = 0;
+                                int progressLast = 0;
+
+                                uint crc = 0;
+                                using (SHA1 sha1 = SHA1.Create())
+                                using (MD5 md5 = MD5.Create())
+                                {
+                                    try
+                                    {
+                                        // Instead of using ComputeHash(), we can read the bytes with ReadAsync() and then use TransformBlock(). This lets us generate
+                                        // all hashes at the same time, instead of having to restart the filestream after each
+                                        while ((bytesRead = await fs.ReadAsync(buffer, 0, buffer.Length, cts.Token)) > 0)
+                                        {
+                                            crc = Crc32.Calculate(crc, buffer, 0, bytesRead);
+                                            sha1.TransformBlock(buffer, 0, bytesRead, null, 0);
+                                            md5.TransformBlock(buffer, 0, bytesRead, null, 0);
+
+                                            totalBytesRead += bytesRead;
+
+                                            int progress = (int)((decimal)totalBytesRead / totalBytes * 100);
+
+                                            if (stockpileForm.ParentCanvas != null && !toast.Visible)
+                                                SyncObjectSingleton.FormBeginExecute(() => stockpileForm?.ParentCanvas?.ShowToast(toast));
+
+
+                                            if (progressLast != progress)
+                                                RtcCore.OnProgressBarUpdate(null, new ProgressBarEventArgs($"Generating hashes...({i} of {RomFilenames.Count})", progress));
+
+                                            if (totalBytesReadLast != totalBytesRead)
+                                            {
+                                                cts.CancelAfter(5000);
+                                            }
+
+                                            totalBytesReadLast = totalBytesRead;
+                                            progressLast = progress;
+                                        }
+
+                                        sha1.TransformFinalBlock(buffer, 0, 0);
+                                        md5.TransformFinalBlock(buffer, 0, 0);
+
+                                        string crc32HashString = crc.ToString("x8");
+                                        string sha1HashString = sha1.Hash.BytesToHexString().ToLowerInvariant();
+                                        string md5HashString = md5.Hash.BytesToHexString().ToLowerInvariant();
+
+                                        metadata.Crc32 = crc32HashString;
+                                        metadata.Sha1 = sha1HashString;
+                                        metadata.Md5 = md5HashString;
+                                    }
+                                    catch (OperationCanceledException)
+                                    {
+                                        MessageBox.Show("Failed to generate metadata! This should never happen." +
+                                            " \n\nPoke the RTC devs for help (Discord is in the launcher).", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error,
+                                            MessageBoxDefaultButton.Button1, MessageBoxOptions.DefaultDesktopOnly);
+                                    }
+                                }
+                            }
+                            StockpileManagerUISide.finishedGeneratingMetadata.SetResult(true);
+                        }).ContinueWith(_ =>
+                        {
+                            // Close the toast on the UI thread
+                            toast.Close();
+                        }, TaskScheduler.FromCurrentSynchronizationContext());
+                    });
+                }
+                await StockpileManagerUISide.finishedGeneratingMetadata.Task;
+            }
+        }
+
 
         private static async void OnMessageReceived(object sender, NetCoreEventArgs e)
         {
@@ -340,6 +573,7 @@ namespace RTCV.UI
             if (!RtcCore.Attached)
             {
                 AllSpec.VanguardSpec = new FullSpec((PartialSpec)advancedMessage.objectValue, !RtcCore.Attached);
+                AllSpec.VanguardSpec.SpecUpdated += new EventHandler<SpecUpdateEventArgs>(VanguardImplementation.OnSpecUpdated);
             }
 
             e.setReturnValue(true);

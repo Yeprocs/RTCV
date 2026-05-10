@@ -70,6 +70,8 @@ namespace RTCV.CorruptCore
         public static TaskCompletionSource<bool> finishedSwapping;
         public static int timeout = 20;
 
+        public static TaskCompletionSource<bool> finishedGeneratingMetadata = new TaskCompletionSource<bool>();
+
         public static StashKey CurrentSavestateStashKey { get; set; }
 
         [SuppressMessage("Microsoft.Design", "CA2211", Justification = "This field cannot be made private or const because it is used by stubs")]
