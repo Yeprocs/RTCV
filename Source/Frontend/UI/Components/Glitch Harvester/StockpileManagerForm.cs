@@ -521,7 +521,7 @@ namespace RTCV.UI
                 dgvStockpile.ClearSelection();
                 StockpileManagerUISide.StockpileChanged();
 
-                UnsavedEdits = true;
+                UnsavedEdits = false;
             }
             finally
             {
