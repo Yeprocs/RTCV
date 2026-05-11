@@ -72,10 +72,9 @@ namespace RTCV.UI
             this.label13.ForeColor = System.Drawing.Color.White;
             this.label13.Location = new System.Drawing.Point(226, 246);
             this.label13.Name = "label13";
-            this.label13.Size = new System.Drawing.Size(70, 15);
+            this.label13.Size = new System.Drawing.Size(29, 15);
             this.label13.TabIndex = 19;
-            this.label13.Text = "Other name";
-            this.label13.Visible = false;
+            this.label13.Text = "Sola";
             // 
             // label12
             // 
@@ -109,10 +108,9 @@ namespace RTCV.UI
             this.label10.ForeColor = System.Drawing.Color.White;
             this.label10.Location = new System.Drawing.Point(20, 246);
             this.label10.Name = "label10";
-            this.label10.Size = new System.Drawing.Size(70, 15);
+            this.label10.Size = new System.Drawing.Size(48, 15);
             this.label10.TabIndex = 16;
-            this.label10.Text = "Other name";
-            this.label10.Visible = false;
+            this.label10.Text = "Moogie";
             // 
             // label9
             // 
@@ -122,9 +120,9 @@ namespace RTCV.UI
             this.label9.ForeColor = System.Drawing.Color.White;
             this.label9.Location = new System.Drawing.Point(20, 229);
             this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(45, 15);
+            this.label9.Size = new System.Drawing.Size(38, 15);
             this.label9.TabIndex = 15;
-            this.label9.Text = "Ircluzar";
+            this.label9.Text = "Foifur";
             // 
             // label8
             // 
@@ -134,9 +132,9 @@ namespace RTCV.UI
             this.label8.ForeColor = System.Drawing.Color.White;
             this.label8.Location = new System.Drawing.Point(226, 194);
             this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(36, 15);
+            this.label8.Size = new System.Drawing.Size(53, 15);
             this.label8.TabIndex = 14;
-            this.label8.Text = "Narry";
+            this.label8.Text = "Nerdzilla";
             // 
             // label7
             // 
@@ -146,9 +144,9 @@ namespace RTCV.UI
             this.label7.ForeColor = System.Drawing.Color.White;
             this.label7.Location = new System.Drawing.Point(226, 177);
             this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(48, 15);
+            this.label7.Size = new System.Drawing.Size(36, 15);
             this.label7.TabIndex = 13;
-            this.label7.Text = "Moogie";
+            this.label7.Text = "Narry";
             // 
             // label6
             // 
@@ -158,9 +156,9 @@ namespace RTCV.UI
             this.label6.ForeColor = System.Drawing.Color.White;
             this.label6.Location = new System.Drawing.Point(20, 212);
             this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(38, 15);
+            this.label6.Size = new System.Drawing.Size(96, 15);
             this.label6.TabIndex = 12;
-            this.label6.Text = "Foifur";
+            this.label6.Text = "ChrisNonyminus";
             // 
             // label5
             // 
@@ -206,9 +204,9 @@ namespace RTCV.UI
             this.label4.ForeColor = System.Drawing.Color.White;
             this.label4.Location = new System.Drawing.Point(20, 194);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(96, 15);
+            this.label4.Size = new System.Drawing.Size(100, 15);
             this.label4.TabIndex = 8;
-            this.label4.Text = "ChrisNonyminus";
+            this.label4.Text = "AbsenteeSurgeon";
             // 
             // label3
             // 
@@ -218,9 +216,9 @@ namespace RTCV.UI
             this.label3.ForeColor = System.Drawing.Color.White;
             this.label3.Location = new System.Drawing.Point(20, 177);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(100, 15);
+            this.label3.Size = new System.Drawing.Size(45, 15);
             this.label3.TabIndex = 7;
-            this.label3.Text = "AbsenteeSurgeon";
+            this.label3.Text = "Ircluzar";
             // 
             // label2
             // 
@@ -339,7 +337,6 @@ namespace RTCV.UI
 		#endregion
 		private System.Windows.Forms.Label lbVersion;
 		private System.Windows.Forms.Label lbProcess;
-		private System.Windows.Forms.Label lbConnectedTo;
 		private System.Windows.Forms.LinkLabel lbSourceCode;
 		private System.Windows.Forms.Label label1;
 		private System.Windows.Forms.Label label2;
