@@ -155,7 +155,7 @@ namespace RTCV.UI
         }
 
         // Checks to see if we need to generate metadata for a game that's been opened for the first time
-        public static async void OnSpecUpdated(object sender, EventArgs e)
+        public static async void GenerateHashes(object sender, EventArgs e)
         {
             string RomFilename = AllSpec.VanguardSpec[VSPEC.OPENROMFILENAME]?.ToString();
             List<string> RomFilenames = new List<string>();
@@ -164,124 +164,126 @@ namespace RTCV.UI
                 return;
 
             if (Stockpile.storedMetadata.Any(x => x.Name.Contains(Path.GetFileNameWithoutExtension(RomFilename))))
-            {
                 return;
+
+            if (!File.Exists(RomFilename))
+                return;
+
+            if (RomFilename.IndexOf(".CUE", StringComparison.OrdinalIgnoreCase) >= 0)
+            {
+                RomFilenames.AddRange(GetCueTracks(RomFilename));
+            }
+            else if (RomFilename.IndexOf(".GDI", StringComparison.OrdinalIgnoreCase) >= 0)
+            {
+                RomFilenames.AddRange(GetGdiTracks(RomFilename));
+            }
+            else if (RomFilename.IndexOf(".CCD", StringComparison.OrdinalIgnoreCase) >= 0)
+            {
+                RomFilenames.AddRange(GetCcdTracks(RomFilename));
+            }
+            else
+            {
+                RomFilenames.Add(RomFilename);
             }
 
-            if (File.Exists(RomFilename))
+            StockpileManagerUISide.finishedGeneratingMetadata = new TaskCompletionSource<bool>();
+            CancellationTokenSource cts = new CancellationTokenSource();
+            cts.CancelAfter(5000);
+
+            for (int i = 0; i < RomFilenames.Count; i++)
             {
-                if (RomFilename.IndexOf(".CUE", StringComparison.OrdinalIgnoreCase) >= 0)
+                string filename = RomFilenames[i];
+
+                RomMetadata metadata = new RomMetadata();
+                metadata.Name = Path.GetFileNameWithoutExtension(filename);
+                metadata.Size = new FileInfo(filename).Length;
+
+                logger.Trace(metadata.Name);
+
+                // Store the initial metadata right away so that additional spec updates don't begin new threads
+                Stockpile.storedMetadata.Add(metadata);
+
+                var stockpileForm = S.GET<StockpileManagerForm>();
+                SyncObjectSingleton.FormBeginExecute(() =>
                 {
-                    RomFilenames.AddRange(GetCueTracks(RomFilename));
-                }
-                else if (RomFilename.IndexOf(".GDI", StringComparison.OrdinalIgnoreCase) >= 0)
-                {
-                    RomFilenames.AddRange(GetGdiTracks(RomFilename));
-                }
-                else
-                {
-                    RomFilenames.Add(RomFilename);
-                }
-
-                StockpileManagerUISide.finishedGeneratingMetadata = new TaskCompletionSource<bool>();
-                CancellationTokenSource cts = new CancellationTokenSource();
-                cts.CancelAfter(5000);
-
-                for (int i = 0; i < RomFilenames.Count; i++)
-                {
-                    string filename = RomFilenames[i];
-
-                    RomMetadata metadata = new RomMetadata();
-                    metadata.Name = Path.GetFileNameWithoutExtension(filename);
-                    metadata.Size = new FileInfo(filename).Length;
-
-                    logger.Trace(metadata.Name);
-
-                    // Store the initial metadata right away so that additional spec updates don't begin new threads
-                    Stockpile.storedMetadata.Add(metadata);
-
-                    var stockpileForm = S.GET<StockpileManagerForm>();
-                    SyncObjectSingleton.FormBeginExecute(() =>
+                    Toast toast = new Toast("Creating metadata...", "");
+                    stockpileForm?.ParentCanvas?.ShowToast(toast);
+                    Task.Run(async () =>
                     {
-                        Toast toast = new Toast("Creating metadata...", "");
-                        stockpileForm?.ParentCanvas?.ShowToast(toast);
-                        Task.Run(async () =>
+                        // Open the file
+                        using (FileStream fs = new FileStream(filename, FileMode.Open, FileAccess.Read, FileShare.Read, 2 * 1024 * 1024, useAsync: true))
                         {
-                            // Open the file
-                            using (FileStream fs = new FileStream(filename, FileMode.Open, FileAccess.Read, FileShare.Read, 2 * 1024 * 1024, useAsync: true))
+                            long totalBytes = fs.Length;
+                            byte[] buffer = new byte[2 * 1024 * 1024];
+                            int bytesRead;
+                            long totalBytesRead = 0;
+                            long totalBytesReadLast = 0;
+                            int progressLast = 0;
+
+                            uint crc = 0;
+                            using (SHA1 sha1 = SHA1.Create())
+                            using (MD5 md5 = MD5.Create())
                             {
-                                long totalBytes = fs.Length;
-                                byte[] buffer = new byte[2 * 1024 * 1024];
-                                int bytesRead;
-                                long totalBytesRead = 0;
-                                long totalBytesReadLast = 0;
-                                int progressLast = 0;
-
-                                uint crc = 0;
-                                using (SHA1 sha1 = SHA1.Create())
-                                using (MD5 md5 = MD5.Create())
+                                try
                                 {
-                                    try
+                                    // Instead of using ComputeHash(), we can read the bytes with ReadAsync() and then use TransformBlock(). This lets us generate
+                                    // all hashes at the same time, instead of having to restart the filestream after each
+                                    while ((bytesRead = await fs.ReadAsync(buffer, 0, buffer.Length, cts.Token)) > 0)
                                     {
-                                        // Instead of using ComputeHash(), we can read the bytes with ReadAsync() and then use TransformBlock(). This lets us generate
-                                        // all hashes at the same time, instead of having to restart the filestream after each
-                                        while ((bytesRead = await fs.ReadAsync(buffer, 0, buffer.Length, cts.Token)) > 0)
+                                        crc = Crc32.Calculate(crc, buffer, 0, bytesRead);
+                                        sha1.TransformBlock(buffer, 0, bytesRead, null, 0);
+                                        md5.TransformBlock(buffer, 0, bytesRead, null, 0);
+
+                                        totalBytesRead += bytesRead;
+
+                                        int progress = (int)((decimal)totalBytesRead / totalBytes * 100);
+
+                                        if (stockpileForm.ParentCanvas != null && !toast.Visible)
+                                            SyncObjectSingleton.FormBeginExecute(() => stockpileForm?.ParentCanvas?.ShowToast(toast));
+
+
+                                        if (progressLast != progress)
+                                            RtcCore.OnProgressBarUpdate(null, new ProgressBarEventArgs($"Generating hashes...({i} of {RomFilenames.Count})", progress));
+
+                                        if (totalBytesReadLast != totalBytesRead)
                                         {
-                                            crc = Crc32.Calculate(crc, buffer, 0, bytesRead);
-                                            sha1.TransformBlock(buffer, 0, bytesRead, null, 0);
-                                            md5.TransformBlock(buffer, 0, bytesRead, null, 0);
-
-                                            totalBytesRead += bytesRead;
-
-                                            int progress = (int)((decimal)totalBytesRead / totalBytes * 100);
-
-                                            if (stockpileForm.ParentCanvas != null && !toast.Visible)
-                                                SyncObjectSingleton.FormBeginExecute(() => stockpileForm?.ParentCanvas?.ShowToast(toast));
-
-
-                                            if (progressLast != progress)
-                                                RtcCore.OnProgressBarUpdate(null, new ProgressBarEventArgs($"Generating hashes...({i} of {RomFilenames.Count})", progress));
-
-                                            if (totalBytesReadLast != totalBytesRead)
-                                            {
-                                                cts.CancelAfter(5000);
-                                            }
-
-                                            totalBytesReadLast = totalBytesRead;
-                                            progressLast = progress;
+                                            cts.CancelAfter(5000);
                                         }
 
-                                        sha1.TransformFinalBlock(buffer, 0, 0);
-                                        md5.TransformFinalBlock(buffer, 0, 0);
-
-                                        string crc32HashString = crc.ToString("x8");
-                                        string sha1HashString = sha1.Hash.BytesToHexString().ToLowerInvariant();
-                                        string md5HashString = md5.Hash.BytesToHexString().ToLowerInvariant();
-
-                                        metadata.Crc32 = crc32HashString;
-                                        metadata.Sha1 = sha1HashString;
-                                        metadata.Md5 = md5HashString;
+                                        totalBytesReadLast = totalBytesRead;
+                                        progressLast = progress;
                                     }
-                                    catch (OperationCanceledException)
-                                    {
-                                        MessageBox.Show("Failed to generate metadata! This should never happen." +
-                                            " \n\nPoke the RTC devs for help (Discord is in the launcher).", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error,
-                                            MessageBoxDefaultButton.Button1, MessageBoxOptions.DefaultDesktopOnly);
-                                    }
+
+                                    sha1.TransformFinalBlock(buffer, 0, 0);
+                                    md5.TransformFinalBlock(buffer, 0, 0);
+
+                                    string crc32HashString = crc.ToString("x8");
+                                    string sha1HashString = sha1.Hash.BytesToHexString().ToLowerInvariant();
+                                    string md5HashString = md5.Hash.BytesToHexString().ToLowerInvariant();
+
+                                    metadata.Crc32 = crc32HashString;
+                                    metadata.Sha1 = sha1HashString;
+                                    metadata.Md5 = md5HashString;
+                                }
+                                catch (OperationCanceledException)
+                                {
+                                    MessageBox.Show("Failed to generate metadata! This should never happen." +
+                                        " \n\nPoke the RTC devs for help (Discord is in the launcher).", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error,
+                                        MessageBoxDefaultButton.Button1, MessageBoxOptions.DefaultDesktopOnly);
                                 }
                             }
-                            StockpileManagerUISide.finishedGeneratingMetadata.SetResult(true);
-                        }).ContinueWith(_ =>
-                        {
-                            // Close the toast on the UI thread
-                            toast.Close();
-                        }, TaskScheduler.FromCurrentSynchronizationContext());
-                    });
-                }
-                await StockpileManagerUISide.finishedGeneratingMetadata.Task;
+                        }
+                        StockpileManagerUISide.finishedGeneratingMetadata.SetResult(true);
+                    }).ContinueWith(_ =>
+                    {
+                        // Close the toast on the UI thread
+                        toast.Close();
+                    }, TaskScheduler.FromCurrentSynchronizationContext());
+                });
             }
+            await StockpileManagerUISide.finishedGeneratingMetadata.Task;
+            logger.Trace($"Finished generating hashes for {RomFilename}");
         }
-
 
         private static async void OnMessageReceived(object sender, NetCoreEventArgs e)
         {
@@ -573,7 +575,7 @@ namespace RTCV.UI
             if (!RtcCore.Attached)
             {
                 AllSpec.VanguardSpec = new FullSpec((PartialSpec)advancedMessage.objectValue, !RtcCore.Attached);
-                AllSpec.VanguardSpec.SpecUpdated += new EventHandler<SpecUpdateEventArgs>(VanguardImplementation.OnSpecUpdated);
+                AllSpec.VanguardSpec.SpecUpdated += new EventHandler<SpecUpdateEventArgs>(GenerateHashes);
             }
 
             e.setReturnValue(true);
