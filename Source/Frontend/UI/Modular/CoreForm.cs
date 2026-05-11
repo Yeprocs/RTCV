@@ -156,7 +156,6 @@ This message only appears once.";
                 Params.SetParam("DISCLAIMER_READ");
                 Params.SetParam("COMPRESS_STOCKPILE"); //Default param
                 Params.SetParam("COMPRESS_SAVESTATES"); //Default param
-                Params.SetParam("INCLUDE_REFERENCED_FILES"); //Default param
                 Params.SetParam("LOAD_STASH_ON_ARROW_CLICK"); //Default param
                 Params.SetParam("RASTERIZE_VMD_UPON_STOCKPILING"); //Default param
                 Params.SetParam("AUTOSAVE_INTERVAL", "300"); //Default param (5 minutes in seconds)
