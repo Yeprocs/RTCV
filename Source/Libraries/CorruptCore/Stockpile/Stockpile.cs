@@ -25,10 +25,16 @@ namespace RTCV.CorruptCore
         private static NLog.Logger logger = NLog.LogManager.GetCurrentClassLogger();
 
         [Exclude]
-        private static List<RomMetadata> _storedMetadata = new List<RomMetadata>();
+        private static List<RomMetadata> _runtimeMetadata = new List<RomMetadata>();
 
         [Exclude]
-        public static List<RomMetadata> storedMetadata { get => _storedMetadata; set => _storedMetadata = value; }
+        public static List<RomMetadata> runtimeMetadata { get => _runtimeMetadata; set => _runtimeMetadata = value; }
+
+        [Exclude]
+        private static List<RomMetadata> _stockpileMetadata = new List<RomMetadata>();
+
+        [Exclude]
+        public static List<RomMetadata> stockpileMetadata { get => _stockpileMetadata; set => _stockpileMetadata = value; }
 
         private List<StashKey> _stashKeys = new List<StashKey>();
         public List<StashKey> StashKeys { get => this._stashKeys; set => this._stashKeys = value; }
@@ -168,8 +174,8 @@ namespace RTCV.CorruptCore
                     while (!StockpileManagerUISide.finishedGeneratingMetadata.Task.IsCompleted)
                         Thread.Sleep(250);
 
-                    List<RomMetadata> metadatas = storedMetadata.FindAll(x  => x.Name.Contains(Path.GetFileNameWithoutExtension(key.RomFilename)));
-
+                    // Serialize the metadata of each game
+                    List<RomMetadata> metadatas = runtimeMetadata.FindAll(x  => x.Name.Contains(Path.GetFileNameWithoutExtension(key.RomFilename)));
                     foreach (RomMetadata metadata in metadatas)
                     {
                         using (FileStream fs = File.Open(Path.Combine(RtcCore.workingDir, "TEMP", $"{metadata.Name}.metadata"), FileMode.OpenOrCreate))
@@ -178,6 +184,10 @@ namespace RTCV.CorruptCore
                             JsonHelper.Serialize(metadata, fs, Formatting.Indented);
                         }
                     }
+
+                    // Overwrite the old metadata in RTC
+                    stockpileMetadata.Clear();
+                    stockpileMetadata.AddRange(metadatas);
                 }
             }
 
@@ -652,6 +662,18 @@ namespace RTCV.CorruptCore
                     "This stockpile is missing a limiter list used by some blastunits.\n" +
                     "Some corruptions probably won't work properly.\n" +
                     "If the limiter list is found next time you save, it'll automatically be packed in.");
+            }
+
+            // Load any metadata files in the stockpile for comparing later
+            stockpileMetadata.Clear();
+            var metadataFiles = Directory.EnumerateFiles(Path.Combine(RtcCore.workingDir, "SKS")).Where(f => f.EndsWith(".metadata")).ToList();
+            foreach (var metadataFile in metadataFiles)
+            {
+                using (FileStream fs = File.Open(metadataFile, FileMode.OpenOrCreate))
+                {
+                    RomMetadata metadata = JsonHelper.Deserialize<RomMetadata>(fs);
+                    stockpileMetadata.Add(metadata);
+                }
             }
 
             RtcCore.OnProgressBarUpdate(sks, new ProgressBarEventArgs($"Done", 100));

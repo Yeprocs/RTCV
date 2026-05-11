@@ -163,7 +163,7 @@ namespace RTCV.UI
             if (String.IsNullOrEmpty(RomFilename))
                 return;
 
-            if (Stockpile.storedMetadata.Any(x => x.Name.Contains(Path.GetFileNameWithoutExtension(RomFilename))))
+            if (Stockpile.runtimeMetadata.Any(f => f.Name.Contains(Path.GetFileNameWithoutExtension(RomFilename))))
                 return;
 
             if (!File.Exists(RomFilename))
@@ -190,24 +190,28 @@ namespace RTCV.UI
             CancellationTokenSource cts = new CancellationTokenSource();
             cts.CancelAfter(5000);
 
-            for (int i = 0; i < RomFilenames.Count; i++)
+            int filesLeft = RomFilenames.Count;
+            decimal totalProgress = 0;
+
+            var stockpileForm = S.GET<StockpileManagerForm>();
+            SyncObjectSingleton.FormBeginExecute(() =>
             {
-                string filename = RomFilenames[i];
-
-                RomMetadata metadata = new RomMetadata();
-                metadata.Name = Path.GetFileNameWithoutExtension(filename);
-                metadata.Size = new FileInfo(filename).Length;
-
-                logger.Trace(metadata.Name);
-
-                // Store the initial metadata right away so that additional spec updates don't begin new threads
-                Stockpile.storedMetadata.Add(metadata);
-
-                var stockpileForm = S.GET<StockpileManagerForm>();
-                SyncObjectSingleton.FormBeginExecute(() =>
+                Toast toast = new Toast("Creating metadata...", "");
+                stockpileForm?.ParentCanvas?.ShowToast(toast);
+                for (int i = 0; i < RomFilenames.Count; i++)
                 {
-                    Toast toast = new Toast("Creating metadata...", "");
-                    stockpileForm?.ParentCanvas?.ShowToast(toast);
+                    string filename = RomFilenames[i];
+
+                    RomMetadata metadata = new RomMetadata();
+                    metadata.Name = Path.GetFileNameWithoutExtension(filename);
+                    metadata.Size = new FileInfo(filename).Length;
+
+                    logger.Trace(metadata.Name);
+
+                    // Store the initial metadata right away so that additional spec updates don't begin new threads
+                    Stockpile.runtimeMetadata.Add(metadata);
+
+
                     Task.Run(async () =>
                     {
                         // Open the file
@@ -243,7 +247,10 @@ namespace RTCV.UI
 
 
                                         if (progressLast != progress)
-                                            RtcCore.OnProgressBarUpdate(null, new ProgressBarEventArgs($"Generating hashes...({i} of {RomFilenames.Count})", progress));
+                                        {
+                                            totalProgress += (decimal)(progress - progressLast) / RomFilenames.Count;
+                                            RtcCore.OnProgressBarUpdate(null, new ProgressBarEventArgs($"Generating hashes...({filesLeft} files left)", totalProgress));
+                                        }
 
                                         if (totalBytesReadLast != totalBytesRead)
                                         {
@@ -273,16 +280,43 @@ namespace RTCV.UI
                                 }
                             }
                         }
-                        StockpileManagerUISide.finishedGeneratingMetadata.SetResult(true);
                     }).ContinueWith(_ =>
                     {
+                        filesLeft -= 1;
+
                         // Close the toast on the UI thread
-                        toast.Close();
+                        if (filesLeft == 0)
+                        {
+                            toast.Close();
+                            StockpileManagerUISide.finishedGeneratingMetadata.SetResult(true);
+                        }
                     }, TaskScheduler.FromCurrentSynchronizationContext());
-                });
-            }
+                }
+            });
             await StockpileManagerUISide.finishedGeneratingMetadata.Task;
             logger.Trace($"Finished generating hashes for {RomFilename}");
+
+            // Compare metadata against any stockpile entries that are the same game and warn the user if they do not match
+            foreach (RomMetadata metadata in runtimeMetadata.Where(f => f.Name.Contains(Path.GetFileNameWithoutExtension(RomFilename))).ToList())
+            {
+                RomMetadata stockpileMetadataFileMatch = stockpileMetadata.FirstOrDefault(f => f.Name == metadata.Name);
+
+                if (stockpileMetadataFileMatch != null)
+                {
+                    if (metadata.Size != stockpileMetadataFileMatch.Size ||
+                        metadata.Crc32 != stockpileMetadataFileMatch.Crc32 ||
+                        metadata.Md5 != stockpileMetadataFileMatch.Md5 ||
+                        metadata.Sha1 != stockpileMetadataFileMatch.Sha1)
+                    {
+                        MessageBox.Show("The selected file's metadata does not match the file used in one or more of the loaded stockpile entries. This can potentially" + 
+                            " cause corruptions to not work as intended. \nVerify that your game dump is accurate, then restart RTC and try again." +
+                            "\n\nIf you're confident that your dump is correct, you can save the stockpile to overwrite the old metadata." +
+                            "\n\nThis message will appear only once for this game.", "WARNING");
+                        
+                        break;
+                    }
+                }
+            }
         }
 
         private static async void OnMessageReceived(object sender, NetCoreEventArgs e)
