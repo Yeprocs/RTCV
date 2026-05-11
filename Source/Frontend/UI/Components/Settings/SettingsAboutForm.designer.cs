@@ -85,10 +85,9 @@ namespace RTCV.UI
             this.label12.ForeColor = System.Drawing.Color.White;
             this.label12.Location = new System.Drawing.Point(226, 229);
             this.label12.Name = "label12";
-            this.label12.Size = new System.Drawing.Size(70, 15);
+            this.label12.Size = new System.Drawing.Size(68, 15);
             this.label12.TabIndex = 18;
-            this.label12.Text = "Other name";
-            this.label12.Visible = false;
+            this.label12.Text = "PurelyAndy";
             // 
             // label11
             // 
@@ -98,9 +97,9 @@ namespace RTCV.UI
             this.label11.ForeColor = System.Drawing.Color.White;
             this.label11.Location = new System.Drawing.Point(226, 212);
             this.label11.Name = "label11";
-            this.label11.Size = new System.Drawing.Size(48, 15);
+            this.label11.Size = new System.Drawing.Size(73, 15);
             this.label11.TabIndex = 17;
-            this.label11.Text = "Moogie";
+            this.label11.Text = "NullShock78";
             // 
             // label10
             // 
@@ -123,10 +122,9 @@ namespace RTCV.UI
             this.label9.ForeColor = System.Drawing.Color.White;
             this.label9.Location = new System.Drawing.Point(20, 229);
             this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(70, 15);
+            this.label9.Size = new System.Drawing.Size(45, 15);
             this.label9.TabIndex = 15;
-            this.label9.Text = "Other name";
-            this.label9.Visible = false;
+            this.label9.Text = "Ircluzar";
             // 
             // label8
             // 
@@ -136,9 +134,9 @@ namespace RTCV.UI
             this.label8.ForeColor = System.Drawing.Color.White;
             this.label8.Location = new System.Drawing.Point(226, 194);
             this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(107, 15);
+            this.label8.Size = new System.Drawing.Size(36, 15);
             this.label8.TabIndex = 14;
-            this.label8.Text = "Absentee Surgeron";
+            this.label8.Text = "Narry";
             // 
             // label7
             // 
@@ -148,9 +146,9 @@ namespace RTCV.UI
             this.label7.ForeColor = System.Drawing.Color.White;
             this.label7.Location = new System.Drawing.Point(226, 177);
             this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(96, 15);
+            this.label7.Size = new System.Drawing.Size(48, 15);
             this.label7.TabIndex = 13;
-            this.label7.Text = "ChrisNonyminus";
+            this.label7.Text = "Moogie";
             // 
             // label6
             // 
@@ -160,9 +158,9 @@ namespace RTCV.UI
             this.label6.ForeColor = System.Drawing.Color.White;
             this.label6.Location = new System.Drawing.Point(20, 212);
             this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(73, 15);
+            this.label6.Size = new System.Drawing.Size(38, 15);
             this.label6.TabIndex = 12;
-            this.label6.Text = "NullShock78";
+            this.label6.Text = "Foifur";
             // 
             // label5
             // 
@@ -208,9 +206,9 @@ namespace RTCV.UI
             this.label4.ForeColor = System.Drawing.Color.White;
             this.label4.Location = new System.Drawing.Point(20, 194);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(187, 15);
+            this.label4.Size = new System.Drawing.Size(96, 15);
             this.label4.TabIndex = 8;
-            this.label4.Text = "Dan B (Narry/SmellyFeetYouHave)";
+            this.label4.Text = "ChrisNonyminus";
             // 
             // label3
             // 
@@ -220,9 +218,9 @@ namespace RTCV.UI
             this.label3.ForeColor = System.Drawing.Color.White;
             this.label3.Location = new System.Drawing.Point(20, 177);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(111, 15);
+            this.label3.Size = new System.Drawing.Size(100, 15);
             this.label3.TabIndex = 7;
-            this.label3.Text = "Phil Girard (Ircluzar)";
+            this.label3.Text = "AbsenteeSurgeon";
             // 
             // label2
             // 
