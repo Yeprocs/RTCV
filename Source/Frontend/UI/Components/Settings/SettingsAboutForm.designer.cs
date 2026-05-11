@@ -354,5 +354,6 @@ namespace RTCV.UI
         private System.Windows.Forms.Label label12;
         private System.Windows.Forms.Label label13;
         private System.Windows.Forms.Label label14;
+        public System.Windows.Forms.Label lbConnectedTo;
     }
 }

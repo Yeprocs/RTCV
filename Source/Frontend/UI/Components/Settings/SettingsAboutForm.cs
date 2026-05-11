@@ -20,7 +20,7 @@ namespace RTCV.UI
         {
             lbVersion.Text += RtcCore.RtcVersion;
             lbProcess.Text += (RtcCore.Attached ? "Attached mode" : "Detached mode");
-            lbConnectedTo.Text += (string)NetCore.AllSpec.VanguardSpec?[VSPEC.NAME] ?? "Not Connected";
+            lbConnectedTo.Text = "Connected to: " + (string)NetCore.AllSpec.VanguardSpec?[VSPEC.NAME] ?? "Not Connected";
         }
 
         private void OpenRTCVRepo(object sender, LinkLabelLinkClickedEventArgs e)

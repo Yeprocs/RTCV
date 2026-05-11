@@ -586,11 +586,13 @@ namespace RTCV.UI
                 return false;
             }
 
-            // We need to make sure to send the name to the connection status form again since we couldn't get it before reconnecting
+            // We need to make sure to send the name to the connection status and about form again since we couldn't get it before reconnecting
             SyncObjectSingleton.FormExecute(() =>
             {
                 S.GET<ConnectionStatusForm>().lbConnectionStatus.Text =
                     $"Connected to {(string)AllSpec.VanguardSpec?[VSPEC.NAME] ?? "Vanguard"}";
+                S.GET<SettingsAboutForm>().lbConnectedTo.Text =
+                    $"Connected to: {(string)AllSpec.VanguardSpec?[VSPEC.NAME] ?? "Vanguard"}";
             });
 
             RtcCore.OnProgressBarUpdate(null, new ProgressBarEventArgs($"Loading game", 100));
