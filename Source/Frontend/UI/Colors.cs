@@ -31,7 +31,7 @@ namespace RTCV.UI
             DateTime.Now >= new DateTime(2026, 4, 1)
             ? DateTime.Now.Month == 4 && DateTime.Now.Day == 1
                 ? 25
-                : 5
+                : 0
             : 0;
         public static int CornerRoundness = DefaultCornerRoundness;
 
