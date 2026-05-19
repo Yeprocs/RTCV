@@ -583,6 +583,18 @@ namespace RTCV.UI
             if (completedTask == timeoutTask && !completedTask.IsCanceled)
             {
                 SwapTimeout(windowSelect);
+
+                // Re-open the old emulator
+                var infoOldEmu = new System.Diagnostics.ProcessStartInfo()
+                {
+                    UseShellExecute = false,
+                    WorkingDirectory = oldEmuDir,
+                    FileName = Path.Combine(oldEmuDir, "RESTARTDETACHEDRTC.bat"),
+                };
+                RtcCore.OnProgressBarUpdate(null, new ProgressBarEventArgs($"Swapping back to " + new DirectoryInfo(oldEmuDir).Name, 50));
+                System.Diagnostics.Process.Start(infoOldEmu);
+
+
                 return false;
             }
 
