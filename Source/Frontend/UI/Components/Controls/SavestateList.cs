@@ -8,6 +8,7 @@ namespace RTCV.UI.Components.Controls
     using System.Drawing.Design;
     using System.IO;
     using System.Linq;
+    using System.Reflection;
     using System.Threading.Tasks;
     using System.Windows.Forms;
     using CorruptCore;
@@ -20,6 +21,7 @@ namespace RTCV.UI.Components.Controls
         private SavestateHolder _selectedHolder;
         private string _saveStateWord = "Savestate";
         private bool _wasSaveWhenFilledSlotWasLastSelected;
+        private readonly Timer _refreshTimer = new Timer();
 
         public SavestateHolder SelectedHolder
         {
@@ -105,7 +107,20 @@ namespace RTCV.UI.Components.Controls
         public SavestateList()
         {
             InitializeComponent();
-            Resize += (s, ev) => CalculateStatesPerPage();
+            _refreshTimer.Interval = 200;
+            _refreshTimer.Enabled = false;
+            _refreshTimer.Tick += (s, ev) =>
+            {
+                MethodInfo onSizeChanged = typeof(Control).GetRuntimeMethods().First(m => m.Name == "OnSizeChanged");
+                onSizeChanged.Invoke(flowPanel, new object[] { EventArgs.Empty });
+                _refreshTimer.Enabled = false;
+                _refreshTimer.Interval = 200;
+            };
+            Resize += (s, ev) =>
+            {
+                CalculateStatesPerPage();
+                _refreshTimer.Enabled = true;
+            };
         }
 
         private void InitializeSavestateHolder()
@@ -147,7 +162,6 @@ namespace RTCV.UI.Components.Controls
                     flowPanel.Controls.Add(ssh);
                     _controlList.Add(ssh);
 
-                    // Recolor only the NEW control
                     if (Parent is IColorize colorize)
                         Colors.SetRTCColor(Colors.GeneralColor, ssh);
                 }
@@ -243,7 +257,8 @@ namespace RTCV.UI.Components.Controls
                         SelectedHolder.SetSelected(true);
 
                         S.GET<SavestateManagerForm>().UnsavedEdits = true;
-                    }).EndIf()
+                    })
+                    .EndIf()
                     .If(holder.sk != null).AddItem("New Blastlayer From This Savestate (Blast Editor)", (ob, ev) =>
                     {
                         var holder = (SavestateHolder)((Button)sender).Parent;
