@@ -64,6 +64,7 @@ namespace RTCV.UI
             foreach (var c in allControls)
             {
                 c.Paint -= RoundedPaint;
+                c.Resize -= ResizeUpdateRegion;
                 if (c is Form)
                 {
                     ((Form)c).ResizeEnd -= UpdateRegions;
@@ -78,6 +79,8 @@ namespace RTCV.UI
                 if (IsRoundable(c))
                 {
                     c.Paint += RoundedPaint;
+                    c.Resize += ResizeUpdateRegion;
+                    ApplyRegion(c);
                 }
 
                 if (c is Form)
@@ -173,13 +176,44 @@ namespace RTCV.UI
                     if (IsRoundable(c))
                     {
                         c.Paint += RoundedPaint;
-                        var controlRect = new RectangleF(-1f, -1f, c.ClientSize.Width + 1f, c.ClientSize.Height + 1f);
-                        int radius = (int)Math.Min(CornerRoundness, Math.Min(controlRect.Width / 2, controlRect.Height / 2));
-                        using (GraphicsPath pathFull = GetFigurePath(controlRect, radius, -1))
-                        {
-                            c.Region = new Region(pathFull);
-                        }
+                        c.Resize += ResizeUpdateRegion;
+                        ApplyRegion(c);
                     }
+                }
+            }
+
+            void ResizeUpdateRegion(object sender, EventArgs args)
+            {
+                Control c = (Control)sender;
+                if (IsRoundable(c))
+                {
+                    ApplyRegion(c);
+                }
+            }
+
+            void ApplyRegion(Control c)
+            {
+                if (c is Form f && f.Parent == null)
+                {
+                    c.Region = null;
+                    return;
+                }
+                if (CornerRoundness <= 0)
+                {
+                    c.Region = null;
+                    c.Paint -= RoundedPaint;
+                    c.Resize -= ResizeUpdateRegion;
+                    return;
+                }
+                if (c.ClientSize.Width <= 0 || c.ClientSize.Height <= 0)
+                {
+                    return;
+                }
+                var controlRect = new RectangleF(-1f, -1f, c.ClientSize.Width + 1f, c.ClientSize.Height + 1f);
+                int radius = (int)Math.Min(CornerRoundness, Math.Min(controlRect.Width / 2, controlRect.Height / 2));
+                using (GraphicsPath pathFull = GetFigurePath(controlRect, radius, -1))
+                {
+                    c.Region = new Region(pathFull);
                 }
             }
 
@@ -193,6 +227,7 @@ namespace RTCV.UI
                     if (IsRoundable(c) && CornerRoundness > 0)
                     {
                         c.Paint -= RoundedPaint;
+                        c.Resize -= ResizeUpdateRegion;
                     }
                 }
             }
@@ -202,7 +237,6 @@ namespace RTCV.UI
                 Control c = (Control)sender;
                 if (c is Form f && f.Parent == null)
                 {
-                    c.Region = null;
                     return;
                 }
 
@@ -272,11 +306,9 @@ namespace RTCV.UI
                 using (GraphicsPath pathNE = GetFigurePath(controlRect, radius, 1))
                 using (GraphicsPath pathSE = GetFigurePath(controlRect, radius, 2))
                 using (GraphicsPath pathSW = GetFigurePath(controlRect, radius, 3))
-                using (GraphicsPath pathFull = GetFigurePath(controlRect, radius, -1))
                 using (Pen pen = new Pen(Color.Magenta, 0))
                 {
                     pevent.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
-                    c.Region = new Region(pathFull);
                     pen.Color = cornerColors[0];
                     pevent.Graphics.DrawPath(pen, pathNW);
                     pen.Color = cornerColors[1];
