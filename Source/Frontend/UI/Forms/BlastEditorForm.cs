@@ -58,6 +58,7 @@ namespace RTCV.UI
     using RTCV.Common;
     using RTCV.UI.Components;
     using System.Threading.Tasks;
+    using NLog;
 
 #pragma warning disable CA2213 //Component designer classes generate their own Dispose method
     public partial class BlastEditorForm : Modular.ColorizedForm
@@ -86,6 +87,7 @@ namespace RTCV.UI
         private Dictionary<string, Control> property2ControlDico;
         private NLog.Logger logger = NLog.LogManager.GetCurrentClassLogger();
         private DataGridViewCell lastSelectedCell = null;
+        private int managerIndex = -1;
 
         private enum BuProperty
         {
@@ -1774,9 +1776,9 @@ namespace RTCV.UI
             BakeROMBlastunitsToFile(null);
         }
 
-        private void RunOriginalSavestate(object sender, EventArgs e)
+        private async void RunOriginalSavestate(object sender, EventArgs e)
         {
-            originalSK.RunOriginal();
+            await originalSK.RunOriginal();
         }
 
         public void ReplaceSavestateFromGlitchHarvester(object sender, EventArgs e)
@@ -2444,7 +2446,31 @@ namespace RTCV.UI
             return S.GET<StashHistoryForm>().AddStashToStockpileFromUI();
         }
 
+        public bool UpdateStockpileEntry()
+        {
+            if (currentSK.ParentKey == null)
+            {
+                MessageBox.Show("There's no savestate associated with this Stashkey!\nAssociate one in the menu to send this to the stash.");
+                return false;
+            }
+
+            // Find the original stash key index
+            var dataRows = S.GET<StockpileManagerForm>().dgvStockpile.Rows.Cast<DataGridViewRow>().ToList();
+            List<StashKey> stashKeys = dataRows.Select(x => (StashKey)x.Cells["Item"].Value).ToList();
+
+            int idx = stashKeys.FindIndex(x => x.Key == originalSK.Key);
+            if (idx == -1)
+            {
+                MessageBox.Show("Couldn't find the original stash key! The stockpile entry will not be updated.");
+                return false;
+            }
+
+            SendToStash(null, null);
+            return S.GET<StashHistoryForm>().UpdateStockpileEntry(idx);
+        }
+
         private void AddStashToStockpile(object sender, EventArgs e) => AddStashToStockpile();
+        private void UpdateStockpileEntry(object sender, EventArgs e) => UpdateStockpileEntry();
         private void BreakDownAllBlastUnits(object sender, EventArgs e) => BreakDownUnits();
         private void OnBlastEditorRowsRemoved(object sender, DataGridViewRowsRemovedEventArgs e) => UpdateLayerSize();
         private void OnBlastEditorRowsAdded(object sender, DataGridViewRowsAddedEventArgs e) => UpdateLayerSize();

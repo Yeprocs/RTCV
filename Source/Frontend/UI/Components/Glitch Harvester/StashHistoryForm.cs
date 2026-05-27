@@ -165,6 +165,46 @@ namespace RTCV.UI
             return true;
         }
 
+        public bool UpdateStockpileEntry(int index = -1)
+        {
+            if (lbStashHistory.Items.Count == 0 || lbStashHistory.SelectedIndex == -1)
+            {
+                MessageBox.Show("Can't add the Stash to the Stockpile because none is selected in the Stash History");
+                return false;
+            }
+
+            StashKey sk = (StashKey)lbStashHistory.SelectedItem;
+            StockpileManagerUISide.CurrentStashkey = sk;
+
+            if (Params.IsParamSet("RASTERIZE_VMD_UPON_STOCKPILING"))
+                sk.BlastLayer.RasterizeVMDs();
+
+            StashKey stockpileStashKey = (StashKey)S.GET<StockpileManagerForm>().dgvStockpile.Rows[index].Cells["Item"].Value;
+            stockpileStashKey.BlastLayer = sk.BlastLayer;
+
+            S.GET<StockpileManagerForm>().RefreshNoteIcons();
+
+            StockpileManagerUISide.StashHistory.Remove(sk);
+
+            RefreshStashHistory();
+
+            DontLoadSelectedStash = true;
+            lbStashHistory.ClearSelected();
+            DontLoadSelectedStash = false;
+
+            S.GET<StockpileManagerForm>().dgvStockpile.ClearSelection();
+            S.GET<StockpileManagerForm>().dgvStockpile.Rows[index].Selected = true;
+
+            StockpileManagerUISide.StockpileChanged();
+
+            S.GET<StockpileManagerForm>().UnsavedEdits = true;
+
+            //Ensure it is redrawn to prevent weird issues such as the merge button not returning into the corrupt button
+            S.GET<GlitchHarvesterBlastForm>().RedrawActionUI();
+
+            return true;
+        }
+
         public void RefreshStashHistory(object sender = null, EventArgs e = null)
         {
             DontLoadSelectedStash = true;

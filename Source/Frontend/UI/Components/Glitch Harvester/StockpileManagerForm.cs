@@ -183,7 +183,7 @@ namespace RTCV.UI
                         if (S.GET<BlastEditorForm>() != null)
                         {
                             var sk = GetSelectedStashKey();
-                            BlastEditorForm.OpenBlastEditor((StashKey)sk.Clone());
+                            BlastEditorForm.OpenBlastEditor(sk);
                         }
                     }, rowCount == 1)
                     .AddItem("Sanitize", (ob, ev) =>
