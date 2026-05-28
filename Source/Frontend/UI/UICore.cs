@@ -391,9 +391,9 @@ namespace RTCV.UI
             switch (trigger)
             {
                 case "Manual Blast":
-                    SyncObjectSingleton.FormExecute(() =>
+                    SyncObjectSingleton.FormExecute(async () =>
                     {
-                        S.GET<CoreForm>().ManualBlast(null, null);
+                        await S.GET<CoreForm>().ManualBlast(null, null);
                     });
                     break;
 
@@ -445,21 +445,21 @@ namespace RTCV.UI
                     break;
 
                 case "Load and Corrupt":
-                    SyncObjectSingleton.FormExecute(async () =>
+                    SyncObjectSingleton.FormExecute(() =>
                     {
                         S.GET<GlitchHarvesterBlastForm>().loadBeforeOperation = true;
-                        await Task.Run(() => S.GET<GlitchHarvesterBlastForm>().Corrupt(null, null));
+                        S.GET<GlitchHarvesterBlastForm>().corruptQueue.Post(Guid.NewGuid());
                     });
                     break;
 
                 case "Just Corrupt":
                     AllSpec.CorruptCoreSpec.Update(VSPEC.STEP_RUNBEFORE, true);
 
-                    SyncObjectSingleton.FormExecute(async () =>
+                    SyncObjectSingleton.FormExecute(() =>
                     {
                         bool isload = S.GET<GlitchHarvesterBlastForm>().loadBeforeOperation;
                         S.GET<GlitchHarvesterBlastForm>().loadBeforeOperation = false;
-                        await Task.Run(() => S.GET<GlitchHarvesterBlastForm>().Corrupt(null, null));
+                        S.GET<GlitchHarvesterBlastForm>().corruptQueue.Post(Guid.NewGuid());
                         S.GET<GlitchHarvesterBlastForm>().loadBeforeOperation = isload;
                     });
                     break;
@@ -479,11 +479,11 @@ namespace RTCV.UI
                     // COPY FROM JUST CORRUPT
                     AllSpec.CorruptCoreSpec.Update(VSPEC.STEP_RUNBEFORE, true);
 
-                    SyncObjectSingleton.FormExecute(async () =>
+                    SyncObjectSingleton.FormExecute(() =>
                     {
                         bool isload = S.GET<GlitchHarvesterBlastForm>().loadBeforeOperation;
                         S.GET<GlitchHarvesterBlastForm>().loadBeforeOperation = false;
-                        await Task.Run(() => S.GET<GlitchHarvesterBlastForm>().Corrupt(null, null));
+                        S.GET<GlitchHarvesterBlastForm>().corruptQueue.Post(Guid.NewGuid());
                         S.GET<GlitchHarvesterBlastForm>().loadBeforeOperation = isload;
                     });
                     //--------------------------------------
@@ -508,7 +508,7 @@ namespace RTCV.UI
 
                 case "Reload Corruption":
 
-                    SyncObjectSingleton.FormExecute(async () =>
+                    SyncObjectSingleton.FormExecute(() =>
                     {
                         var sh = S.GET<StashHistoryForm>();
                         var sm = S.GET<StockpileManagerForm>();
@@ -525,7 +525,7 @@ namespace RTCV.UI
 
                             if (rows.Count > 1)
                             {
-                                await Task.Run(() => ghb.Corrupt(null, null));
+                                ghb.corruptQueue.Post(Guid.NewGuid());
                             }
                             else
                             {
@@ -537,9 +537,9 @@ namespace RTCV.UI
                     break;
 
                 case "Reroll":
-                    SyncObjectSingleton.FormExecute(() =>
+                    SyncObjectSingleton.FormExecute(async () =>
                     {
-                        S.GET<GlitchHarvesterBlastForm>().RerollSelected(null, null);
+                        await S.GET<GlitchHarvesterBlastForm>().RerollSelected(null, null);
                     });
                     break;
 
@@ -571,11 +571,14 @@ namespace RTCV.UI
                     break;
 
                 case "Blast+RawStash":
-                    SyncObjectSingleton.FormExecute(() =>
+                    SyncObjectSingleton.FormExecute(async () =>
                     {
-                        AllSpec.CorruptCoreSpec.Update(VSPEC.STEP_RUNBEFORE, true);
-                        S.GET<CoreForm>().ManualBlast(null, null);
-                        S.GET<GlitchHarvesterBlastForm>().SendRawToStash(null, null);
+                        await Task.Run(() =>
+                        {
+                            AllSpec.CorruptCoreSpec.Update(VSPEC.STEP_RUNBEFORE, true);
+                            S.GET<CoreForm>().ManualBlast(null, null);
+                            S.GET<GlitchHarvesterBlastForm>().SendRawToStash(null, null);
+                        });
                     });
                     break;
 

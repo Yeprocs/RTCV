@@ -1,20 +1,22 @@
 namespace RTCV.UI
 {
+    using CorruptCore;
+    using Modular;
+    using NetCore;
+    using RTCV.Common;
+    using RTCV.NetCore.Enums;
+    using SlimDX.Direct3D9;
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
     using System.Drawing;
     using System.IO;
     using System.Linq;
-    using System.Windows.Forms;
-    using CorruptCore;
-    using NetCore;
-    using RTCV.Common;
-    using Modular;
     using System.Threading;
     using System.Threading.Tasks;
-    using RTCV.NetCore.Enums;
+    using System.Threading.Tasks.Dataflow;
     using System.Timers;
+    using System.Windows.Forms;
 
     public partial class GlitchHarvesterBlastForm : ComponentForm, IBlockable
     {
@@ -253,8 +255,18 @@ namespace RTCV.UI
                 }
             }
         }
+        
+        public ActionBlock<Guid> corruptQueue = new ActionBlock<Guid>(async id =>
+        {
+            await ProcessDataAsync(id);
+        });
 
-        public async void Corrupt(object sender, EventArgs e)
+        private static async Task ProcessDataAsync(Guid id)
+        {
+            await S.GET<GlitchHarvesterBlastForm>().Corrupt(null, null);
+        }
+
+        public async Task Corrupt(object sender, EventArgs e)
         {
             logger.Trace("btnCorrupt Clicked");
 
@@ -329,9 +341,8 @@ namespace RTCV.UI
                         else
                         {
                             MessageBox.Show("The Glitch Harvester could not perform the INJECT action\n\nHave you made a corruption yet?");
-     
+                            return;
                         }
-                        
                     }
 
                     S.GET<StashHistoryForm>().DontLoadSelectedStash = true;
@@ -350,6 +361,7 @@ namespace RTCV.UI
                         else
                         {
                             MessageBox.Show("The Glitch Harvester could not perform the ORIGINAL action\n\nHave you made a corruption yet?");
+                            return;
                         }
                     }
 
@@ -380,6 +392,11 @@ namespace RTCV.UI
             SendRawToStash(null, null);
         }
 
+        public void btnCorrupt_Click(object sender, EventArgs e)
+        {
+            corruptQueue.Post(Guid.NewGuid());
+        }
+
         public void btnCorrupt_MouseDown(object sender, MouseEventArgs e)
         {
             if (e.Button != MouseButtons.Right) return;
@@ -400,7 +417,7 @@ namespace RTCV.UI
             {
                 ghModeStore = ghMode;
                 ghMode = mode;
-                S.GET<GlitchHarvesterBlastForm>().Corrupt(sender, e);
+                corruptQueue.Post(Guid.NewGuid());
                 ghMode = ghModeStore;
                 RedrawActionUI();
             }
@@ -472,6 +489,11 @@ namespace RTCV.UI
             }
         }
 
+        private async void OnRerollButtonMouseClick(object sender, EventArgs e)
+        {
+            await RerollSelected(sender, e);
+        }
+
         private void OnRerollButtonMouseDown(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Right)
@@ -486,7 +508,7 @@ namespace RTCV.UI
             }
         }
 
-        public async void RerollSelected(object sender, EventArgs e)
+        public async Task RerollSelected(object sender, EventArgs e)
         {
             if (!btnRerollSelected.Visible)
             {

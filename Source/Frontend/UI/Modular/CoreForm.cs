@@ -358,7 +358,7 @@ This message only appears once.";
             }
         }
 
-        public async void ManualBlast(object sender, EventArgs e)
+        public async Task ManualBlast(object sender, EventArgs e)
         {
             if (AllSpec.VanguardSpec[VSPEC.REPLACE_MANUALBLAST_WITH_GHCORRUPT] != null)
             {
@@ -646,6 +646,10 @@ This message only appears once.";
             S.GET<GlitchHarvesterBlastForm>().SendRawToStash(null, null);
         }
 
+        public async void btnManualBlast_Click(object sender, EventArgs e)
+        {
+            await ManualBlast(null, null);
+        }
         public void btnManualBlast_MouseDown(object sender, MouseEventArgs e)
         {
             e ??= new MouseEventArgs(MouseButtons.Left, 1, 0, 0, 0);

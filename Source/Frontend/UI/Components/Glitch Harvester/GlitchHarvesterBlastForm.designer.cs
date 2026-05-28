@@ -97,7 +97,7 @@ namespace RTCV.UI
             this.btnRerollSelected.Tag = "color:light1";
             this.btnRerollSelected.Text = "Reroll";
             this.btnRerollSelected.UseVisualStyleBackColor = false;
-            this.btnRerollSelected.Click += new System.EventHandler(this.RerollSelected);
+            this.btnRerollSelected.Click += new System.EventHandler(this.OnRerollButtonMouseClick);
             this.btnRerollSelected.MouseDown += new System.Windows.Forms.MouseEventHandler(this.OnRerollButtonMouseDown);
             // 
             // btnCorrupt
@@ -123,7 +123,7 @@ namespace RTCV.UI
             this.btnCorrupt.Text = "  Corrupt";
             this.btnCorrupt.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.btnCorrupt.UseVisualStyleBackColor = false;
-            this.btnCorrupt.Click += new System.EventHandler(this.Corrupt);
+            this.btnCorrupt.Click += new System.EventHandler(this.btnCorrupt_Click);
             this.btnCorrupt.MouseDown += new System.Windows.Forms.MouseEventHandler(this.btnCorrupt_MouseDown);
             // 
             // btnBlastToggle

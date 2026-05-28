@@ -444,7 +444,7 @@ namespace RTCV.UI
             this.btnManualBlast.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.btnManualBlast.UseVisualStyleBackColor = false;
             this.btnManualBlast.Visible = false;
-            this.btnManualBlast.Click += new System.EventHandler(this.ManualBlast);
+            this.btnManualBlast.Click += new System.EventHandler(this.btnManualBlast_Click);
             this.btnManualBlast.MouseDown += new System.Windows.Forms.MouseEventHandler(this.btnManualBlast_MouseDown);
             // 
             // btnAutoCorrupt
