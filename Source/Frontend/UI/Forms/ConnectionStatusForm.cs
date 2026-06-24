@@ -33,6 +33,11 @@ namespace RTCV.UI
             "Unpredictable and profoundly cursed",
             "Violates every design paradigm in the book",
             "I can't believe it's WinForms",
+            "Home of Emmanuel Blast",
+            "Over 10 years of RAM bullying",
+            "Sweeping up the shards",
+            "Now with double the threading!",
+            "Prepare your ears",
         };
 
         private void OnFormLoad(object sender, EventArgs e)
