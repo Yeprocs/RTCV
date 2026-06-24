@@ -52,6 +52,14 @@ namespace RTCV.CorruptCore
             set => _alias = value;
         }
 
+        private Dictionary<string, MemoryInterface> _domainToMiDico;
+
+        public Dictionary<string, MemoryInterface> DomainToMiDico
+        {
+            get => _domainToMiDico ??= new Dictionary<string, MemoryInterface>();
+            set => _domainToMiDico = value;
+        }
+
         public StashKey()
         {
             var key = RtcCore.GetRandomKey();
@@ -82,6 +90,12 @@ namespace RTCV.CorruptCore
             EmuVer = dirCheck ? new DirectoryInfo((string)AllSpec.VanguardSpec?[VSPEC.EMUDIR]).Name.ToUpper() : "";
 
             this.SelectedDomains = ((string[])AllSpec.UISpec[UISPEC.SELECTEDDOMAINS]).ToList();
+
+            var domains = MemoryDomains.MemoryInterfaces.Keys.Concat(MemoryDomains.VmdPool.Values.Select(it => it.ToString())).ToArray();
+            foreach (var domain in domains)
+            {
+                DomainToMiDico.Add(domain, MemoryDomains.GetInterface(domain));
+            }
         }
 
         public object Clone()

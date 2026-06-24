@@ -208,7 +208,7 @@ namespace RTCV.UI
 
         private void OnFormLoad(object sender, EventArgs e)
         {
-            _domains = MemoryDomains.MemoryInterfaces?.Keys.Concat(MemoryDomains.VmdPool.Values.Select(it => it.ToString())).ToArray();
+            //_domains = MemoryDomains.MemoryInterfaces?.Keys.Concat(MemoryDomains.VmdPool.Values.Select(it => it.ToString())).ToArray();
 
             dgvBlastEditor.AllowUserToOrderColumns = true;
             SetDisplayOrder();
@@ -1373,11 +1373,22 @@ namespace RTCV.UI
 
         internal void LoadStashkey(StashKey sk, bool silent = false)
         {
-            if (!RefreshDomains())
+            if (!LoadDomainsFromStashKey(sk.DomainToMiDico))
             {
-                MessageBox.Show($"Loading domains failed! Aborting load. Check to make sure the RTC and {RtcCore.VanguardImplementationName} are connected.");
-                this.Close();
-                return;
+                // If we fail to load the domains from the stash key (most likely because it's an older one), try to fall back to the old method
+                if (!RefreshDomains())
+                {
+                    MessageBox.Show($"Loading domains failed! Aborting load. Check to make sure the RTC and {RtcCore.VanguardImplementationName} are connected.");
+                    this.Close();
+                    return;
+                }
+
+                // If that works, store the domains in the stash key now
+                var domains = MemoryDomains.MemoryInterfaces.Keys.Concat(MemoryDomains.VmdPool.Values.Select(it => it.ToString())).ToArray();
+                foreach (var domain in domains)
+                {
+                    sk.DomainToMiDico.Add(domain, MemoryDomains.GetInterface(domain));
+                }
             }
             var buDomains = new List<string>();
             foreach (var bu in sk.BlastLayer.Layer)
@@ -1432,6 +1443,32 @@ namespace RTCV.UI
                 this.Show();
                 this.BringToFront();
                 RefreshAllNoteIcons();
+            }
+        }
+
+        private bool LoadDomainsFromStashKey(Dictionary<string, MemoryInterface> skDomainToMiDico)
+        {
+            try
+            {
+                DomainToMiDico?.Clear();
+
+                _domains = skDomainToMiDico.Keys.ToArray();
+                foreach (var domain in _domains)
+                {
+                    DomainToMiDico.Add(domain, skDomainToMiDico[domain]);
+                }
+                if (DomainToMiDico.Keys.Count > 0)
+                {
+                    return true;
+                }
+
+                return false;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(
+                    $"An error occurred in RTC while refreshing the domains\nAre you sure you don't have an invalid domain selected?\nMake sure any VMDs are loaded and you have the correct core loaded in {RtcCore.VanguardImplementationName}\n{ex}"
+                );
             }
         }
 
@@ -2448,7 +2485,7 @@ namespace RTCV.UI
 
         public bool UpdateStockpileEntry()
         {
-            if (currentSK.ParentKey == null)
+            if (currentSK?.ParentKey == null)
             {
                 MessageBox.Show("There's no savestate associated with this Stashkey!\nAssociate one in the menu to send this to the stash.");
                 return false;
