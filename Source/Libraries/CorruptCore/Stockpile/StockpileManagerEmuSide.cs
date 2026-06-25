@@ -29,14 +29,6 @@ namespace RTCV.CorruptCore
 
             StashKey.SetCore(sk);
             LocalNetCoreRouter.Route(NetCore.Endpoints.Vanguard, NetCore.Commands.Remote.LoadROM, sk.RomFilename, true);
-
-            string ss = (string)AllSpec.VanguardSpec[VSPEC.SYNCSETTINGS];
-            //If the syncsettings are different, update them and load it again. Otheriwse, leave as is
-            if (sk.SyncSettings != ss && sk.SyncSettings != null)
-            {
-                LocalNetCoreRouter.Route(NetCore.Endpoints.Vanguard, NetCore.Commands.Remote.KeySetSyncSettings, sk.SyncSettings, true);
-                LocalNetCoreRouter.Route(NetCore.Endpoints.Vanguard, NetCore.Commands.Remote.LoadROM, sk.RomFilename, true);
-            }
             return true;
         }
 

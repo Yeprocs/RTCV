@@ -475,12 +475,29 @@ namespace RTCV.CorruptCore
                 var reloadRom = (bool)valueAsObjectArr[1];
                 var runBlastLayer = (bool)valueAsObjectArr[2];
 
+                if ((AllSpec.VanguardSpec[VSPEC.RELOAD_ON_SAVESTATE]) != null)
+                    reloadRom = (bool)AllSpec.VanguardSpec[VSPEC.RELOAD_ON_SAVESTATE];
+
+                string currentOpenRom = "";
+                if ((string)AllSpec.VanguardSpec[VSPEC.OPENROMFILENAME] != "")
+                    currentOpenRom = (string)AllSpec.VanguardSpec[VSPEC.OPENROMFILENAME];
+
                 var returnValue = false;
 
                 //Load the game from the main thread
-                if (reloadRom)
+                //We need to also check the sync settings here, since we definitely need to reload if it's different
+                string ss = (string)AllSpec.VanguardSpec[VSPEC.SYNCSETTINGS];
+                if (reloadRom || (sk.SyncSettings != ss && sk.SyncSettings != null) || currentOpenRom != sk.RomFilename)
                 {
                     SyncObjectSingleton.FormExecute(() => StockpileManagerEmuSide.LoadRomNet(sk));
+
+                    ss = (string)AllSpec.VanguardSpec[VSPEC.SYNCSETTINGS];
+                    //If the syncsettings are different, update them and load it again. Otheriwse, leave as is
+                    if (sk.SyncSettings != ss && sk.SyncSettings != null)
+                    {
+                        LocalNetCoreRouter.Route(NetCore.Endpoints.Vanguard, NetCore.Commands.Remote.KeySetSyncSettings, sk.SyncSettings, true);
+                        SyncObjectSingleton.FormExecute(() => StockpileManagerEmuSide.LoadRomNet(sk));
+                    }
                 }
                 void a()
                 {
