@@ -2210,7 +2210,7 @@ namespace RTCV.UI
                 DataGridViewButtonCell cell = pair.Value;
         
                 bool hasNote = !string.IsNullOrWhiteSpace(bu.Note);
-                cell.Value = hasNote ? "📝" : string.Empty;
+                cell.Value = hasNote ? bu.Note : string.Empty;
             }
         }
 
@@ -2266,7 +2266,7 @@ namespace RTCV.UI
                 _noteButtonsCache[unit] = cell;
         
                 bool hasNote = !string.IsNullOrWhiteSpace(unit.Note);
-                cell.Value = hasNote ? "📝" : string.Empty;
+                cell.Value = hasNote ? unit.Note : string.Empty;
             }
         }
 
