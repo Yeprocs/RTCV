@@ -1233,7 +1233,7 @@ namespace RTCV.UI
             sourceAddress.Increment = 1;
             dgvBlastEditor.Columns.Add(sourceAddress);
 
-            dgvBlastEditor.Columns.Add(CreateColumn("", BuProperty.Note.ToString(), "Note", new DataGridViewButtonColumn()));
+            dgvBlastEditor.Columns.Add(CreateColumn("", BuProperty.Note.ToString(), "Note", new DataGridViewTextBoxColumn()));
 
             if (Params.IsParamSet("BLASTEDITOR_VISIBLECOLUMNS"))
             {
@@ -1369,7 +1369,7 @@ namespace RTCV.UI
 
         private BindingSource _mainSource;
         private BindingSource _filteredSource;
-        private Dictionary<BlastUnit, DataGridViewButtonCell> _noteButtonsCache = new Dictionary<BlastUnit, DataGridViewButtonCell>();
+        private Dictionary<BlastUnit, DataGridViewTextBoxCell> _noteButtonsCache = new Dictionary<BlastUnit, DataGridViewTextBoxCell>();
 
         internal void LoadStashkey(StashKey sk, bool silent = false)
         {
@@ -2207,7 +2207,7 @@ namespace RTCV.UI
             foreach (var pair in _noteButtonsCache)
             {
                 BlastUnit bu = pair.Key;
-                DataGridViewButtonCell cell = pair.Value;
+                DataGridViewTextBoxCell cell = pair.Value;
         
                 bool hasNote = !string.IsNullOrWhiteSpace(bu.Note);
                 cell.Value = hasNote ? bu.Note : string.Empty;
@@ -2258,7 +2258,7 @@ namespace RTCV.UI
             if (dgvBlastEditor.Columns[e.ColumnIndex].Name != BuProperty.Note.ToString())
                 return;
     
-            DataGridViewButtonCell cell = dgvBlastEditor.Rows[e.RowIndex].Cells[e.ColumnIndex] as DataGridViewButtonCell;
+            DataGridViewTextBoxCell cell = dgvBlastEditor.Rows[e.RowIndex].Cells[e.ColumnIndex] as DataGridViewTextBoxCell;
             BlastUnit unit = dgvBlastEditor.Rows[e.RowIndex].DataBoundItem as BlastUnit;
     
             if (cell != null && unit != null)
