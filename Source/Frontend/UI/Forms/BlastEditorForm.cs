@@ -1233,7 +1233,9 @@ namespace RTCV.UI
             sourceAddress.Increment = 1;
             dgvBlastEditor.Columns.Add(sourceAddress);
 
-            dgvBlastEditor.Columns.Add(CreateColumn("", BuProperty.Note.ToString(), "Note", new DataGridViewTextBoxColumn()));
+            var note = (DataGridViewTextBoxColumn)(CreateColumn("", BuProperty.Note.ToString(), "Note", new DataGridViewTextBoxColumn()));
+            note.ReadOnly = true;
+            dgvBlastEditor.Columns.Add(note);
 
             if (Params.IsParamSet("BLASTEDITOR_VISIBLECOLUMNS"))
             {
